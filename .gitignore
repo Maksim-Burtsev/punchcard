@@ -1,0 +1,4 @@
+# The book corpus never ships — copyrighted sources stay local
+books/
+
+.DS_Store

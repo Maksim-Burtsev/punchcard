@@ -1,0 +1,13 @@
+{
+  "name": "punchcard",
+  "version": "0.1.0",
+  "description": "Architecture-level code review from a fifty-year veteran. Design, boundaries, data and error paths — never naming or formatting. Seven findings max, one verdict.",
+  "author": {
+    "name": "Maksim Burtsev",
+    "url": "https://github.com/Maksim-Burtsev"
+  },
+  "homepage": "https://github.com/Maksim-Burtsev/punchcard",
+  "repository": "https://github.com/Maksim-Burtsev/punchcard",
+  "license": "MIT",
+  "keywords": ["code-review", "architecture", "design-review", "claude-code-plugin"]
+}

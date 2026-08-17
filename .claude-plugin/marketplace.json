@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "punchcard",
+  "description": "Code review by the industry's doyen: fifty years of shipped software, seven findings max.",
+  "owner": {
+    "name": "Maksim Burtsev",
+    "url": "https://github.com/Maksim-Burtsev"
+  },
+  "plugins": [
+    {
+      "name": "punchcard",
+      "description": "Architecture-level review: design, boundaries, data, errors. Never style. Verdict first, seven findings max.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

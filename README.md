@@ -1,0 +1,85 @@
+<!-- uncomment when assets/logo.png lands (roadmap #6)
+<p align="center">
+  <img src="assets/logo.png" alt="Punchcard" width="280">
+</p>
+-->
+
+# Punchcard
+
+> Reviewing code since it came on cardboard.
+
+**Architecture-level code review for Claude Code.** Punchcard is the reviewer
+every team wishes it had: the veteran who started on punch cards, shipped
+through every era of the industry, and read the classics before they were
+classics. He doesn't care about your variable names. He cares whether the
+design fits the problem — and he says so in seven findings or fewer.
+
+## Why another review tool
+
+Ask a stock agent for a code review and you get a wall of text: nitpicks
+about naming, a paragraph praising your structure, and a different verdict
+every run. Punchcard is built on three constraints instead:
+
+- **Altitude lock.** Boundaries, dependency direction, data model, error
+  paths, cost of the next change. Never naming, formatting, or anything a
+  linter catches — that's someone else's job.
+- **The gate.** Every finding must have a real consequence, cite a numbered
+  principle, and change how the code works or evolves — not how it reads.
+  Hard cap of seven findings. "Ship it." is a complete review.
+- **A constitution, not a mood.** Findings cite principles from a written
+  constitution, so two runs argue from the same ground. Today it's ten
+  bedrock principles (v0); the [roadmap](ROADMAP.md) replaces them with a
+  synthesis distilled from ~30 classic software engineering books.
+
+## Install
+
+```
+/plugin marketplace add Maksim-Burtsev/punchcard
+/plugin install punchcard@punchcard   # plugin@marketplace
+```
+
+## Use
+
+```
+/punchcard                  # review working tree, or current branch vs default
+/punchcard main..feature    # review a range
+/punchcard <MR/PR url>      # review a merge request (roadmap: inline comments)
+```
+
+## The verdicts
+
+| Verdict | Meaning |
+|---|---|
+| **Ship it.** | Nothing passed the gate. Merge. |
+| **Ship it, then fix #1…#N.** | Findings worth doing; none of them blocks the merge. |
+| **Ship after #1…#N.** | The numbered BLOCKERs stop the merge; the rest can follow. |
+| **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
+
+A finding looks like this:
+
+> ### 2. [BLOCKER] Charge failures vanish silently — `billing/api.py:48`
+>
+>     try:
+>         charge(order.total)
+>     except Exception:
+>         pass
+>
+> **Why:** violates principle 6 — errors are interface. A failed charge on a
+> money path disappears without trace: the order proceeds unpaid and no one
+> learns until reconciliation.
+>
+> **Fix:** let the exception propagate; the endpoint's error handler already
+> returns 502.
+
+## Punchcard and friends
+
+[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
+build — the laziest solution that works. Punchcard judges whether what you
+built fits the problem. A bug-hunting review (Claude Code's built-in
+`/code-review`) catches the off-by-ones. Run all three and you have a senior
+team; Punchcard is the one with the corner office and the punch card in his
+shirt pocket.
+
+## License
+
+MIT
