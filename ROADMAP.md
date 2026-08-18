@@ -3,10 +3,12 @@
 - [x] **1. Walking skeleton** — plugin structure, `/punchcard` command, skill
   v0 with a ten-principle stub constitution, smoke-tested on a planted-flaw
   diff.
-- [ ] **2. The corpus** — ~30 classic software engineering books (EPUB/PDF),
-  balanced across schools: code construction, design, architecture, testing
-  and change, operations, engineering wisdom. Sources live in `books/`
-  (gitignored — the corpus never ships; only the synthesis does).
+- [x] **2. The corpus** — 30 deliberately chosen books (see
+  [CORPUS.md](CORPUS.md)): the persona's worldview, not an industry survey.
+  Sources live in `books/` (gitignored — the corpus never ships; only the
+  synthesis does). All 30 collected and machine-verified for completeness
+  and text extraction; `scripts/extract_corpus.py` turns them into chunked
+  plain text under `books/.text/`.
 - [ ] **3. The synthesis** — the heart of the project. One distillation pass
   per book (5–10 durable principles in our own words: statement, rationale,
   scope, source), then cross-book clustering, a conflict register where the
