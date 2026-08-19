@@ -9,12 +9,14 @@
   synthesis does). All 30 collected and machine-verified for completeness
   and text extraction; `scripts/extract_corpus.py` turns them into chunked
   plain text under `books/.text/`.
-- [ ] **3. The synthesis** — the heart of the project. One distillation pass
-  per book (5–10 durable principles in our own words: statement, rationale,
-  scope, source), then cross-book clustering, a conflict register where the
-  schools disagree (resolved explicitly — that's the persona's worldview),
-  and a final constitution of ~50–80 principles that replaces the v0 stub.
-  Plus `BIBLIOGRAPHY.md`.
+- [x] **3. The synthesis** — done in three PRs: 30 distillates
+  (`corpus/distillates/`, 349 principles), 11 clusters and a register of 15
+  explicitly decided forks (`corpus/clusters.md`, `corpus/conflicts.md`),
+  and the constitution — 11 chapters, 78 principles (`constitution/`) —
+  now wired into the skill: a 15-principle core plus per-diff chapter
+  routing. `CORPUS.md` serves as the bibliography. Smoke-tested on three
+  planted-flaw fixtures: 30/30 flaws caught across six runs, zero style
+  baits taken.
 - [ ] **4. GitLab/GitHub inline** — findings posted as inline discussions on
   the MR/PR diff lines; summary comment is the verdict plus the list. The
   review lives where the code lives.
