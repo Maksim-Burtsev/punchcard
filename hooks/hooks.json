@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/punchcard_stop.py\"",
+            "timeout": 10,
+            "statusMessage": "Punchcard: checking for unreviewed work..."
+          }
+        ]
+      }
+    ]
+  }
+}

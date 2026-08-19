@@ -17,12 +17,14 @@
   routing. `CORPUS.md` serves as the bibliography. Smoke-tested on three
   planted-flaw fixtures: 30/30 flaws caught across six runs, zero style
   baits taken.
-- [ ] **4. GitLab/GitHub inline** — findings posted as inline discussions on
-  the MR/PR diff lines; summary comment is the verdict plus the list. The
-  review lives where the code lives.
-- [ ] **5. Auto mode** — a hook so that when agents finish work and
-  self-review, Punchcard runs automatically. Convergence rule: only BLOCKERs
-  are auto-fixed, two rounds maximum.
+- [~] **4. GitLab/GitHub inline** — dropped by decision: the local diff
+  review covers the actual workflow, and a posting integration is a second
+  product to maintain.
+- [x] **5. Auto mode** — a Stop hook (`hooks/punchcard_stop.py`): when the
+  agent finishes a turn leaving uncommitted changes in a repo that opted in
+  (a `.punchcard-auto` file at the git toplevel), the stop is blocked once
+  and the agent reviews its own work. Convergence rule: only BLOCKERs are
+  auto-fixed, two rounds per session maximum.
 - [ ] **6. Benchmarks & release** — the same set of real MRs reviewed with
   and without Punchcard, results published in `benchmarks/`; polish, logo,
   marketplace listing.

@@ -9,5 +9,11 @@
   "homepage": "https://github.com/Maksim-Burtsev/punchcard",
   "repository": "https://github.com/Maksim-Burtsev/punchcard",
   "license": "MIT",
-  "keywords": ["code-review", "architecture", "design-review", "claude-code-plugin"]
+  "keywords": [
+    "code-review",
+    "architecture",
+    "design-review",
+    "claude-code-plugin"
+  ],
+  "hooks": "./hooks/hooks.json"
 }

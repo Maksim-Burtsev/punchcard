@@ -71,6 +71,20 @@ A finding looks like this:
 > **Fix:** let the exception propagate; the endpoint's error handler already
 > returns 502.
 
+## Auto mode
+
+Drop an empty `.punchcard-auto` file into a repository's root and Punchcard
+reviews the agents working in it. When an agent finishes a turn leaving
+uncommitted changes, a Stop hook blocks the handoff and makes it review its
+own work first: BLOCKER findings get fixed, DESIGN and QUESTION findings get
+reported, and the loop is bounded — two rounds per session, then the work
+ships as reviewed. Agents running in a loop end up applying fifty years of
+engineering judgment to their own output before you ever see it.
+
+```
+touch .punchcard-auto   # opt in, per repository
+```
+
 ## Punchcard and friends
 
 [Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
