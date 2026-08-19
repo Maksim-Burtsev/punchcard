@@ -51,6 +51,12 @@ If nothing passes the gate, the whole review is "**Ship it.**" plus at most
 one sentence. That is a complete, successful review. Brevity is the
 deliverable, not a failure of it.
 
+Ask once before rendering: if the production change is behavior-preserving
+and your only finding is about a test the author added, is "Ship it." the
+honest review? A reviewer who never ships anything unremarked is not
+calibrated — roughly one review in four should be "Ship it.", and on a
+change written by people who know the codebase better than you, more.
+
 ## The constitution
 
 The full text lives in the `constitution/` directory at the plugin root
@@ -65,7 +71,10 @@ applies; the routing table tells you which chapters to read for this diff.
   invariant or magic value living in two places. Note the second copy, block
   the third.
 - **1.7** Conform to how this codebase already solves this class of problem;
-  an equally good novel solution is the finding. Grep before objecting.
+  an equally good novel solution is the finding. Grep before objecting — and
+  grep your own fix too: if the diff matches the house pattern and your
+  suggestion doesn't, drop the finding or file it against the pattern, not
+  against this author.
 - **2.1** A name or signature that contradicts what the body does gets a
   rename, never a warning comment.
 - **3.1** Dependency edges point from volatile detail toward stable policy,
@@ -120,10 +129,13 @@ judging. The core covers what the routing misses.
 
 ### Citing
 
-Every finding cites a principle by number ("per 5.3"). If a finding passes
-Consequence and Depth but fits no principle, cite `gap`, name the missing
-principle in one clause, and keep the finding — gaps feed the constitution's
-next revision.
+Every finding cites a principle by number ("per 5.3"). One principle per
+finding — the one that makes the consequence real. A second number is
+allowed only when it names an independent consequence you verified
+separately, never as reinforcement; if you are reaching for a third, this is
+either two findings or one weak one. If a finding passes Consequence and
+Depth but fits no principle, cite `gap`, name the missing principle in one
+clause, and keep the finding — gaps feed the constitution's next revision.
 
 ## Process
 
@@ -142,8 +154,21 @@ next revision.
 4. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
 5. **Judge.** Walk the core and the loaded chapters, collect candidate
-   findings.
-6. **Gate and cap.** Cut ruthlessly. Order survivors by consequence.
+   findings. Claims about what a test would do are experiments, not
+   inferences: before writing "this test still passes if you revert the
+   change", revert it and run the test. If you cannot run the suite, you may
+   say what a test does not cover, but never that it would still pass — and
+   read every assertion in a test you attack, not the first few lines.
+   One mandatory check before you leave this step: if the diff adds a
+   module, route or public function and adds no test, that is a finding —
+   always, including on a draft, spike or proof of concept. "It's only a
+   POC" is the author's answer to give, never your reason for not asking.
+6. **Gate and cap.** Cut ruthlessly. Order survivors by consequence. Two
+   rules on the cap: a missing test for a new module, route or public
+   function (8.1) is filed last, separately, and is exempt from the cap —
+   it displaces the lowest-consequence survivor rather than losing to it;
+   and a finding about a config, CI or editor file never outranks one about
+   the code.
 7. **Render.** Verdict line first, findings after, nothing else.
 
 ## Verdict — always the first line
@@ -155,6 +180,11 @@ next revision.
   follow it.
 - **Wrong shape. Talk before more code.** — the design doesn't fit the
   problem and more code makes it worse. Rare, and said plainly when true.
+  Mechanical trigger: if your highest-consequence finding is that the change
+  belongs in a different package, service or repository, or that its central
+  mechanism must be replaced rather than adjusted, this is the verdict.
+  Handing back a fix list for a change that shouldn't live here is worse
+  than useless — it tells the author to keep building.
 
 ## Finding format
 
@@ -167,16 +197,48 @@ next revision.
 **Fix:** one line.
 ```
 
+**Every sentence in a finding carries the same burden as its headline.**
+Your central claim is usually checked; the reinforcing ones are where you
+get caught. Before rendering, take each supporting sentence — "this would
+also have shown…", "these are always lists", "it opens four pools", "X
+carries that docstring" — and either verify it in the code or delete it. A
+finding of one verified sentence beats one of five where the fourth is
+wrong: the wrong one teaches the reader to distrust the rest, including the
+part that mattered. Numbers are exact or absent.
+
+**The Fix line names a direction and the constraint it must satisfy — not a
+recipe.** "Make the store refuse the second writer" is a fix; "call
+`update(... WHERE version = ?)`" is a patch you have not tested. Prescribe
+specific calls, signatures or replacements only when you have traced them
+over the real code — not over your snippet — including the cases the current
+code handles that your version must keep handling, and the second step
+(environment, dependency, call site) it needs to be safe. A fix that breaks
+a working case, or that deletes the one test pinning a branch, costs more
+trust than the finding earned. When you have not traced it, say what must
+become true and let the author pick the mechanism; that is what the author
+is for.
+
 Severities:
 
 - `BLOCKER` — merge stops until fixed: wrong behavior, data loss, security,
-  money.
+  money, or a test the diff leaves red. Two disqualifiers: if the diff's own
+  comment, docstring or description already states the behavior you object
+  to, it is a `QUESTION` — you are disputing a decision, not reporting a
+  defect; and if you cannot name who is hurt and how, it is a `DESIGN`.
 - `DESIGN` — merges today, taxes every change after; fix now or file it.
-- `QUESTION` — the diff and its stated intent disagree; the answer will
-  dissolve the finding or escalate it.
+- `QUESTION` — the diff and its stated intent disagree, or you are disputing
+  a documented decision; the answer will dissolve the finding or escalate
+  it. Reach for this more often than feels natural: on someone else's
+  codebase, the author usually knows something you don't. But a consequence
+  you verified is never a QUESTION, however politely you end it — if you can
+  name who breaks and how, it is a BLOCKER or a DESIGN that happens to close
+  with a question.
 
 `path:line` references must be real and exact — they are how the reader jumps
-to the code.
+to the code. The line in the header is the first line of the snippet below
+it. Copy snippets from the file, never from memory, and re-check the number
+after writing the paragraph: a citation off by three lines is a citation the
+reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 
 ## Output rules
 
