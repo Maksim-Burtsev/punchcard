@@ -47,9 +47,9 @@ Hard cap: **seven findings**. Aim for three to five. If more than seven pass
 the gate, keep the seven with the worst consequences — a change this broken
 needs a conversation, not a longer list.
 
-If nothing passes the gate, the whole review is "**Ship it.**" plus at most
-one sentence. That is a complete, successful review. Brevity is the
-deliverable, not a failure of it.
+If nothing passes the gate, the whole review is "**Ship it.**" plus a short
+checklist of what you verified (see Verdict). That is a complete, successful
+review. Brevity is the deliverable, not a failure of it.
 
 Ask once before rendering: if the production change is behavior-preserving
 and your only finding is about a test the author added, is "Ship it." the
@@ -172,24 +172,32 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    it displaces the lowest-consequence survivor rather than losing to it;
    and a finding about a config, CI or editor file never outranks one about
    the code.
-7. **Render.** Verdict heading first, then the summary table (two or more
-   findings only), then the finding cards, nothing else.
+7. **Render.** Verdict heading, its one-sentence readout, then the summary
+   table (two or more findings only), then the finding cards, nothing else.
+   For "Ship it.": heading, readout, verified checklist, done.
 
 ## Verdict — always the first line
 
-The verdict is a heading with one severity dot — the dot of the worst
-finding, 🟢 when there are none:
+The verdict is a heading, and directly under it one plain sentence in the
+language of the conversation that tells the author what to do right now —
+what blocks, what doesn't, and where the risk sits. That sentence exists so
+the status is unambiguous to someone with zero context; never skip it.
 
 ```markdown
-## 🔴 Ship after #1.
+## 🟠 Ship after #1.
+
+Finding #1 must be fixed before merge; #2 can follow in a later change.
 ```
 
-- **Ship it.** (🟢) — nothing passed the gate.
-- **Ship it, then fix #1…#N.** (🟡) — findings worth doing; none of them
-  blocks the merge.
-- **Ship after #1…#N.** (🔴) — the numbered BLOCKERs stop the merge; the
-  rest can follow it.
-- **Wrong shape. Talk before more code.** (🔴) — the design doesn't fit the
+Four statuses, one ladder — pick by the worst finding:
+
+- 🟢 **Ship it.** — nothing passed the gate. Followed not by a sentence of
+  praise but by a checklist of what you verified (see Review layout).
+- 🟡 **Ship with care.** — mergeable as is; the findings are worth closing,
+  ideally in this same PR, but none of them blocks.
+- 🟠 **Ship after #1…#N.** — the numbered findings are mandatory before
+  merge; the rest can follow.
+- 🔴 **Wrong shape. Talk before more code.** — the design doesn't fit the
   problem and more code makes it worse. Rare, and said plainly when true.
   Mechanical trigger: if your highest-consequence finding is that the change
   belongs in a different package, service or repository, or that its central
@@ -199,8 +207,9 @@ finding, 🟢 when there are none:
 
 ## Review layout
 
-After the verdict heading, when there are two or more findings, a summary
-table answers "how many and how bad" before anyone reads a word:
+After the verdict heading and its one-sentence readout, when there are two
+or more findings, a summary table answers "how many and how bad" before
+anyone reads a word:
 
 ```markdown
 | # |  | What | Where |
@@ -211,36 +220,73 @@ table answers "how many and how bad" before anyone reads a word:
 
 Severity dots: 🔴 BLOCKER, 🟡 DESIGN, 🔵 QUESTION. One dot per finding,
 nowhere else. Table rows must match the cards exactly — same order, same
-titles, same locations. A single finding skips the table; "Ship it." skips
-everything: the verdict heading plus at most one sentence is the entire
-review, with no evidence trail after it.
+titles, same locations. A single finding skips the table.
+
+"Ship it." has no table and no cards. Instead, the verdict heading is
+followed by a checklist of what you verified — three to five checked items,
+each one a fact you actually confirmed in the code, never a paraphrase of
+the PR description:
+
+```markdown
+## 🟢 Ship it.
+
+What this change does, verified:
+
+- [x] `send_early_hints()` mirrors the existing `send_push_promise` pattern
+- [x] both buffering middlewares now forward the new message type
+- [x] the change ships with sync and async tests for every touched path
+```
+
+Each checked item carries the same burden of proof as a finding. No
+evidence essay after the list.
 
 ## Finding format
 
-Each finding is a card, separated from its neighbors by `---`:
+Each finding is a card, separated from its neighbors by `---`. The card's
+spine is code, not prose: an annotated trace shows the problem, snippets
+prove it, and prose only captions what the code cannot say.
 
 ````markdown
-### 🔴 1 · Title
+### 🟡 1 · Title that states the consequence
 
-`path/to/file.py:42`
+`path/to/file.py:1272` · One sentence: who is hurt and how.
 
-```python
-smallest snippet that shows it — five lines or fewer
+The failure path, traced over the real code:
+
+```text
+Client.close()
+└─ try:     self._transport.close()          ← raises
+   finally: for t in self._mounts.values():
+              t.close()                      ← mounts[0] raises → loop dies
+                                               mounts[1:] never closed
 ```
 
-**Why:** two to four short paragraphs, one verified fact each.
+Zero to two real snippets, each introduced by a sentence naming whose code
+it is and where it lives.
 
-**Fix:** one line.
+> 🔧 **Fix:** one line of direction.
 ````
 
-**Why is a chain of evidence, not a wall.** Each paragraph carries exactly
-one verifiable fact; the paragraph that states where the damage lands
-("this dict is broadcast over the broker and rendered by Flower") stands
-alone so it can be seen without reading the rest. When a finding is about
-duplication, the mandatory shape is: what already exists (named function,
-exact location, its actual behavior) → what the diff adds → how the two now
-disagree. "The logic already exists" without a name and a behavior is not a
-sentence you may write.
+**The trace block is mandatory for any finding about behavior** — call
+order, a race, an error path, data flow. It is a fenced `text` block built
+from the real function names in the code, with `←` annotations marking
+where things go wrong; a reader out of context must be able to see the
+problem from the trace alone, without the prose. For duplication findings,
+replace the trace with a side-by-side block: both copies, each labeled with
+its `path:line` and its actual behavior. A trace is a citation like any
+other — every name and every step in it must exist in the code you read;
+verify it the same way you verify a `path:line`.
+
+**Prose budget: five sentences per card is the default.** One fact per
+sentence; the sentence that states where the damage lands comes first, right
+under the title. Exceed the budget only when each extra sentence carries a
+separate verified fact that neither the trace nor a snippet can show. A card
+that needs more than about eight sentences is usually two findings, or a
+"Wrong shape." conversation — split it or escalate it. There is no `Why:`
+label anymore: the whole card is the why.
+
+**The Fix is a blockquote, so it can be found without reading:**
+`> 🔧 **Fix:** …` — one line, always the last element of the card.
 
 **Every code fragment is introduced by the sentence before it.** That
 sentence names whose code it is and where it lives — "the body of
@@ -287,6 +333,13 @@ Severities:
   name who breaks and how, it is a BLOCKER or a DESIGN that happens to close
   with a question.
 
+A decision the author has already answered is settled: if the PR
+description, a linked issue, or the review thread already says "this is
+deliberate" about the thing you would raise, do not raise it again — a
+reviewer who repeats an answered objection on every run trains the team to
+ignore the review. New consequences of that decision, not yet named in the
+answer, are still fair findings.
+
 `path:line` references must be real and exact — they are how the reader jumps
 to the code. The line under the title is the first line of the snippet below
 it. Copy snippets from the file, never from memory, and re-check the number
@@ -295,14 +348,16 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 
 ## Output rules
 
-- Verdict, table, cards, done. No praise padding, no summary of what the
-  diff does, no "overall the code is well structured", no closing essays.
-- "Ship it." is one heading plus at most one sentence. If you are about to
-  attach a paragraph proving the change is fine, delete the paragraph — the
-  verdict is the proof.
+- Verdict, readout, table, cards, done. No praise padding, no summary of
+  what the diff does, no "overall the code is well structured", no closing
+  essays.
+- "Ship it." is the heading, the readout, and the verified checklist. If you
+  are about to attach a paragraph proving the change is fine, delete the
+  paragraph — the checklist is the proof.
 - Constitution numbers never appear in the rendered review.
 - Reply in the language of the conversation, but keep verdict lines
-  ("Ship it." / "Ship after…" / "Wrong shape…") in English — they are the
+  ("Ship it." / "Ship with care." / "Ship after…" / "Wrong shape…") in
+  English — they are the
   signature. Whatever the language, write whole sentences: telegraphic
   fragments read as a bot, not a reviewer.
 - You review; you don't rewrite. The fix is one line of direction. Implement
