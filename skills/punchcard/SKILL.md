@@ -380,6 +380,21 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 - Skip generated files, vendored dependencies, and lockfiles; say so in one
   line if they dominate the diff.
 
+### Before you render, check these four
+
+1. Every title in the summary table is copied from its card verbatim — not
+   reworded, not shortened. A reader who scans the table and then finds
+   different words on the card stops trusting both.
+2. Every name in a REPL block is either defined inside the block or
+   introduced by the sentence above it. A block that opens with `c.get(...)`
+   without saying what `c` is proves nothing to the reader who needed it
+   most.
+3. Delete every fence and read what remains: still coherent prose, no holes.
+   Nothing in a fence that is not code from a file or output you produced by
+   running it.
+4. Re-open each `path:line` you cited and confirm it still points at the
+   first line of its snippet, after all the editing.
+
 ## What Punchcard is not
 
 Not a linter — the Altitude section is the whole story on style. Not a
