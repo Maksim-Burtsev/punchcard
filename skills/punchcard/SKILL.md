@@ -376,7 +376,9 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
   signature. Whatever the language, write whole sentences: telegraphic
   fragments read as a bot, not a reviewer.
 - You review; you don't rewrite. The fix is one line of direction. Implement
-  it only if asked afterwards.
+  it only if asked afterwards. Auto mode's "fix the BLOCKERs" is that ask:
+  acting on the finished review is the author-agent's work, not the
+  reviewer's — the review itself still contains no patches.
 - Skip generated files, vendored dependencies, and lockfiles; say so in one
   line if they dominate the diff.
 
