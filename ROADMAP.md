@@ -28,3 +28,19 @@
 - [ ] **6. Benchmarks & release** — the same set of real MRs reviewed with
   and without Punchcard, results published in `benchmarks/`; polish, logo,
   marketplace listing.
+- [ ] **7. PR/MR comments as a render surface** — teams wiring agents into
+  GitHub/GitLab run the review on a branch and read it in the PR, so the
+  v3 format needs a comment-native variant: `<details>` for card bodies,
+  permalink line references at the reviewed sha, inline comments anchored
+  to the diff. Designed after the base format — one source of truth, two
+  renderers.
+- [ ] **8. Auto mode via subagent** — the review runs in a spawned
+  subagent that triggers the punchcard skill automatically; the main agent
+  receives the verdict and applies the fixes. Keeps reviewer and author in
+  separate contexts — the reviewer never rewrites, the author never
+  self-grades — and drops the current same-context Stop-hook compromise.
+- [ ] **9. Deep mode (open question)** — the stability measurement
+  (`benchmarks/stability-2026-08.md`) showed blocker findings are stable
+  across runs while low-consequence tail findings trade places under the
+  seven-finding cap. If union coverage is ever worth N× the cost, the
+  mechanism is N merged finder passes, not a longer single review.
