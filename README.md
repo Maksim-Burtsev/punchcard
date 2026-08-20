@@ -50,26 +50,42 @@ every run. Punchcard is built on three constraints instead:
 
 | Verdict | Meaning |
 |---|---|
-| **Ship it.** | Nothing passed the gate. Merge. |
-| **Ship it, then fix #1…#N.** | Findings worth doing; none of them blocks the merge. |
-| **Ship after #1…#N.** | The numbered BLOCKERs stop the merge; the rest can follow. |
-| **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
+| 🟢 **Ship it.** | Nothing passed the gate. Merge, and here is what was verified. |
+| 🟡 **Ship with care.** | Mergeable as is; the findings are worth closing, ideally in this PR. |
+| 🟠 **Ship after #1…#N.** | The numbered findings are mandatory before merge; the rest can follow. |
+| 🔴 **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
 
-A finding looks like this:
+The verdict is followed by one sentence saying what to do right now, then a
+summary table, then the findings. A finding looks like this:
 
-> ### 2. [BLOCKER] Charge failures vanish silently — `billing/api.py:48`
->
->     try:
->         charge(order.total)
->     except Exception:
->         pass
->
-> **Why:** violates principle 6 — errors are interface. A failed charge on a
-> money path disappears without trace: the order proceeds unpaid and no one
-> learns until reconciliation.
->
-> **Fix:** let the exception propagate; the endpoint's error handler already
-> returns 502.
+---
+
+### 🔴 2 · Charge failures vanish silently
+
+`billing/api.py:48` · A failed charge leaves the order marked paid, and
+nobody learns until month-end reconciliation.
+
+The diff swallows every exception from the charge call, in `submit_order` at
+`billing/api.py:48`:
+
+```python
+try:
+    charge(order.total)
+except Exception:
+    pass          # ← a declined card is indistinguishable from a paid one
+```
+
+The order is then marked paid unconditionally, two lines later at
+`billing/api.py:52`:
+
+```python
+order.status = "paid"
+```
+
+> 🔧 **Fix:** let the charge failure reach the caller — the endpoint's error
+> handler already returns 502 and leaves the order unpaid.
+
+---
 
 ## Auto mode
 
