@@ -243,50 +243,63 @@ evidence essay after the list.
 ## Finding format
 
 Each finding is a card, separated from its neighbors by `---`. The card's
-spine is code, not prose: an annotated trace shows the problem, snippets
-prove it, and prose only captions what the code cannot say.
+spine is code, not prose: real snippets walk the failure path, and prose
+only captions what the code cannot say.
 
 ````markdown
 ### 🟡 1 · Title that states the consequence
 
 `path/to/file.py:1272` · One sentence: who is hurt and how.
 
-The failure path, traced over the real code:
+The diff adds the cleanup loop in `Client.close` at `httpx/_client.py:1272`:
 
-```text
-Client.close()
-└─ try:     self._transport.close()          ← raises
-   finally: for t in self._mounts.values():
-              t.close()                      ← mounts[0] raises → loop dies
-                                               mounts[1:] never closed
+```python
+finally:
+    for transport in self._mounts.values():
+        if transport is not None:
+            transport.close()   # ← mounts[0] raises → the loop dies here
 ```
 
-Zero to two real snippets, each introduced by a sentence naming whose code
-it is and where it lives.
+One or two more real snippets, each introduced the same way, following the
+failure to where the damage lands.
 
 > 🔧 **Fix:** one line of direction.
 ````
 
-**The trace block is mandatory for any finding about behavior** — call
-order, a race, an error path, data flow. It is a fenced `text` block built
-from the real function names in the code, with `←` annotations marking
-where things go wrong; a reader out of context must be able to see the
-problem from the trace alone, without the prose. For duplication findings,
-replace the trace with a side-by-side block: both copies, each labeled with
-its `path:line` and its actual behavior. A trace is a citation like any
-other — every name and every step in it must exist in the code you read;
-verify it the same way you verify a `path:line`.
+**Evidence is real code, in execution order.** Two or three snippets copied
+from the files walk the reader down the failure path — the line the diff
+adds, the code that consumes it, the place the damage lands — each
+introduced by its attribution sentence. Mark the load-bearing lines with a
+short `# ←` comment inside the fence, in the file's own language, so the
+snippet stays valid highlighted code. Never invent notation: no
+pseudo-traces, no variable-value timelines, no box diagrams. If a fence
+holds something that is neither code copied from a file nor the output of
+actually running it, delete the fence.
+
+**When the break is observable as input → output, show it that way.** A
+short REPL-style block (` ```pycon `, or the ecosystem's equivalent) runs
+the same input through both versions, labeled `# main` and `# this PR`.
+Outputs in that block must come from actually executing the code — if you
+could not run it, state the divergence in prose instead of fabricating a
+session. This block replaces paragraphs of description; use it whenever the
+finding has a demonstrable input.
+
+**For duplication findings**, the evidence is both copies as real snippets,
+back to back, each introduced with its `path:line` — the reader sees the
+repetition instead of being told about it.
 
 **Prose budget: five sentences per card is the default.** One fact per
 sentence; the sentence that states where the damage lands comes first, right
 under the title. Exceed the budget only when each extra sentence carries a
-separate verified fact that neither the trace nor a snippet can show. A card
-that needs more than about eight sentences is usually two findings, or a
-"Wrong shape." conversation — split it or escalate it. There is no `Why:`
-label anymore: the whole card is the why.
+separate verified fact that no snippet can show. A card that needs more
+than about eight sentences is usually two findings, or a "Wrong shape."
+conversation — split it or escalate it. There is no `Why:` label anymore:
+the whole card is the why.
 
 **The Fix is a blockquote, so it can be found without reading:**
-`> 🔧 **Fix:** …` — one line, always the last element of the card.
+`> 🔧 **Fix:** …` — one line, always the last element of the card. Never a
+code patch: the skill reviews, the author fixes. A Fix that ships the edit
+is doing the author's job with none of the author's context.
 
 **Every code fragment is introduced by the sentence before it.** That
 sentence names whose code it is and where it lives — "the body of
