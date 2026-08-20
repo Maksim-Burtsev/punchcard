@@ -270,8 +270,10 @@ failure to where the damage lands.
 from the files walk the reader down the failure path — the line the diff
 adds, the code that consumes it, the place the damage lands — each
 introduced by its attribution sentence. Mark the load-bearing lines with a
-short `# ←` comment inside the fence, in the file's own language, so the
-snippet stays valid highlighted code. Never invent notation: no
+short `←` note in a trailing comment, using the snippet's own comment
+syntax — `# ←` in Python, `// ←` in Go or TypeScript, `-- ←` in SQL — so
+the snippet stays valid highlighted code in any language the review runs
+against. Never invent notation: no
 pseudo-traces, no variable-value timelines, no box diagrams. If a fence
 holds something that is neither code copied from a file nor the output of
 actually running it, delete the fence.
