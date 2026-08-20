@@ -154,9 +154,29 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    You review the change against what it claims to do.
 3. **Read past the diff.** Open the files the diff touches, their callers,
    the neighboring modules. Diffs lie by omission; never review one cold.
-4. **Route and load.** Match the diff against the routing table and read the
+4. **Sweep the changed contracts.** Before judging, build a private
+   table — it never appears in the rendered review. One row per contract
+   the diff changes: a name, key, endpoint or route string; the shape,
+   identity or contents of a returned, stored or shared object; a
+   default; an ordering; an invariant like "this set is never mutated".
+   A contract is changed the moment code outside the diff could observe
+   a different value than before — including objects the diff mutates in
+   place, strings the diff generates that other code compares against,
+   and documented attributes whose reading moved. For each row, find the
+   consumers by searching for the name or the attribute read — never
+   from memory. Record in the row the search you ran and the sites it
+   hit; "no consumers" is a claim that requires the empty search result,
+   not the absence of one. Then open each consumer and answer one
+   question: does it still behave as before under the new value? Every
+   "no" is a candidate finding; the gate still decides whether it
+   survives, at the same bar as any other candidate. More than ~15
+   consumer sites for one contract: check one site per distinct usage
+   pattern and note the sampling. Do not skip this step because the diff
+   looks local — the class of defect it exists for lives in files the
+   diff does not touch.
+5. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
-5. **Judge.** Walk the core and the loaded chapters, collect candidate
+6. **Judge.** Walk the core and the loaded chapters, collect candidate
    findings. Claims about what a test would do are experiments, not
    inferences: before writing "this test still passes if you revert the
    change", revert it and run the test. If you cannot run the suite, you may
@@ -166,13 +186,13 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    module, route or public function and adds no test, that is a finding —
    always, including on a draft, spike or proof of concept. "It's only a
    POC" is the author's answer to give, never your reason for not asking.
-6. **Gate and cap.** Cut ruthlessly. Order survivors by consequence. Two
+7. **Gate and cap.** Cut ruthlessly. Order survivors by consequence. Two
    rules on the cap: a missing test for a new module, route or public
    function (8.1) is filed last, separately, and is exempt from the cap —
    it displaces the lowest-consequence survivor rather than losing to it;
    and a finding about a config, CI or editor file never outranks one about
    the code.
-7. **Render.** Verdict heading, its one-sentence readout, then the summary
+8. **Render.** Verdict heading, its one-sentence readout, then the summary
    table (two or more findings only), then the finding cards, nothing else.
    For "Ship it.": heading, readout, verified checklist, done.
 
