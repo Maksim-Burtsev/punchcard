@@ -34,7 +34,15 @@ def main():
     if top.returncode != 0:
         return 0
     toplevel = top.stdout.strip()
-    if not os.path.exists(os.path.join(toplevel, ".punchcard-auto")):
+    marker = os.path.join(toplevel, ".punchcard-auto")
+    if not os.path.exists(marker):
+        return 0
+    # v2: the marker may carry per-repo config, e.g. {"max_rounds": 3}
+    try:
+        raw = open(marker).read().strip()
+        cfg = json.loads(raw) if raw else {}
+        max_rounds = int(cfg.get("max_rounds", MAX_ROUNDS))
+    except Exception:
         return 0
 
     dirty = sh("git", "-C", toplevel, "status", "--porcelain")
@@ -49,7 +57,7 @@ def main():
             rounds = int(open(state).read().strip() or 0)
         except ValueError:
             rounds = 0
-    if rounds >= MAX_ROUNDS:
+    if rounds >= max_rounds:
         return 0
     with open(state, "w") as f:
         f.write(str(rounds + 1))
