@@ -413,24 +413,29 @@ stays a heading in the body, merge gating is the humans' call. Build it
 as one `gh api repos/{owner}/{repo}/pulls/{n}/reviews --input
 payload.json` call:
 
-- **Review body** — the standard render, whole: verdict heading, readout,
-  summary table, every card. Replace each card's `path:line` location
-  line with a blob permalink at the reviewed head sha
-  (`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`) — GitHub expands
-  same-repo permalinks into snippet cards in the body. Keep the fenced
-  snippets too: permalinks decorate, fences prove.
-- **Inline comments** — only for findings whose anchor line is part of
-  the diff. Verify each anchor against the actual hunks (`gh pr diff`)
-  BEFORE composing the payload: an inline comment on a line outside the
-  hunks fails the whole review atomically with a 422, so anchors are
-  validated up front, never discovered by error. An inline comment is
-  the compact card: `### 🔴 N · Title`, the one-sentence
-  who-is-hurt line, the key snippet, the Fix blockquote, and a final
-  line "Full evidence in the review summary." Fields per comment:
-  `path`, `line`, `side: RIGHT` (plus `start_line` for a range).
-- Findings whose anchor is outside the diff — punchcard's specialty,
-  broken consumers in untouched files — appear only in the body. That is
-  not a downgrade; it is where GitHub allows them to live.
+**Every finding renders in exactly one place — never twice.** Like a
+human reviewer: the comment lives next to the code when it can, and in
+the summary only when it can't.
+
+- **Inline comments** — the home for every finding whose anchor line is
+  part of the diff. Verify each anchor against the actual hunks
+  (`gh pr diff`) BEFORE composing the payload: an inline comment on a
+  line outside the hunks fails the whole review atomically with a 422,
+  so anchors are validated up front, never discovered by error. The
+  inline comment is the finding's FULL card — title, who-is-hurt line,
+  evidence snippets, Fix blockquote — because it is the only place the
+  finding appears. Fields per comment: `path`, `line`, `side: RIGHT`
+  (plus `start_line` for a range).
+- **Review body** — verdict heading, readout, the summary table, and
+  then full cards ONLY for the findings that cannot be anchored —
+  punchcard's specialty, broken consumers in untouched files. Their
+  location lines become blob permalinks at the reviewed head sha
+  (`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`), which GitHub
+  expands into snippet cards; keep the fenced snippets too — permalinks
+  decorate, fences prove. The summary table always lists ALL findings
+  (it is the one at-a-glance view and repeats only titles, not cards);
+  mark each row's Where as the inline location or "below" for the
+  body cards.
 
 **GitLab — one MR note.** Post the standard render as a single note:
 `glab mr note {iid} -m "$(cat review.md)"`. GitLab does not expand blob
