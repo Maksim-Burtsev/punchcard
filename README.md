@@ -122,18 +122,15 @@ order.status = "paid"
 
 ---
 
-## Auto mode
+## Keeping it in the loop
 
-Drop an empty `.punchcard-auto` file into a repository's root and Punchcard
-reviews the agents working in it. When an agent finishes a turn leaving
-uncommitted changes, a Stop hook blocks the handoff and makes it review its
-own work first: BLOCKER findings get fixed, DESIGN and QUESTION findings get
-reported, and the loop is bounded — two rounds per session, then the work
-ships as reviewed. Agents running in a loop end up applying fifty years of
-engineering judgment to their own output before you ever see it.
+There is no hook and no daemon: you decide when the reviewer is worth
+three minutes. The cheapest way to make that automatic for the agents
+working in a repository is to say so in `AGENTS.md` or `CLAUDE.md`:
 
-```
-touch .punchcard-auto   # opt in, per repository
+```markdown
+Before opening a pull request, run `/punchcard` on the branch and fix
+every BLOCKER it reports.
 ```
 
 ## Punchcard and friends
