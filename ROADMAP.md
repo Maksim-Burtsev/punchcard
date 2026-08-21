@@ -28,12 +28,15 @@
 - [ ] **6. Benchmarks & release** — the same set of real MRs reviewed with
   and without Punchcard, results published in `benchmarks/`; polish, logo,
   marketplace listing.
-- [ ] **7. PR/MR comments as a render surface** — teams wiring agents into
-  GitHub/GitLab run the review on a branch and read it in the PR, so the
-  v3 format needs a comment-native variant: `<details>` for card bodies,
-  permalink line references at the reviewed sha, inline comments anchored
-  to the diff. Designed after the base format — one source of truth, two
-  renderers.
+- [x] **7. PR/MR comments as a render surface** — `/punchcard:pr` reviews
+  a GitHub PR / GitLab MR and posts into it: on GitHub one review
+  (`COMMENT`) whose body is the full render with sha permalinks, plus
+  inline comments for findings anchorable inside the diff hunks (anchors
+  validated up front — out-of-diff findings live in the body, where
+  GitHub allows them); on GitLab one MR note. No posting access → the
+  review renders in the reply with one line saying why. Deferred tails:
+  GitLab inline discussions (positions API unreliable on unchanged
+  lines), sticky re-run updates (each run posts a new review).
 - [ ] **8. Auto mode via subagent** — the review runs in a spawned
   subagent that triggers the punchcard skill automatically; the main agent
   receives the verdict and applies the fixes. Keeps reviewer and author in

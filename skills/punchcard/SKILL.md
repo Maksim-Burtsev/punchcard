@@ -397,6 +397,59 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 4. Re-open each `path:line` you cited and confirm it still points at the
    first line of its snippet, after all the editing.
 
+## Posting to a PR/MR
+
+Post the review into the PR/MR only when posting was asked for: the
+`/punchcard:pr` command, an explicit request in the conversation, or a
+headless run whose task is to post. In an interactive session, show the
+verdict line and ask before posting — posting is publishing. In a
+headless run (`claude -p`, CI), post without asking: the run itself is
+the permission. When posting was not asked for, this section does not
+apply — render in the conversation as usual.
+
+**GitHub — one review, hybrid render.** Post a single PR review with
+`event: COMMENT` — never `APPROVE` or `REQUEST_CHANGES`; the verdict
+stays a heading in the body, merge gating is the humans' call. Build it
+as one `gh api repos/{owner}/{repo}/pulls/{n}/reviews --input
+payload.json` call:
+
+- **Review body** — the standard render, whole: verdict heading, readout,
+  summary table, every card. Replace each card's `path:line` location
+  line with a blob permalink at the reviewed head sha
+  (`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`) — GitHub expands
+  same-repo permalinks into snippet cards in the body. Keep the fenced
+  snippets too: permalinks decorate, fences prove.
+- **Inline comments** — only for findings whose anchor line is part of
+  the diff. Verify each anchor against the actual hunks (`gh pr diff`)
+  BEFORE composing the payload: an inline comment on a line outside the
+  hunks fails the whole review atomically with a 422, so anchors are
+  validated up front, never discovered by error. An inline comment is
+  the compact card: `### 🔴 N · Title`, the one-sentence
+  who-is-hurt line, the key snippet, the Fix blockquote, and a final
+  line "Full evidence in the review summary." Fields per comment:
+  `path`, `line`, `side: RIGHT` (plus `start_line` for a range).
+- Findings whose anchor is outside the diff — punchcard's specialty,
+  broken consumers in untouched files — appear only in the body. That is
+  not a downgrade; it is where GitHub allows them to live.
+
+**GitLab — one MR note.** Post the standard render as a single note:
+`glab mr note {iid} -m "$(cat review.md)"`. GitLab does not expand blob
+permalinks into snippets, so location lines are plain markdown links to
+`/-/blob/{sha}/{path}#L{n}` and the fenced snippets carry the evidence.
+No inline discussions in this version: the positions API requires three
+exact SHAs and is unreliable on unchanged lines — the anchor punchcard
+needs most.
+
+**When posting fails, the review still gets delivered.** The attempt is
+the access check: a 403 (no permission — including a fork PR's read-only
+token), a 404 (no access to the repo), a missing or unauthenticated
+`gh`/`glab` — in every such case render the full review in the reply as
+usual, plus one sentence naming why it was not posted. A 422 despite
+anchor validation: move the rejected anchors' comments into the body and
+post once more. Never let a posting failure eat the review.
+
+Each run posts a new review; it does not edit or hide previous ones.
+
 ## What Punchcard is not
 
 Not a linter — the Altitude section is the whole story on style. Not a
