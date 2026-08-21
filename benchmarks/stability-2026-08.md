@@ -83,6 +83,29 @@ sweep was reverted (`b0599b2`).
   it masks the slot-budget property rather than changing it, and the
   single-run default is what ships.
 
+## Beyond Python
+
+The format and the judgment were calibrated on Python. Four cold runs on
+other ecosystems, one PR each, checked that neither depends on it:
+
+| PR | Language | Verdict | What it turned on |
+|---|---|---|---|
+| sirupsen/logrus#1574 | Go | 🟠 Ship after #1 | The fix lands in `LevelHooks.Fire`, which the logging path no longer calls — the reported bug reproduces identically on both branches |
+| spf13/cobra#2486 | Go | 🟡 Ship with care | The padding cache is repaired on attach but left stale on the `RemoveCommand` detach path |
+| fastify/fastify#6965 | JS | 🟡 Ship with care | The advisory's sibling entry point still reaches the not-found handler with its `preHandler` skipped |
+| colinhacks/zod#6450 | TS | 🟡 Ship with care | Suppression and restoration of stack frames are gated on two different feature probes |
+
+Every claim was demonstrated by execution — `go run` against two
+worktrees, `node` against two bundles — not by reading. The annotation
+marker came out in each language's own comment syntax, and no run
+fabricated a Python-style REPL session where the ecosystem has none. The
+zod run also checked the PR's own performance claim by measuring it
+(~3x claimed, 4.6–5.9x observed on the failing-`safeParse` cases) rather
+than repeating it.
+
+Four PRs, one per shape, is a smoke test of portability — not evidence
+that findings are as complete outside Python as within it.
+
 ## Reproduce
 
 Clone the target, check out the PR head, open a fresh session with only
