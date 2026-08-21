@@ -27,7 +27,7 @@ def main():
     try:
         payload = json.load(sys.stdin)
     except Exception:
-        return 0
+        max_rounds = MAX_ROUNDS
     cwd = payload.get("cwd") or os.getcwd()
 
     top = sh("git", "-C", cwd, "rev-parse", "--show-toplevel")
