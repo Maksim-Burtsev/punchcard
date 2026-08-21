@@ -397,6 +397,64 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 4. Re-open each `path:line` you cited and confirm it still points at the
    first line of its snippet, after all the editing.
 
+## Posting to a PR/MR
+
+Post the review into the PR/MR only when posting was asked for: the
+`/punchcard:pr` command, an explicit request in the conversation, or a
+headless run whose task is to post. In an interactive session, show the
+verdict line and ask before posting — posting is publishing. In a
+headless run (`claude -p`, CI), post without asking: the run itself is
+the permission. When posting was not asked for, this section does not
+apply — render in the conversation as usual.
+
+**GitHub — one review, one body.** Post a single PR review with
+`event: COMMENT` — never `APPROVE` or `REQUEST_CHANGES`; the verdict
+stays a heading in the body, merge gating is the humans' call. The body
+is the standard render, whole and in order: verdict heading, readout,
+summary table, every card. Replace each card's `path:line` location
+line with a blob permalink at the reviewed head sha
+(`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`) — GitHub expands
+same-repo permalinks into snippet cards right in the review; keep the
+fenced snippets too, permalinks decorate and fences prove. One command:
+`gh pr review {n} --comment --body-file review.md`.
+
+No inline comments. Punchcard findings are design-level cards with
+evidence spanning files, not line-level remarks; scattering them across
+Files Changed breaks the verdict's numbering and reading order, and the
+cards already carry file, line, permalink and snippet. One coherent
+report beats a split one.
+
+**One review per PR, updated in place.** Start the body with the marker
+`<!-- punchcard -->` on its own line. Before posting, look for your own
+previous review on this PR
+(`gh api repos/{o}/{r}/pulls/{n}/reviews --jq '.[] | select(.body |
+startswith("<!-- punchcard -->"))'`). Found one: update it —
+`gh api -X PUT repos/{o}/{r}/pulls/{n}/reviews/{id} -f body=@review.md` —
+and end the readout with one sentence naming the sha you just reviewed.
+None: post a new one. A PR gets one Punchcard entry in its timeline for
+its whole life, not one per run; a review that reposts itself on every
+push is the noise everyone mutes.
+
+**GitLab — one MR note.** Post the standard render as a single note:
+`glab mr note {iid} -m "$(cat review.md)"`, with the same
+`<!-- punchcard -->` marker and the same update-in-place rule
+(`glab api -X PUT projects/:id/merge_requests/{iid}/notes/{note_id}`).
+GitLab does not expand blob
+permalinks into snippets, so location lines are plain markdown links to
+`/-/blob/{sha}/{path}#L{n}` and the fenced snippets carry the evidence.
+No inline discussions, for the same reason as on GitHub.
+
+**When posting fails, the review still gets delivered.** The attempt is
+the access check: a 403 (no permission — including a fork PR's read-only
+token), a 404 (no access to the repo), a missing or unauthenticated
+`gh`/`glab` — in every such case render the full review in the reply as
+usual, plus one sentence naming why it was not posted. Never let a
+posting failure eat the review.
+
+A finding the author has answered in the thread of your previous review
+is settled — the same rule as an answered decision in the PR
+description: do not raise it again in the updated body.
+
 ## What Punchcard is not
 
 Not a linter — the Altitude section is the whole story on style. Not a

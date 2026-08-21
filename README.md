@@ -43,7 +43,42 @@ every run. Punchcard is built on three constraints instead:
 ```
 /punchcard                  # review working tree, or current branch vs default
 /punchcard main..feature    # review a range
-/punchcard <MR/PR url>      # review a merge request (roadmap: inline comments)
+/punchcard <MR/PR url>      # review a PR/MR, render in the conversation
+/punchcard:pr <url|number>  # review a PR/MR and post the review into it
+```
+
+`/punchcard:pr` posts the review as one PR review on GitHub (locations
+permalinked to the reviewed sha, which GitHub expands into code cards) or
+one MR note on GitLab — a single coherent report, never scattered inline
+comments. Re-run it after a push and it updates that same review in
+place rather than adding another — one Punchcard entry per PR, for the
+life of the PR. No access to post? The review is rendered in the reply
+instead, with one line saying why.
+
+### In CI
+
+GitHub Actions, review every PR ([claude-code-action](https://github.com/anthropics/claude-code-action)):
+
+```yaml
+permissions:
+  pull-requests: write   # note: fork PRs get a read-only token
+steps:
+  - uses: anthropics/claude-code-action@v1
+    with:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+      prompt: "/punchcard:pr ${{ github.event.pull_request.html_url }}"
+      claude_args: '--allowedTools "Bash(gh:*),Read,Grep,Glob"'
+```
+
+GitLab CI:
+
+```yaml
+punchcard:
+  script:
+    - claude -p "/punchcard:pr $CI_MERGE_REQUEST_IID" \
+        --allowedTools "Bash(glab:*),Bash(git:*),Read,Grep,Glob"
+  variables:
+    GITLAB_TOKEN: $CI_JOB_TOKEN
 ```
 
 ## The verdicts
