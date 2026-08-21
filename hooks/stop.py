@@ -17,6 +17,20 @@ import sys
 import tempfile
 
 MAX_ROUNDS = 2
+ROUNDS_LOG = os.path.expanduser("~/.punchcard/rounds.json")
+
+
+def log_round(session_id, n):
+    """Persist the round counter so ops can audit auto-review activity."""
+    try:
+        os.makedirs(os.path.dirname(ROUNDS_LOG), exist_ok=True)
+        data = {}
+        if os.path.exists(ROUNDS_LOG):
+            data = json.load(open(ROUNDS_LOG))
+        data[session_id] = n
+        json.dump(data, open(ROUNDS_LOG, "w"))
+    except Exception:
+        pass
 
 
 def sh(*args, cwd=None):
