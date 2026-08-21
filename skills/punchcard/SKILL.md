@@ -407,51 +407,35 @@ headless run (`claude -p`, CI), post without asking: the run itself is
 the permission. When posting was not asked for, this section does not
 apply — render in the conversation as usual.
 
-**GitHub — one review, hybrid render.** Post a single PR review with
+**GitHub — one review, one body.** Post a single PR review with
 `event: COMMENT` — never `APPROVE` or `REQUEST_CHANGES`; the verdict
-stays a heading in the body, merge gating is the humans' call. Build it
-as one `gh api repos/{owner}/{repo}/pulls/{n}/reviews --input
-payload.json` call:
+stays a heading in the body, merge gating is the humans' call. The body
+is the standard render, whole and in order: verdict heading, readout,
+summary table, every card. Replace each card's `path:line` location
+line with a blob permalink at the reviewed head sha
+(`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`) — GitHub expands
+same-repo permalinks into snippet cards right in the review; keep the
+fenced snippets too, permalinks decorate and fences prove. One command:
+`gh pr review {n} --comment --body-file review.md`.
 
-**Every finding renders in exactly one place — never twice.** Like a
-human reviewer: the comment lives next to the code when it can, and in
-the summary only when it can't.
-
-- **Inline comments** — the home for every finding whose anchor line is
-  part of the diff. Verify each anchor against the actual hunks
-  (`gh pr diff`) BEFORE composing the payload: an inline comment on a
-  line outside the hunks fails the whole review atomically with a 422,
-  so anchors are validated up front, never discovered by error. The
-  inline comment is the finding's FULL card — title, who-is-hurt line,
-  evidence snippets, Fix blockquote — because it is the only place the
-  finding appears. Fields per comment: `path`, `line`, `side: RIGHT`
-  (plus `start_line` for a range).
-- **Review body** — verdict heading, readout, the summary table, and
-  then full cards ONLY for the findings that cannot be anchored —
-  punchcard's specialty, broken consumers in untouched files. Their
-  location lines become blob permalinks at the reviewed head sha
-  (`https://github.com/{o}/{r}/blob/{sha}/{path}#L{n}`), which GitHub
-  expands into snippet cards; keep the fenced snippets too — permalinks
-  decorate, fences prove. The summary table always lists ALL findings
-  (it is the one at-a-glance view and repeats only titles, not cards);
-  mark each row's Where as the inline location or "below" for the
-  body cards.
+No inline comments. Punchcard findings are design-level cards with
+evidence spanning files, not line-level remarks; scattering them across
+Files Changed breaks the verdict's numbering and reading order, and the
+cards already carry file, line, permalink and snippet. One coherent
+report beats a split one.
 
 **GitLab — one MR note.** Post the standard render as a single note:
 `glab mr note {iid} -m "$(cat review.md)"`. GitLab does not expand blob
 permalinks into snippets, so location lines are plain markdown links to
 `/-/blob/{sha}/{path}#L{n}` and the fenced snippets carry the evidence.
-No inline discussions in this version: the positions API requires three
-exact SHAs and is unreliable on unchanged lines — the anchor punchcard
-needs most.
+No inline discussions, for the same reason as on GitHub.
 
 **When posting fails, the review still gets delivered.** The attempt is
 the access check: a 403 (no permission — including a fork PR's read-only
 token), a 404 (no access to the repo), a missing or unauthenticated
 `gh`/`glab` — in every such case render the full review in the reply as
-usual, plus one sentence naming why it was not posted. A 422 despite
-anchor validation: move the rejected anchors' comments into the body and
-post once more. Never let a posting failure eat the review.
+usual, plus one sentence naming why it was not posted. Never let a
+posting failure eat the review.
 
 Each run posts a new review; it does not edit or hide previous ones.
 

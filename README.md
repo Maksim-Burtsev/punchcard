@@ -47,11 +47,11 @@ every run. Punchcard is built on three constraints instead:
 /punchcard:pr <url|number>  # review a PR/MR and post the review into it
 ```
 
-`/punchcard:pr` posts one PR review on GitHub — the full review as the
-body (permalinked to the reviewed sha), plus inline comments on findings
-whose lines are part of the diff — or one MR note on GitLab. No access
-to post? The review is rendered in the reply instead, with one line
-saying why.
+`/punchcard:pr` posts the review as one PR review on GitHub (locations
+permalinked to the reviewed sha, which GitHub expands into code cards) or
+one MR note on GitLab — a single coherent report, never scattered inline
+comments. No access to post? The review is rendered in the reply
+instead, with one line saying why.
 
 ### In CI
 
