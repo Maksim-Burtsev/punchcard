@@ -50,7 +50,9 @@ every run. Punchcard is built on three constraints instead:
 `/punchcard:pr` posts the review as one PR review on GitHub (locations
 permalinked to the reviewed sha, which GitHub expands into code cards) or
 one MR note on GitLab — a single coherent report, never scattered inline
-comments. No access to post? The review is rendered in the reply
+comments. Re-run it after a push and it updates that same review in
+place rather than adding another — one Punchcard entry per PR, for the
+life of the PR. No access to post? The review is rendered in the reply
 instead, with one line saying why.
 
 ### In CI

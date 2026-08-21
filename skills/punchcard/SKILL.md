@@ -424,8 +424,22 @@ Files Changed breaks the verdict's numbering and reading order, and the
 cards already carry file, line, permalink and snippet. One coherent
 report beats a split one.
 
+**One review per PR, updated in place.** Start the body with the marker
+`<!-- punchcard -->` on its own line. Before posting, look for your own
+previous review on this PR
+(`gh api repos/{o}/{r}/pulls/{n}/reviews --jq '.[] | select(.body |
+startswith("<!-- punchcard -->"))'`). Found one: update it —
+`gh api -X PUT repos/{o}/{r}/pulls/{n}/reviews/{id} -f body=@review.md` —
+and end the readout with one sentence naming the sha you just reviewed.
+None: post a new one. A PR gets one Punchcard entry in its timeline for
+its whole life, not one per run; a review that reposts itself on every
+push is the noise everyone mutes.
+
 **GitLab — one MR note.** Post the standard render as a single note:
-`glab mr note {iid} -m "$(cat review.md)"`. GitLab does not expand blob
+`glab mr note {iid} -m "$(cat review.md)"`, with the same
+`<!-- punchcard -->` marker and the same update-in-place rule
+(`glab api -X PUT projects/:id/merge_requests/{iid}/notes/{note_id}`).
+GitLab does not expand blob
 permalinks into snippets, so location lines are plain markdown links to
 `/-/blob/{sha}/{path}#L{n}` and the fenced snippets carry the evidence.
 No inline discussions, for the same reason as on GitHub.
@@ -437,7 +451,9 @@ token), a 404 (no access to the repo), a missing or unauthenticated
 usual, plus one sentence naming why it was not posted. Never let a
 posting failure eat the review.
 
-Each run posts a new review; it does not edit or hide previous ones.
+A finding the author has answered in the thread of your previous review
+is settled — the same rule as an answered decision in the PR
+description: do not raise it again in the updated body.
 
 ## What Punchcard is not
 

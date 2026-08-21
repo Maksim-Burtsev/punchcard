@@ -34,9 +34,9 @@
   on GitLab. Deliberately no inline comments: punchcard findings are
   design-level cards spanning files, and splitting them across Files
   Changed broke the verdict's numbering and reading order in live tests.
-  No posting access → the review renders in the reply with one line
-  saying why. Deferred tail: sticky re-run updates (each run posts a new
-  review).
+  Re-runs update the same review in place (marker `<!-- punchcard -->`),
+  so a PR carries one Punchcard entry for its whole life. No posting
+  access → the review renders in the reply with one line saying why.
 - [ ] **8. Auto mode via subagent** — the review runs in a spawned
   subagent that triggers the punchcard skill automatically; the main agent
   receives the verdict and applies the fixes. Keeps reviewer and author in
