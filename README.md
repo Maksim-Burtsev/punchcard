@@ -26,10 +26,11 @@ every run. Punchcard is built on three constraints instead:
 - **The gate.** Every finding must have a real consequence, cite a numbered
   principle, and change how the code works or evolves — not how it reads.
   Hard cap of seven findings. "Ship it." is a complete review.
-- **A constitution, not a mood.** Findings cite principles from a written
-  constitution, so two runs argue from the same ground. Today it's ten
-  bedrock principles (v0); the [roadmap](ROADMAP.md) replaces them with a
-  synthesis distilled from ~30 classic software engineering books.
+- **A constitution, not a mood.** Every finding is grounded in a numbered
+  principle before it survives the gate, so two runs argue from the same
+  ground rather than from taste. The constitution is 78 principles in 11
+  chapters, [synthesized](CORPUS.md) from 30 classic software engineering
+  books and a register of the decided conflicts between their schools.
 
 ## Install
 

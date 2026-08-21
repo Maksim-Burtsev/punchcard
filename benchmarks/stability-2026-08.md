@@ -1,6 +1,7 @@
 # Finding stability across runs — August 2026
 
-The August calibration named run-to-run variance as a known limit: two cold
+The [August calibration](calibration-2026-08.md) named run-to-run
+variance as a known limit: two cold
 runs of the same skill on the same diff could surface different findings.
 This measurement quantifies that variance on the v3 output format, tests
 one mechanical fix, and reports why the fix was rejected.

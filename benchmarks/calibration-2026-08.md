@@ -1,5 +1,12 @@
 # Calibration on real open-source PRs — August 2026
 
+> **Historical.** This records the calibration of the skill's *judgment* —
+> what it finds and what it stays quiet about — as it stood before the v3
+> output format. The findings and the four corrections below still hold;
+> the rendering they were reported in does not. For the format the skill
+> uses today see the README; for how stable its findings are across runs
+> see [stability-2026-08.md](stability-2026-08.md).
+
 Punchcard's constitution was built from books and verified on synthetic
 fixtures. That proves it catches planted flaws; it says nothing about
 whether it stays quiet on good code. So it was run against six real Python
@@ -67,13 +74,19 @@ Honest accounting of what did not get fixed.
   fix suggestions per review were incomplete or would break a case the
   current code handles. The claims are verified; the prescriptions often are
   not. The last edit narrows the Fix line's contract to direction plus
-  constraint unless the recipe was traced — untested at the time of writing.
+  constraint unless the recipe was traced — untested at the time of
+  writing. *Since resolved:* the Fix line is now one line of direction and
+  may never be a code patch, on any surface.
 - **Supporting sentences lag the headline.** Central claims verify; the
   reinforcing ones sometimes carry an enumeration short by one, or an
   inflated count. Numbers should be exact or absent.
 - **Verdict variance between runs.** Two runs of arq#462 produced "Wrong
   shape" and "Ship after" from near-identical finding sets. The trigger is
-  now explicit, but ranking is a judgment call and it wobbles.
+  now explicit, but ranking is a judgment call and it wobbles. *Since
+  measured:* ten cold runs across two PRs put every blocker-class finding
+  at 5/5 with stable verdicts; what varies is which low-consequence
+  findings fill the remaining slots under the seven-finding cap. See
+  [stability-2026-08.md](stability-2026-08.md).
 - **A weak finding survived every round.** It kept asking celery to build a
   real `kombu.Connection` instead of a mock, though the project mocks it the
   same way elsewhere — the reviewer grepped, found a usage supporting its
