@@ -20,11 +20,12 @@
 - [~] **4. GitLab/GitHub inline** — dropped by decision: the local diff
   review covers the actual workflow, and a posting integration is a second
   product to maintain.
-- [x] **5. Auto mode** — a Stop hook (`hooks/punchcard_stop.py`): when the
-  agent finishes a turn leaving uncommitted changes in a repo that opted in
-  (a `.punchcard-auto` file at the git toplevel), the stop is blocked once
-  and the agent reviews its own work. Convergence rule: only BLOCKERs are
-  auto-fixed, two rounds per session maximum.
+- [~] **5. Auto mode** — built as a Stop hook, then removed. No automatic
+  trigger fits: `Stop` fires on every turn including plain questions, a
+  commit hook re-reviews the same growing branch once per commit (fifty
+  commits, fifty reviews), and PR creation comes after the work is done.
+  When to call a reviewer is a human judgement; a line in `AGENTS.md`
+  expresses it exactly and costs nothing.
 - [ ] **6. Benchmarks & release** — the same set of real MRs reviewed with
   and without Punchcard, results published in `benchmarks/`; polish, logo,
   marketplace listing.
@@ -37,12 +38,8 @@
   Re-runs update the same review in place (marker `<!-- punchcard -->`),
   so a PR carries one Punchcard entry for its whole life. No posting
   access → the review renders in the reply with one line saying why.
-- [ ] **8. Auto mode via subagent** — the review runs in a spawned
-  subagent that triggers the punchcard skill automatically; the main agent
-  receives the verdict and applies the fixes. Keeps reviewer and author in
-  separate contexts — the reviewer never rewrites, the author never
-  self-grades — and drops the current same-context Stop-hook compromise.
-- [ ] **9. Deep mode (open question)** — the stability measurement
+
+- [ ] **8. Deep mode (open question)** — the stability measurement
   (`benchmarks/stability-2026-08.md`) showed blocker findings are stable
   across runs while low-consequence tail findings trade places under the
   seven-finding cap. If union coverage is ever worth N× the cost, the
