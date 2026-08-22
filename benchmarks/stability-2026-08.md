@@ -278,7 +278,9 @@ nine reviews across both variants. Verdicts: stable across runs on both
 PRs. The judge rejected finder candidates that did not survive checking —
 two runs independently dropped a "weakened test" claim after reading the
 assertions, one dropped the `except: pass` breadth because the PR
-description already answers it.
+description already answers it. The clean control (celery#10493) came back
+"Ship it." with zero cards and one correct out-of-scope line: three finders
+looking for candidates do not talk a clean change into a finding.
 
 **The cost is real and it is the argument against B.** Tokens per run rose
 from ~100k to 152k/183k/191k on flask and from ~80k to 124k/131k on
