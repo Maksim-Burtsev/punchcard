@@ -26,9 +26,12 @@
   commits, fifty reviews), and PR creation comes after the work is done.
   When to call a reviewer is a human judgement; a line in `AGENTS.md`
   expresses it exactly and costs nothing.
-- [ ] **6. Benchmarks & release** — the same set of real MRs reviewed with
-  and without Punchcard, results published in `benchmarks/`; polish, logo,
-  marketplace listing.
+- [~] **6. Benchmarks & release** — with/without measured on four real
+  PRs, 24 cold runs (`benchmarks/with-without-2026-08.md`): same blockers
+  found by both, zero below-altitude noise with Punchcard against 2.3
+  sections per stock review, a verdict every time, 37% shorter, ~1.6× the
+  tokens, a slightly thinner tail. Remaining: logo, README pass, version
+  1.0.0, marketplace listing, release.
 - [x] **7. PR/MR comments as a render surface** — `/punchcard:pr` reviews
   a GitHub PR / GitLab MR and posts into it: one review (`COMMENT`) on
   GitHub whose body is the full render with sha permalinks, one MR note
