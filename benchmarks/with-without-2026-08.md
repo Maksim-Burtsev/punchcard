@@ -17,8 +17,9 @@ cross-language smoke runs:
 | sirupsen/logrus#1574 | Go | 4 | 1 |
 | fastify/fastify#6965 | JS | 4 | 1 |
 
-Two conditions, three cold runs each per PR, 24 runs in all, every run on
-Opus (medium) with the repository cloned at the PR head:
+Three conditions, three cold runs each per PR, 36 runs in all, every run
+on Opus (medium) with the repository cloned at the PR head. The first two
+are compared next; the third, `/code-review`, in its own section below:
 
 - **without** — the prompt is "Review pull request <url>", plus where the
   clone is and a request not to run the test suite. Nothing else.
@@ -92,6 +93,63 @@ refusal to say things it did not run: no stock review was caught in a
 false claim among those checked, but several state test behavior by
 inference ("this passes on main as well") where Punchcard is bound to
 execute or stay silent.
+
+## Against `/code-review`
+
+Claude Code ships a reviewer: `/code-review`, a correctness bug-hunter
+that reports findings as a list with file and line. For a Claude Code
+user that is the real baseline, so the same four PRs got three more cold
+runs each: `claude -p "/code-review <base>...<head> medium"` from inside
+the clone, output captured to a file. (One caveat: `--bare` drops the
+login, so these runs inherited the host's global configuration; the
+prose carries that voice, the findings do not appear to.)
+
+| PR | `/code-review` recall | Punchcard recall | Found only by `/code-review` | Found only by Punchcard |
+|---|---|---|---|---|
+| flask#5918 | 0.67 | 0.62 | OPTIONS cross-redirect **3/3** (Punchcard 0/3); the `except: pass` swallow 3/3 (1/3) | no-single-source 3/3 (0/3); `Rule.methods` introspection 2/3 (0/3) |
+| requests#7520 | 0.33 | 0.92 | — | the unterminated-quote **blocker 3/3 (`/code-review` 1/3)**; valueless-param tail 3/3 (0/3); escape tests 2/3 (0/3) |
+| logrus#1574 | 0.25 | 0.58 | — | test at the wrong altitude 2/3 (0/3); `errors.Join` identity 1/3 (0/3); two loops disagree 1/3 (0/3) |
+| fastify#6965 | 0.08 | 0.25 | — | `errorHandler` restored untested 2/3 (0/3) |
+
+Blocker-class keys by condition, three runs each:
+
+| Blocker | bare model | Punchcard | `/code-review` |
+|---|---|---|---|
+| flask · blueprint hooks skip | 3/3 | 3/3 | 3/3 |
+| flask · routes mutates live rule | 3/3 | 2/3 | 3/3 |
+| flask · required_methods flip | 2/3 | 3/3 | 2/3 |
+| flask · OPTIONS cross-redirect | 1/3 | 0/3 | **3/3** |
+| requests · unterminated quote | 3/3 | 3/3 | 1/3 |
+| logrus · fix in dead code | 3/3 | 3/3 | 3/3 |
+| fastify · preHandler bypass | 0/3 | 0/3 | 0/3 |
+
+Two reviewers, two shapes. `/code-review` is the better bug-hunter on
+one axis: the flask cross-redirect — a pure runtime-behavior defect
+buried in Werkzeug's routing internals — it found three times out of
+three where Punchcard found it never and the bare model once. Everything
+design-shaped it does not see at all: duplicated knowledge, a contract
+with no single source, a test pinning the wrong seam, a widened blast
+radius without a test — zero across twelve runs, because those are not
+bugs and it is not looking for them. And it is not reliable on the
+regression that matters most in requests: the unterminated-quote
+blocker, which both other conditions found 3/3, it found once.
+
+Form: `/code-review` output is a flat list, no verdict, 140–330 words —
+the shortest of the three — with essentially no below-altitude noise
+(it is correctness-scoped by design). Two of its fastify runs reported
+no findings and instead listed what they had verified as clean; one of
+those clean bills is wrong — it asserts the lazily built validation
+memo "still lands on the child", while the code's `== null` guard
+inherits a parent map that already exists, which the Punchcard run
+demonstrated by execution. Token cost was not captured for this
+condition (`-p` prints no usage).
+
+So the README's claim holds, with numbers: run both. `/code-review` for
+the runtime defect a design reviewer is not hunting; Punchcard for the
+shape of the change and a decision about it. Neither replaces the other,
+and on this evidence neither replaces a bare strong model for raw
+recall — they replace it for discipline and for the class of defect each
+is built to see.
 
 ## The cost
 
