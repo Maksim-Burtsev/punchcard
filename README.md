@@ -139,6 +139,27 @@ order.status = "paid"
 
 ---
 
+## Measured
+
+Every claim above was checked on real open-source pull requests, with
+the per-run reviews matched to a hand-verified list of defects and every
+factual claim re-executed against the code. Three reports in
+[`benchmarks/`](benchmarks/):
+
+- [Calibration](benchmarks/calibration-2026-08.md) — six PRs, four
+  systematic faults found in the reviewer and fixed, the first clean
+  "Ship it."
+- [Stability](benchmarks/stability-2026-08.md) — ten cold runs on two
+  PRs: every blocker-class finding at 5/5, zero noise; plus Go and
+  JavaScript smoke runs.
+- [With and without](benchmarks/with-without-2026-08.md) — the same four
+  PRs reviewed by the bare model, by Punchcard, and by Claude Code's
+  built-in `/code-review`, three cold runs each. The bare model finds the
+  blockers too. What Punchcard changes: zero below-altitude noise against
+  2.3 nit sections per bare review, a verdict every time, reviews 37%
+  shorter (70% on a clean PR), a slightly thinner tail — at about 1.6×
+  the tokens.
+
 ## Keeping it in the loop
 
 There is no hook and no daemon: you decide when the reviewer is worth
