@@ -23,8 +23,8 @@ each line links to the pull request that landed it.
   ([#7](https://github.com/Maksim-Burtsev/punchcard/pull/7)).
 - **Stability measured.** Ten cold runs across two PRs: every
   blocker-class finding at 5/5, zero noise; a mechanical enumeration
-  step was tested and rejected because it reallocates the seven-finding
-  cap rather than widening it
+  step was tested and rejected because it reallocated the finding cap
+  rather than widening it
   ([#8](https://github.com/Maksim-Burtsev/punchcard/pull/8)).
 - **`/punchcard:pr`.** Review a GitHub PR or GitLab MR and post one
   coherent review into it — updated in place on re-runs, rendered in the
