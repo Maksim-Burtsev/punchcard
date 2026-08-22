@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "punchcard",
-  "description": "Code review by the industry's doyen: fifty years of shipped software, one verdict, seven findings max.",
+  "description": "Code review by the industry's doyen: fifty years of shipped software, one verdict, every finding that earns its place.",
   "owner": {
     "name": "Maksim Burtsev",
     "url": "https://github.com/Maksim-Burtsev"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "punchcard",
-      "description": "Architecture-level review: design, boundaries, data, error paths. Never style. One verdict, seven findings max, claims demonstrated in code. /punchcard for a diff, /punchcard:pr to post into a PR/MR.",
+      "description": "Architecture-level review: design, boundaries, data, error paths. Never style. One verdict, every finding that earns its place, claims demonstrated in code. /punchcard for a diff, /punchcard:pr to post into a PR/MR.",
       "source": "./",
       "category": "productivity"
     }

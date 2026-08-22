@@ -10,7 +10,8 @@
 every team wishes it had: the veteran who started on punch cards, shipped
 through every era of the industry, and read the classics before they were
 classics. He doesn't care about your variable names. He cares whether the
-design fits the problem — and he says so in seven findings or fewer.
+design fits the problem — and says exactly that, nothing padded, nothing
+cut.
 
 ## Why another review tool
 
@@ -23,7 +24,8 @@ every run. Punchcard is built on three constraints instead:
   linter catches — that's someone else's job.
 - **The gate.** Every finding must have a real consequence, cite a numbered
   principle, and change how the code works or evolves — not how it reads.
-  Hard cap of seven findings. "Ship it." is a complete review.
+  Every finding that earns its place is rendered; none is invented to
+  fill a list. "Ship it." is a complete review.
 - **A constitution, not a mood.** Every finding is grounded in a numbered
   principle before it survives the gate, so two runs argue from the same
   ground rather than from taste. The constitution is 78 principles in 11

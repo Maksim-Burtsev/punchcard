@@ -83,6 +83,62 @@ sweep was reverted (`b0599b2`).
   it masks the slot-budget property rather than changing it, and the
   single-run default is what ships.
 
+## Search decoupled from render
+
+The with/without measurement showed the reviewer reading "aim for three
+to five" as a search budget — every flask run rendered exactly five cards
+and one lost a blocker to a full set — and stopping at the repository
+boundary while the consequence of a shared endpoint string lived inside
+werkzeug. Two edits, measured with 17 cold runs (Opus, medium): the
+finding count left the skill entirely (scope is the only limit; everything
+that passes the gate renders), and step 3 became "follow every value to
+its last consumer, inside this repository and outside it", with a second
+round adding "every read of the value, and a collision pass when things
+start sharing a key".
+
+| Key | before (3 runs) | after |
+|---|---|---|
+| flask · blueprint hooks skip | 3/3 | 5/5 |
+| flask · routes mutates live rule | 2/3 | **5/5** |
+| flask · required_methods flip | 3/3 | 3/5 |
+| flask · OPTIONS cross-redirect (inside werkzeug) | 0/3 | **0/5** |
+| requests · unterminated quote | 3/3 | 3/3 |
+| requests · escape branches untested | 2/3 | 0/3 |
+| logrus · fix in dead code | 3/3 | 3/3 |
+| fastify · errorHandler restored, untested | 2/3 | 0/3 |
+| control · celery#10493 | — | 🟢 2/3, one run a verified QUESTION (the description claims a unit test the branch added and then deleted) |
+
+Cards per run fell, not rose: flask 4–5 (was 5), requests 2 (was 3–4),
+logrus 2 (was 2–3), fastify 0 (was 1). Noise: zero in 17 runs. Tokens
+per run fell about a third: flask ~108k (was ~162k), requests ~80k
+(~130k), logrus ~73k (~124k), fastify ~99k (~157k).
+
+What the numbers say:
+
+- **Decoupling held.** The blocker that a full card set had crowded out
+  is back at 5/5, verdicts are stable, nothing was invented on the clean
+  control, and the reviewer got cheaper rather than longer.
+- **The dependency boundary was crossed, the consequence was still not
+  found.** All five flask runs read werkzeug — for the mutated
+  `Rule.methods` and the inert duplicate guard — but none grepped the
+  package for every read of `endpoint` or ran the collision pass the
+  text asks for, so `get_default_redirect` was never reached. One
+  paragraph in a long skill does not change what a reviewer looks at
+  once it has a design-shaped finding for the same value. Two wordings
+  tried; this is where prompt text stops. The class stays uncovered and
+  is now written down as such.
+- **The tail got thinner.** Two keys that used to appear 2/3 now appear
+  0/3: requests' untested escape branches and fastify's silently widened
+  blast radius. Pre-existing faults moved correctly to out-of-scope
+  lines (the scope rule working), but these two are consequences of the
+  diff — 8.1-class coverage findings — and they were dropped, not
+  demoted. Without a number to reach for, the reviewer stops at what it
+  can demonstrate by running; a missing test has no runtime demonstration.
+
+Kept, with that on the record: stable blockers, zero noise, a third
+cheaper. Open: the coverage tail, and consequences that live inside a
+dependency.
+
 ## Beyond Python
 
 The format and the judgment were calibrated on Python. Four cold runs on
