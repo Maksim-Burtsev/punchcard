@@ -199,3 +199,98 @@ Clone the target, check out the PR head, open a fresh session with only
 the skill and the target named, run five times, match by mechanism. The
 per-run reviews and matching tables for both conditions are not committed;
 this file records the protocol and the numbers.
+
+## Independent search passes — August 2026
+
+Two classes stayed uncovered after the coverage-tail work: a consequence
+that terminates inside a dependency (flask's OPTIONS cross-redirect, found
+1 run in 11, where Claude Code's built-in `/code-review` found it 3/3) and
+the `except: pass` swallow on the same PR (1/3 against its 3/3). Reading
+that reviewer's own prompt explains the gap: at medium effort it runs eight
+independent finder angles, each in its own context, and one of them exists
+only to ask what every *removed* line used to guarantee. Punchcard searched
+once, in the context that also judges — and a reviewer that has already
+written a finding about a value stops looking at that value.
+
+Two variants were measured against that, both on Opus (medium), cold runs,
+matched by mechanism.
+
+### Variant A — prose only (rejected)
+
+Step 3 gained a second reading of the diff ("for every line it deletes or
+replaces, name the guarantee that line used to make and find where the new
+code makes it again"), an explicit "a candidate does not close a trace",
+and lost the endpoint/registry/cache-key paragraph the earlier sweep had
+left behind.
+
+| Key | master | A |
+|---|---|---|
+| flask · OPTIONS cross-redirect (target) | 1/11 | **0/3** |
+| flask · blueprint hooks skip | 3/3 | 3/3 |
+| flask · routes mutates live rule | 3/3 | 3/3 |
+| flask · no single source | 0/3 | 3/3 |
+| flask · no test goes red on revert | 3/3 | 3/3 |
+| flask · required_methods flip | 3/5 | 1/3 |
+| flask · `except: pass` swallow | 1/3 | 0/3 |
+| requests · unterminated quote / duplication / escape tests | 3/3 · — · 3/3 | 3/3 · 3/3 · 3/3 |
+
+Tokens flat (88–109k), noise zero, verdicts stable. The target key did not
+move, and the reason was visible in the runs: they *did* follow the shared
+endpoint into its consumers — `request.endpoint`, blueprint hooks — and
+folded all of it into one card, then stopped looking at that value. Three
+prose wordings have now failed on this key. Prose was the wrong instrument.
+
+### Variant B — three independent passes (kept)
+
+Step 3 became three readings of the same diff, dispatched as subagents that
+do not see each other's notes — every value to its last consumer, every
+removed guarantee to its new home, the test that goes red on revert — each
+returning candidates only: file, line, mechanism, traced consequence. No
+severity, no verdict, no card. Judgement stays in one place: the
+constitution, the runtime demonstrations, the gate, the render. Without a
+subagent tool the three passes run in sequence, each starting from the diff
+rather than from what the last pass concluded.
+
+| Key | master | A | B |
+|---|---|---|---|
+| flask · OPTIONS cross-redirect (target) | 1/11 | 0/3 | **3/3, blocker every time** |
+| flask · blueprint hooks skip | 3/3 | 3/3 | 3/3 |
+| flask · routes mutates live rule | 3/3 | 3/3 | 3/3 |
+| flask · required_methods flip | 3/5 | 1/3 | 3/3 |
+| flask · no single source | 0/3 | 3/3 | 2/3 |
+| flask · no test goes red on revert | 3/3 | 3/3 | 3/3 |
+| flask · `except: pass` swallow | 1/3 | 0/3 | 1/3 (once correctly dropped as answered in the PR description) |
+| flask · sansio registers a view only `flask.Flask` supplies | — | — | 1/3 — **new key**, verified by hand |
+| requests · unterminated quote | 3/3 | 3/3 | 2/2 |
+| requests · quote rule duplicated | — | 3/3 | 2/2 |
+| requests · escape branches untested | 3/3 | 3/3 | 2/2 |
+
+The target key is taken, as the first or third card, with the redirect
+demonstrated by running both trees. The class it belongs to — a
+consequence that terminates inside a dependency — is no longer open. One
+run found something no condition had found before, including the built-in
+reviewer: the automatic-`OPTIONS` rule is registered in `sansio/app.py`,
+the shared base Quart also subclasses, while the view function it points at
+is installed only in `flask/app.py`. Confirmed by hand.
+
+Discipline held where it matters. Noise: zero below-altitude sections in
+nine reviews across both variants. Verdicts: stable across runs on both
+PRs. The judge rejected finder candidates that did not survive checking —
+two runs independently dropped a "weakened test" claim after reading the
+assertions, one dropped the `except: pass` breadth because the PR
+description already answers it.
+
+**The cost is real and it is the argument against B.** Tokens per run rose
+from ~100k to 152k/183k/191k on flask and from ~80k to 124k/131k on
+requests — about 1.7×, above the 1.5× ceiling this measurement set for
+itself in advance. Reviews got longer too, but only where the diff is
+complex: flask went from ~950 words and four cards to ~1,600–2,050 words
+and six, while requests stayed at three cards and ~950 words. The extra
+length is findings, not padding — on flask, two of the extra cards are
+blocker-class regressions that were being missed.
+
+So the trade is stated, not hidden: three finder passes buy the last
+uncovered blocker class and full union recall on both PRs, and they cost
+roughly 70% more per review. That is a deliberate exceedance of the
+pre-registered token rule, kept because what it bought is the class the
+project had twice written down as out of reach.
