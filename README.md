@@ -173,12 +173,17 @@ every BLOCKER it reports.
 
 ## Punchcard and friends
 
+Claude Code's built-in `/code-review` hunts runtime bugs; Punchcard
+judges the shape of the change. Measured on the same four PRs, that is
+not a slogan: `/code-review` found a routing-internals regression three
+times out of three that Punchcard never saw, and saw nothing of the
+duplicated knowledge, single-source and wrong-seam-test findings that
+Punchcard reported every run. Run both — they cover different defects.
 [Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
-build — the laziest solution that works. Punchcard judges whether what you
-built fits the problem. A bug-hunting review (Claude Code's built-in
-`/code-review`) catches the off-by-ones. Run all three and you have a senior
-team; Punchcard is the one with the corner office and the punch card in his
-shirt pocket.
+build, the laziest solution that works; Punchcard judges whether what
+you built fits the problem. Three reviewers, one senior team; Punchcard
+is the one with the corner office and the punch card in his shirt
+pocket.
 
 ## License
 
