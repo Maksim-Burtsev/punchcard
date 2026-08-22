@@ -187,19 +187,24 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    change", revert it and run the test. If you cannot run the suite, you may
    say what a test does not cover, but never that it would still pass — and
    read every assertion in a test you attack, not the first few lines.
-   One mandatory check before you leave this step: if the diff adds a
-   module, route or public function and adds no test, that is a finding —
-   always, including on a draft, spike or proof of concept. "It's only a
-   POC" is the author's answer to give, never your reason for not asking.
+   One mandatory check before you leave this step: name the test that goes
+   red if this change is reverted. If the diff adds a module, route or
+   public function with no test, or changes behavior — a new branch, a
+   widened effect, a new code path — that no test in the diff exercises,
+   that is a finding, always, including on a draft, spike or proof of
+   concept. This is the one finding that needs no runtime demonstration:
+   the evidence is the named missing case — the input that reaches the
+   branch and the assertion nobody makes about it. "It's only a POC" is
+   the author's answer to give, never your reason for not asking.
    Search stops when every contract the diff changes has been traced to its
    last consumer in both directions — never when you have collected enough
    findings. Collect every candidate you find; cutting is the gate's job in
    the next step, not the search's.
 6. **Gate and order.** Cut ruthlessly against the gate and the scope rule,
    never against a count. Every survivor is rendered. Order them by
-   consequence, with two rules: a missing test for a new module, route or
-   public function (8.1) is filed last, separately; and a finding about a
-   config, CI or editor file never outranks one about the code.
+   consequence, with two rules: a missing-test finding (8.1) is filed
+   last, separately; and a finding about a config, CI or editor file never
+   outranks one about the code.
 7. **Render.** Verdict heading, its one-sentence readout, then the summary
    table (two or more findings only), then the finding cards, nothing else.
    For "Ship it.": heading, readout, verified checklist, done.

@@ -139,6 +139,37 @@ Kept, with that on the record: stable blockers, zero noise, a third
 cheaper. Open: the coverage tail, and consequences that live inside a
 dependency.
 
+## The coverage tail, restored in part
+
+Removing the finding count had dropped two 8.1-class findings from 2/3
+to 0/3 — changed behavior with no test exercising it has no runtime
+demonstration, and the reviewer had stopped at what it could run. One
+edit to the Judge step: the mandatory check now names the test that goes
+red on revert, covers changed behavior (a new branch, a widened effect, a
+new code path) as well as new modules, and says outright that this
+finding needs no runtime demonstration — the evidence is the named
+missing case. Twelve cold runs (Opus, medium):
+
+| Key | before | after |
+|---|---|---|
+| requests · escape branches untested | 0/3 | **3/3** |
+| fastify · errorHandler restored, untested | 0/3 | 1/3 |
+| flask · no test in the diff goes red on revert (new 8.1 card) | — | 3/3 |
+| flask · blueprint hooks skip / routes mutates live rule | 5/5 / 5/5 | 3/3 / 3/3 |
+| flask · OPTIONS cross-redirect inside werkzeug | 0/5 | 1/3 — the first time, on the step-3 wording already in place |
+| requests · unterminated quote | 3/3 | 2/3 |
+| control · celery#10493 | 🟢 2/3 | 🟢 2/3, one run a verified DESIGN (the smoke test never pins `worker_concurrency`, so it passes on any surviving child) |
+
+Cards per run stayed at the baseline or one above (requests 2–3, fastify
+0–1, flask 4, celery 0–1); noise zero in twelve; tokens flat (~73–104k).
+
+Read honestly: the requests tail is back and flask now carries a
+coverage card every run, but fastify's widened `errorHandler` surfaced
+once in three — a coverage gap that hides behind a correct fix is still
+easy to walk past. And the requests quote regression, found in every one
+of fourteen earlier runs, was missed once here. One miss in three is
+within what this protocol can see; it is recorded, not explained away.
+
 ## Beyond Python
 
 The format and the judgment were calibrated on Python. Four cold runs on
