@@ -169,9 +169,16 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    value is handed to a framework, a library or a vendor SDK, open that
    package's installed source and read the code that consumes it. Damage
    that lands inside a dependency is still this change's damage, and it is
-   the one you are most likely to miss. Backward: every other path that
-   reaches the thing the diff touches, not only the path the diff
-   demonstrates. Diffs lie by omission; never review one cold.
+   the one you are most likely to miss. Tracing a value means every read
+   of it in that consumer, not the one read you already know about: grep
+   the package for the attribute and walk each hit. And when the change
+   makes several things share one key that used to be distinct — the same
+   endpoint name, registry key, cache key, identifier — give that collision
+   its own pass: find every place the consumer compares, groups or looks
+   up by that key and ask what it does when two entries are now equal.
+   Backward: every other path that reaches the thing the diff touches, not
+   only the path the diff demonstrates. Diffs lie by omission; never
+   review one cold.
 4. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
 5. **Judge.** Walk the core and the loaded chapters, collect candidate
