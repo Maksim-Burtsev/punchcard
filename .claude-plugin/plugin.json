@@ -1,7 +1,7 @@
 {
   "name": "punchcard",
-  "version": "0.1.0",
-  "description": "Architecture-level code review from a fifty-year veteran. Design, boundaries, data and error paths — never naming or formatting. Seven findings max, one verdict.",
+  "version": "1.0.0",
+  "description": "Architecture-level code review from a fifty-year veteran: design, boundaries, data and error paths — never naming or formatting. One verdict, seven findings max, every claim demonstrated in code. Reviews a diff in the conversation or posts one review into a GitHub PR / GitLab MR.",
   "author": {
     "name": "Maksim Burtsev",
     "url": "https://github.com/Maksim-Burtsev"

@@ -448,8 +448,9 @@ No inline discussions, for the same reason as on GitHub.
 the access check: a 403 (no permission — including a fork PR's read-only
 token), a 404 (no access to the repo), a missing or unauthenticated
 `gh`/`glab` — in every such case render the full review in the reply as
-usual, plus one sentence naming why it was not posted. Never let a
-posting failure eat the review.
+usual, plus one sentence naming why it was not posted — a sentence, not
+a section on how the run went. Never let a posting failure eat the
+review.
 
 A finding the author has answered in the thread of your previous review
 is settled — the same rule as an answered decision in the PR
