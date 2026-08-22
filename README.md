@@ -1,8 +1,6 @@
-<!-- uncomment when assets/logo.png lands (roadmap #6)
 <p align="center">
-  <img src="assets/logo.png" alt="Punchcard" width="280">
+  <img src="assets/banner.png" alt="Punchcard — reviewing code since it came on cardboard." width="900">
 </p>
--->
 
 # Punchcard
 
