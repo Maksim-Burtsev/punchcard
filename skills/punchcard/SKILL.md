@@ -160,31 +160,53 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    you skipped in one line.
 2. **Intent first.** Read the MR/PR description, commit messages, or task.
    You review the change against what it claims to do.
-3. **Follow every value to its last consumer, and every removed guarantee to
-   its new home.** Open the files the diff touches, then take each thing the
-   change alters — a value, a string key, a signature, a stored shape, a
-   default — and trace it in both directions until the trace ends. Forward:
-   everyone who reads, indexes, compares, groups, stores or dispatches on
-   it, including code outside this repository. The repository boundary is
-   not a stopping point: when the value is handed to a framework, a library
-   or a vendor SDK, open that package's installed source and read the code
-   that consumes it. Damage that lands inside a dependency is still this
-   change's damage, and it is the one you are most likely to miss. Tracing
-   a value means every read of it in that consumer, not the one read you
-   already know about: grep the package for the attribute and walk each
-   hit. Backward: every other path that reaches the thing the diff touches,
-   not only the path the diff demonstrates.
-   Then read the diff a second time from the other side. For every line it
-   deletes or replaces, name the guarantee that line used to make — a
-   distinct key, a guard, an ordering, a default, a path that ran — and
-   find the place in the new code that makes it again. If you cannot point
-   at that place, you have a candidate, and the damage is wherever the old
-   guarantee was being relied on: follow it there before you write it down.
-   A candidate does not close a trace. The consumer you already have a
-   finding for is one hit among many; keep walking to the last one, because
-   the second consequence of the same change is the one nobody else has
-   seen. Collect every candidate — cutting is the gate's job, never the
-   search's. Diffs lie by omission; never review one cold.
+3. **Search in three independent passes.** The three passes below are three
+   readings of the same diff, run by finders that do not see each other's
+   notes. When a subagent tool is available, dispatch them in parallel:
+   give each the target, the repository path and its own pass, and have it
+   return candidates only — file, line, the mechanism, and the concrete
+   consequence it traced to the end — with no severity, no verdict and no
+   card. When no subagent tool is available, run the three passes yourself
+   in sequence, starting each one from the diff again rather than from what
+   the last pass concluded. Independence is the whole point: a reviewer who
+   has written down one consequence of a value stops looking at that value,
+   and the second consequence — the one nobody else has — is the one that
+   gets lost. Two passes explaining the same line differently are two
+   candidates, not a duplicate; both go to the gate. Collect every
+   candidate — cutting is the gate's job, never the search's.
+
+   **Pass 1 — every value to its last consumer.** Open the files the diff
+   touches, then take each thing the change alters — a value, a string key,
+   a signature, a stored shape, a default — and trace it in both directions
+   until the trace ends. Forward: everyone who reads, indexes, compares,
+   groups, stores or dispatches on it, including code outside this
+   repository. The repository boundary is not a stopping point: when the
+   value is handed to a framework, a library or a vendor SDK, open that
+   package's installed source and read the code that consumes it. Damage
+   that lands inside a dependency is still this change's damage, and it is
+   the one you are most likely to miss. Tracing a value means every read of
+   it in that consumer, not the one read you already know about: grep the
+   package for the attribute and walk each hit. Backward: every other path
+   that reaches the thing the diff touches, not only the path the diff
+   demonstrates. Diffs lie by omission; never review one cold.
+
+   **Pass 2 — every removed guarantee to its new home.** Read the diff from
+   the other side. For every line it deletes or replaces, name the
+   guarantee that line used to make — a distinct key, a guard, an ordering,
+   a default, a path that ran — and find the place in the new code that
+   makes it again. If you cannot point at that place, you have a candidate,
+   and the damage is wherever the old guarantee was being relied on:
+   follow it there, into the dependency if that is where the reliance
+   lives, before you write it down.
+
+   **Pass 3 — the test that goes red.** For each behavior the diff changes,
+   name the test that fails if the change is reverted, and the input that
+   reaches it. A new module, route or public function with no test, or a
+   changed behavior — a new branch, a widened effect, a new code path —
+   that no test in the diff exercises, is a candidate: name the missing
+   case, the input that reaches the branch and the assertion nobody makes
+   about it.
+
 4. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
 5. **Judge.** Walk the core and the loaded chapters, collect candidate
