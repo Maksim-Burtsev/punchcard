@@ -39,6 +39,12 @@ every run. Punchcard is built on three constraints instead:
 /plugin install punchcard@punchcard   # plugin@marketplace
 ```
 
+Or load it for one session without installing:
+
+```
+claude --plugin-dir path/to/punchcard
+```
+
 ## Use
 
 ```
@@ -58,17 +64,25 @@ instead, with one line saying why.
 
 ### In CI
 
+A fresh runner has no plugins installed, so load Punchcard explicitly
+with `--plugin-dir` pointing at a checkout of this repository.
+
 GitHub Actions, review every PR ([claude-code-action](https://github.com/anthropics/claude-code-action)):
 
 ```yaml
 permissions:
   pull-requests: write   # note: fork PRs get a read-only token
 steps:
+  - uses: actions/checkout@v4
+  - uses: actions/checkout@v4
+    with:
+      repository: Maksim-Burtsev/punchcard
+      path: .punchcard
   - uses: anthropics/claude-code-action@v1
     with:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
       prompt: "/punchcard:pr ${{ github.event.pull_request.html_url }}"
-      claude_args: '--allowedTools "Bash(gh:*),Read,Grep,Glob"'
+      claude_args: '--plugin-dir ./.punchcard --allowedTools "Bash(gh:*),Bash(git:*),Read,Grep,Glob"'
 ```
 
 GitLab CI:
@@ -76,7 +90,9 @@ GitLab CI:
 ```yaml
 punchcard:
   script:
+    - git clone --depth 1 https://github.com/Maksim-Burtsev/punchcard /tmp/punchcard
     - claude -p "/punchcard:pr $CI_MERGE_REQUEST_IID" \
+        --plugin-dir /tmp/punchcard \
         --allowedTools "Bash(glab:*),Bash(git:*),Read,Grep,Glob"
   variables:
     GITLAB_TOKEN: $CI_JOB_TOKEN
