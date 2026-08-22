@@ -43,7 +43,7 @@ each line links to the pull request that landed it.
   last consumer, inside the repository and out. Measured: the blocker a
   full card set used to crowd out is back at 5/5, zero noise, a third
   fewer tokens — and two classes written down as still uncovered
-  ([#17](https://github.com/Maksim-Burtsev/punchcard/pull/18)).
+  ([#17](https://github.com/Maksim-Burtsev/punchcard/pull/19)).
 - **With and without.** The same four PRs reviewed by the bare model,
   by Punchcard, and by Claude Code's built-in `/code-review`, three cold
   runs each, matched by mechanism — so the trade can be made with numbers
