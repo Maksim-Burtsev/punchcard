@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 — unreleased
+## 1.1.0 — 2026-08
 
 - **Installs in any agent harness.** Punchcard follows the Agent Skills
   standard: `npx skills add Maksim-Burtsev/punchcard` puts it into every
@@ -12,8 +12,9 @@
 - **The demo replays 2.9× faster, and shows the whole review.** 25.8 s down
   to 9.0 s, streamed line by line: the verdict and readout, the summary
   table, then all three finding cards. The VHS tape that renders it
-  (`assets/demo.tape`) and the replayed review text
-  (`assets/demo-review.md`) are in the repository.
+  (`assets/demo.tape`), the review exactly as the skill rendered it
+  (`assets/demo-review.md`) and the screen text it streams
+  (`assets/demo-screen.txt`) are in the repository.
 - **The corpus gets a face.** ISBNs for all 30 books in `CORPUS.md`, a
   cover collage in `assets/corpus.png` built by `scripts/covers.py`, and a
   README that traces one book → principle → benchmark finding.
