@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — unreleased
+
+- **Cheaper finders, no double work.** The three search passes run on the
+  cheapest model that can read code and bring back what they executed;
+  the judge re-runs only what decides a verdict and reads the
+  constitution once. Measured against 1.0.0 in
+  `benchmarks/stability-2026-08.md`, "Faster".
+
 ## 1.0.0 — 2026-08
 
 The first release. Everything below was built and measured in the open;
