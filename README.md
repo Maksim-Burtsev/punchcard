@@ -8,7 +8,7 @@
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
-<strong>Measured: the same blockers as Claude Code's <code>/code-review</code>, plus the design class it never sees — zero nit sections in 53 runs.</strong></p>
+<strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — zero nit sections in 53 runs.</strong></p>
 
 ---
 
@@ -160,6 +160,11 @@ in the same session — the same review, only slower.
 /punchcard:pr <url|number>  # review a PR/MR and post the review into it
 ```
 
+The slash form is how Claude Code names a skill. Codex spells it
+`$punchcard <target>`, and every other harness has its own way in — asking for
+a Punchcard review of the target in plain words works everywhere. Where there
+is no `:pr` command, put the word `post` next to the target instead.
+
 Posting puts one PR review on GitHub (locations permalinked to the reviewed sha,
 which GitHub expands into code cards) or one MR note on GitLab. Re-run it after a
 push and it updates that same review in place — one entry per PR, for the life of
@@ -168,8 +173,9 @@ the PR. No access to post? The review is rendered in the reply, with the reason.
 <details>
 <summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>
 
-A fresh runner has no plugins installed, so load Punchcard explicitly
-with `--plugin-dir` pointing at a checkout of this repository.
+A fresh runner has nothing installed, so load Punchcard explicitly from a
+checkout of this repository — below with `--plugin-dir`, in another harness
+with whatever it reads skills from.
 
 GitHub Actions, review every PR ([claude-code-action](https://github.com/anthropics/claude-code-action)):
 
@@ -268,16 +274,18 @@ ten minutes. The cheapest way to make that automatic for the agents
 working in a repository is to say so in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
-Before opening a pull request, run `/punchcard` on the branch and fix
-every BLOCKER it reports.
+Before opening a pull request, run the punchcard skill on the branch and
+fix every BLOCKER it reports.
 ```
 
 ## Punchcard and friends
 
-Claude Code's built-in `/code-review` hunts runtime bugs; Punchcard judges the
-shape of the change. On the same four PRs, `/code-review` saw nothing of the
-duplicated-knowledge, single-source and wrong-seam-test findings Punchcard
-reported every run — different defects, so run both. And
+A bug hunter and Punchcard look for different defects. Claude Code's
+`/code-review`, the one the benchmarks measure against, hunts runtime bugs;
+Punchcard judges the shape of the change. On the same four PRs it saw nothing
+of the duplicated-knowledge, single-source and wrong-seam-test findings
+Punchcard reported every run — so run both, whatever your harness calls its
+bug reviewer. And
 [Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
 
 ## License
