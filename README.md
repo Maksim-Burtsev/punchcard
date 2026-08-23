@@ -8,7 +8,7 @@
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
-<strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — zero nit sections in 53 runs.</strong></p>
+<strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — and not one nitpick.</strong></p>
 
 ---
 
@@ -32,9 +32,10 @@ replayed from [`assets/demo-review.md`](assets/demo-review.md).
   <img src="assets/corpus.png" alt="The thirty books of the corpus: cover collage, five shelves, in the order they are listed in CORPUS.md" width="100%">
 </p>
 
-Thirty books, five shelves, no others. 349 principles distilled in our own
-words → 15 conflicts between the schools decided, never averaged → 78
-principles in 11 chapters. Every finding cites one.
+Fifty years of the industry's best thinking, read cover to cover: thirty
+books, five shelves, no others. Distilled into 349 principles, then into the
+78 that decide a review. Every finding cites one — so he argues from the
+canon, never from mood.
 
 - **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
 - **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
@@ -263,14 +264,14 @@ claim re-executed against the code.
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
 | [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
 
-The price is tokens and minutes: three search passes cost roughly 1.5–2× the
-bare prompt and take 6–13 minutes against `/code-review`'s 3–5, because every
-claim is demonstrated by running both trees.
+Known trade-off, chosen on purpose: a review costs roughly 1.5–2× the tokens
+of a bare prompt and runs about twice as long as `/code-review`, because every
+claim is demonstrated by actually running both trees.
 
 ## Keeping it in the loop
 
-There is no hook and no daemon: you decide when the reviewer is worth
-ten minutes. The cheapest way to make that automatic for the agents
+There is no hook and no daemon: you decide when a change deserves the
+reviewer. The cheapest way to make that automatic for the agents
 working in a repository is to say so in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
