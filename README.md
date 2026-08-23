@@ -90,11 +90,7 @@ shows what each of those decisions bought and what it cost.
   <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
 </p>
 
-A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
-replayed from [`assets/demo-review.md`](assets/demo-review.md): the three
-finder passes, then the verdict and its one-line instruction, the summary
-table, and the three finding cards — the blocker run through `main` and the
-PR, the scanner that now exists twice, the branches no test covers.
+> A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520), [replayed](assets/demo-review.md) in full.
 
 ## The verdicts
 
