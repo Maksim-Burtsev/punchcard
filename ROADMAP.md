@@ -30,8 +30,9 @@
   PRs, 24 cold runs (`benchmarks/with-without-2026-08.md`), and against
   the built-in `/code-review`: same blockers, zero below-altitude noise
   against 2.3 sections per stock review, a verdict every time, 37%
-  shorter. Banner, README, 1.0.0, CHANGELOG done; the tag and the
-  marketplace listing are the release itself.
+  shorter. Released as `punchcard--v1.0.0` on 2026-08-23: README with the
+  doyen, Hoare, a replayed review and how it reviews; Rust and Java smoke
+  runs; install verified from a fresh config.
 - [x] **7. PR/MR comments as a render surface** — `/punchcard:pr` reviews
   a GitHub PR / GitLab MR and posts into it: one review (`COMMENT`) on
   GitHub whose body is the full render with sha permalinks, one MR note
