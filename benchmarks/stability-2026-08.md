@@ -346,3 +346,58 @@ Tokens ~117k / ~156k; wall clock ~6 / ~8 minutes.
 
 One run per language is a smoke test, as before — evidence the search
 shape ports, not a recall figure.
+
+## Faster — PR A (in progress)
+
+ROADMAP 9 asks for the same recall at `/code-review`'s speed. The
+minutes go to the judge, not the finders — so the first PR changes what
+the judge does with what finders bring back, and tried a cheaper model
+for the finders. Cold runs on Opus (medium), flask#5918, the coordinator
+asked to timestamp four points.
+
+**S1 — finders on a cheaper model: rejected.** Three runs with the three
+passes on Sonnet (two by instruction, one where the coordinator chose it
+on its own after the instruction was removed):
+
+| Key | Sonnet finders (3 runs) | 1.0.0 (three passes, Opus) |
+|---|---|---|
+| blueprint hooks skip (blocker) | **1/3** — found by the judge, not a finder | 5/5 across every measurement |
+| OPTIONS cross-redirect | 0/3 | 3/3 |
+| routes mutates live rule | 3/3 | 3/3 |
+| required_methods flip | 0/3 | 3/3 |
+
+Wall clock 5.2–7.3 minutes; the judge 76–88k; but the finders wrote
+~60k each and found less, so the run cost more (~260k) than the run it
+was meant to undercut. A finder that does not reach the dependency is
+not cheaper, it is a different reviewer. The skill now says finders run
+on the judge's own model, and why.
+
+**S3 + S4 — finders bring their executed runs; the judge re-runs only
+what decides a verdict; the constitution is read once, by the judge.**
+Two valid runs so far (a third ran its finders on Sonnet by the
+coordinator's own choice and is counted above, not here):
+
+| | run 1 | run 2 | 1.0.0 three-pass (flask) |
+|---|---|---|---|
+| verdict | 🟠 Ship after #1–#3 | 🔴 Wrong shape | 🟠 / 🟠 / 🔴 |
+| cards | 8 | 8 | 6 / 6 / 6 |
+| hooks skip · routes · required_methods | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | 3/3 · 3/3 · 3/3 |
+| OPTIONS cross-redirect | — | ✓ | 3/3 |
+| coverage card | ✓ | ✓ | 3/3 |
+| judge's own executions | 3 | 2 | every card |
+| judge tokens | 94k | 90k | 152k / 183k / 191k |
+| wall clock, dispatch → written | 9:28 | 6:49 | ~13 min |
+
+What the two runs say: the judge's half of the review halved in tokens
+(~92k against ~175k) and the clock fell from ~13 minutes to 7–9, with
+recall intact on every blocker and the coverage card. In run 1 the judge
+distrusted all three finders on the `flask routes` mutation, re-ran it,
+found its own invocation was wrong, and rendered the finders' result —
+the "re-run only what you doubt" rule working as written. Cross-redirect
+is 1/2 here; the gate for this PR is ≥2/3, so it needs its third valid
+run, plus requests ×1 and the celery control, before it can be merged.
+
+One harness lesson, now in the skill: a coordinator that dispatches
+finders in the background and ends its turn to "wait" can sleep until
+someone wakes it — one run sat four hours that way. Finders are awaited
+synchronously; their return is what resumes the judge.

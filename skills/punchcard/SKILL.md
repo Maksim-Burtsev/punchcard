@@ -165,8 +165,10 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    notes. When a subagent tool is available, dispatch them in parallel and
    wait for all three to return before you judge — never end your turn,
    set a timer or poll while a finder is still running; their return is
-   what resumes you. Give each the target, the repository path and its
-   own pass, and have it
+   what resumes you. Run them on the model you are running on — a cheaper
+   finder was measured and it lost a blocker no full-strength finder had
+   ever missed. Give each the target, the repository path and its own
+   pass, and have it
    return candidates only — file, line, the mechanism, the concrete
    consequence it traced to the end, and for each claim the command it ran
    and what that printed, or the words "not executed" — with no severity,
