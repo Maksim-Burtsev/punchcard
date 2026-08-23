@@ -1,11 +1,15 @@
 # Render with:  vhs assets/demo.tape   (from the repository root)
 #
-# The review body is a replay of a real run on psf/requests#7520 and lives in
-# assets/demo-review.md — nothing here is invented, and the text is edited
-# there, not in this tape. The setup runs inside Hide so the recording starts
-# at the prompt. Everything typed here is ASCII on purpose: vhs 0.11 drops
-# multibyte characters out of `Type`, so the check marks and the middle dots
-# are printed from octal escapes and the rest comes out of the review file.
+# The review body is a replay of a real run on psf/requests#7520. The review
+# exactly as the skill rendered it is assets/demo-review.md; what fits on a
+# terminal screen — the same text, shortened to one evidence block per card —
+# is assets/demo-screen.txt, and that is what this tape streams. Nothing is
+# invented, and the screen text is edited there, not in this tape.
+#
+# The setup runs inside Hide so the recording starts at the prompt.
+# Everything typed here is ASCII on purpose: vhs 0.11 drops multibyte
+# characters out of `Type`, so the check marks and the middle dots are
+# printed from octal escapes and the rest comes out of the screen file.
 #
 # Pacing lives in the awk at the bottom: one constant sleep per line, and a
 # longer one before each finding-card title.
@@ -31,7 +35,7 @@ Type `  printf "\033[32m\342\234\223\033[0m \033[90mthree finder passes $D every
 Type `  sleep 0.6` Enter
 Type `  printf "\033[32m\342\234\223\033[0m \033[90mjudging 7 candidates against the constitution $D running main and this PR\033[0m\n\n"` Enter
 Type `  sleep 0.5` Enter
-Type `  awk -v E=$'\033[' '{ p=0.045; if ($0 ~ /Ship after/) $0=E "1;38;5;214m" $0 E "0m"; else if ($0 ~ /^  [0-9] /) { sub(/BLOCKER/, E "38;5;204m&" E "0m"); sub(/DESIGN/, E "38;5;179m&" E "0m") } else if ($0 ~ /One stray/) { $0=E "1;38;5;204m" $0 E "0m"; p=0.5 } else if ($0 ~ /scanner now exists|load-bearing branches/) { $0=E "1;38;5;179m" $0 E "0m"; p=0.5 } else if ($0 ~ /severity/) $0=E "90m" $0 E "0m"; else if ($0 ~ /^src/) sub(/^[^ ]+/, E "90m&" E "0m"); else if ($0 ~ /passed,/) $0=E "32m" $0 E "0m"; else if ($0 ~ /Fix:/) sub(/Fix:.*/, E "1m&" E "0m"); system("sleep " p); print }' assets/demo-review.md` Enter
+Type `  awk -v E=$'\033[' '{ p=0.045; if ($0 ~ /Ship after/) $0=E "1;38;5;214m" $0 E "0m"; else if ($0 ~ /^  [0-9] /) { sub(/BLOCKER/, E "38;5;204m&" E "0m"); sub(/DESIGN/, E "38;5;179m&" E "0m") } else if ($0 ~ /One stray/) { $0=E "1;38;5;204m" $0 E "0m"; p=0.5 } else if ($0 ~ /scanner now exists|load-bearing branches/) { $0=E "1;38;5;179m" $0 E "0m"; p=0.5 } else if ($0 ~ /severity/) $0=E "90m" $0 E "0m"; else if ($0 ~ /^src/) sub(/^[^ ]+/, E "90m&" E "0m"); else if ($0 ~ /passed,/) $0=E "32m" $0 E "0m"; else if ($0 ~ /Fix:/) sub(/Fix:.*/, E "1m&" E "0m"); system("sleep " p); print }' assets/demo-screen.txt` Enter
 Type `}` Enter
 Type "clear" Enter
 Show
