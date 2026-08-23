@@ -296,3 +296,30 @@ uncovered blocker class and full union recall on both PRs, and they cost
 roughly 70% more per review. That is a deliberate exceedance of the
 pre-registered token rule, kept because what it bought is the class the
 project had twice written down as out of reach.
+
+### Wall-clock time
+
+Nobody timed the earlier conditions on purpose; these figures are
+reconstructed from file timestamps (the `/code-review` runs went through
+`claude -p` with output redirected, so each has a start and an end) and
+from subagent durations in this session. Two runs were in flight at any
+time in every condition. Treat the minutes as the right order of
+magnitude, not as a controlled measurement.
+
+| PR | `/code-review` medium | Punchcard, single pass | Punchcard, three passes |
+|---|---|---|---|
+| flask#5918 | 4:07 · 4:21 · 5:40 → ~4.7 min | 7:25 · 5:45 · 7:04 → ~6.7 min | 13:45 · 10:23 · 14:50 → ~13 min |
+| requests#7520 | 2:42 · 2:06 · 3:36 → ~2.8 min | 6:18 | 6:38 · 6:38 → ~6.6 min |
+| logrus#1574 | 0:40 · 0:45 · 0:37 → ~0.7 min | — | — |
+| fastify#6965 | 4:36 · 5:40 · 5:08 → ~5.1 min | — | — |
+| celery#10493 (control) | — | ~14 min, one run | 8:43 |
+
+The single-pass column is variant A, whose token count matched master
+(88–109k), so it stands in for master here.
+
+Where the time goes: the three finder passes run in parallel, so they do
+not triple the clock — on requests they added twenty seconds. The judge
+is the slow part, because it demonstrates every claim by running both
+trees, and on a diff with six findings that is a lot of running. The
+built-in reviewer executes nothing; forty seconds on logrus is what eight
+reading angles cost when none of them starts an interpreter.
