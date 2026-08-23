@@ -1,0 +1,6 @@
+{
+  "name": "punchcard",
+  "version": "1.0.0",
+  "description": "Architecture-level code review from a fifty-year veteran: design, boundaries, data and error paths — never naming or formatting.",
+  "skills": ["./skills/punchcard"]
+}

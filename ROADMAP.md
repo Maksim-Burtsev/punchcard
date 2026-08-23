@@ -12,7 +12,7 @@
 - [x] **3. The synthesis** — done in three PRs: 30 distillates
   (`corpus/distillates/`, 349 principles), 11 clusters and a register of 15
   explicitly decided forks (`corpus/clusters.md`, `corpus/conflicts.md`),
-  and the constitution — 11 chapters, 78 principles (`constitution/`) —
+  and the constitution — 11 chapters, 78 principles (`skills/punchcard/constitution/`) —
   now wired into the skill: a 15-principle core plus per-diff chapter
   routing. `CORPUS.md` serves as the bibliography. Smoke-tested on three
   planted-flaw fixtures: 30/30 flaws caught across six runs, zero style

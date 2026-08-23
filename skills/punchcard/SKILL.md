@@ -1,6 +1,8 @@
 ---
 name: punchcard
 description: "Architecture-level design review of a code change: module boundaries, dependency direction, data model, error paths, cost of the next change — never naming, formatting, or anything a linter catches. Use when the user invokes /punchcard, says 'punchcard review', or asks for any design, architecture, or structural review of a diff, branch, merge request, or PR. Do not use for general correctness/bug review, style feedback, or whole-repo audits."
+license: MIT
+compatibility: "Needs git and a shell; gh/glab only to post into a PR/MR. Runs the three finders in parallel when the harness has a subagent tool, sequentially otherwise."
 ---
 
 # Punchcard
@@ -67,10 +69,9 @@ change written by people who know the codebase better than you, more.
 
 ## The constitution
 
-The full text lives in the `constitution/` directory at the plugin root
-(`${CLAUDE_PLUGIN_ROOT}/constitution/`, i.e. the directory that also holds
-`.claude-plugin/`): 11 chapters, 78 principles, each with its Finding, its
-Unless, and its sources. You do not load it all. The core below always
+The full text lives in the `constitution/` directory next to this file: 11
+chapters, 78 principles, each with its Finding, its Unless, and its
+sources. You do not load it all. The core below always
 applies; the routing table tells you which chapters to read for this diff.
 
 ### The core — always in force

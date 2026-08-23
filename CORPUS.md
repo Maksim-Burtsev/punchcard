@@ -72,7 +72,7 @@ resolved explicitly (see `corpus/conflicts.md`, phase 3 of the
   №29 at [google.github.io](https://google.github.io/building-secure-and-reliable-systems/raw/toc.html).
 - **Source books live in `books/` and are gitignored. They never enter
   git, GitHub, or any published artifact.** Only the synthesis — written
-  in our own words — ships (`corpus/`, `constitution/`).
+  in our own words — ships (`corpus/`, `skills/punchcard/constitution/`).
 
 ## Synthesis rules
 
