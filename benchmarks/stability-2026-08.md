@@ -323,3 +323,26 @@ is the slow part, because it demonstrates every claim by running both
 trees, and on a diff with six findings that is a lot of running. The
 built-in reviewer executes nothing; forty seconds on logrus is what eight
 reading angles cost when none of them starts an interpreter.
+
+## Beyond Python, three passes — August 2026
+
+The earlier cross-language runs were single-pass. Two cold runs with the
+three-pass search, one each in Rust and Java, on PRs the projects
+themselves later reverted or fixed — so the key is the project's, not ours:
+
+| PR | Language | Ground truth | Verdict | The key, as rendered |
+|---|---|---|---|---|
+| tokio-rs/tokio#7757 | Rust | reverted by #8057: `spawn_blocking` hangs under load (#8056) | 🔴 Wrong shape | #1 BLOCKER — a stale `num_idle_threads` read stops the pool from growing and strands a task on an exiting thread |
+| netty/netty#16837 | Java | fixed by #16949: `setAutoRead(false)` inside `channelRead` no longer honored (#16945) | 🟠 Ship after #1, #2 | #2 BLOCKER — `dequeueAll` no longer re-reads auto-read, so the backlog drains past the handler that just said stop |
+
+Both keys came through the removed-guarantees pass; on netty the value
+tracer reached the same line from the other side. Noise: zero. Two
+honest limits recorded: the tokio judge rendered after one finder had
+returned (the other two were still running when it was told to finish),
+so that review rests on pass 2 plus the judge's own trace; and no JDK is
+installed here, so every netty claim is traced by reading and the review
+says so instead of pretending to have run `FlowControlHandlerTest`.
+Tokens ~117k / ~156k; wall clock ~6 / ~8 minutes.
+
+One run per language is a smoke test, as before — evidence the search
+shape ports, not a recall figure.

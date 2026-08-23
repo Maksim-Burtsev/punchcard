@@ -182,8 +182,8 @@ factual claim re-executed against the code. Three reports in
   plus a clean control, every edit to the reviewer measured before it
   stayed: every blocker-class finding stable, zero noise, and the one
   class it kept missing — a consequence that lands inside a dependency —
-  taken 3/3 once search became three independent passes; plus Go and
-  JavaScript smoke runs, and wall-clock time next to tokens.
+  taken 3/3 once search became three independent passes; Go, JavaScript,
+  Rust and Java smoke runs; wall-clock time next to tokens.
 - [With and without](benchmarks/with-without-2026-08.md) — the same four
   PRs reviewed by the bare model, by Punchcard, and by Claude Code's
   built-in `/code-review`, three cold runs each. The bare model finds the
