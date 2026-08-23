@@ -162,9 +162,11 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    You review the change against what it claims to do.
 3. **Search in three independent passes.** The three passes below are three
    readings of the same diff, run by finders that do not see each other's
-   notes. When a subagent tool is available, dispatch them in parallel on
-   the cheapest model that can read code — judgement stays here, on yours:
-   give each the target, the repository path and its own pass, and have it
+   notes. When a subagent tool is available, dispatch them in parallel and
+   wait for all three to return before you judge — never end your turn,
+   set a timer or poll while a finder is still running; their return is
+   what resumes you. Give each the target, the repository path and its
+   own pass, and have it
    return candidates only — file, line, the mechanism, the concrete
    consequence it traced to the end, and for each claim the command it ran
    and what that printed, or the words "not executed" — with no severity,
