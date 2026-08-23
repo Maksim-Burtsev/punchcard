@@ -418,3 +418,37 @@ One harness lesson, now in the skill: a coordinator that dispatches
 finders in the background and ends its turn to "wait" can sleep until
 someone wakes it — one run sat four hours that way. Finders are awaited
 synchronously; their return is what resumes the judge.
+
+## Faster — PR B (rejected)
+
+Hypothesis S2: the main-vs-PR demonstration stays mandatory for blockers
+and for whatever the verdict turns on; design and question cards are
+proven by the copied code, and the judge does not start an interpreter
+to decorate a card that merges either way. Expected to take flask from
+7–11 minutes to about 6, since the judge was making 2–5 runs of its own.
+
+Three cold flask runs on Opus (medium), same protocol as PR A:
+
+| | PR B run 1 | run 2 | run 3 | PR A (merged) |
+|---|---|---|---|---|
+| verdict | 🟠 after #1–#3 | 🟠 after #1, #2 | 🟠 after #1–#4 | 🟠 · 🔴 · 🟠 |
+| cards | 7 | 6 | 7 | 8 · 8 · 9 |
+| hooks · routes · required_methods | ✓ · ✓ · ✓ | ✓ · ✓ · 🟡 | ✓ · ✓ · ✓ | 3/3 each |
+| OPTIONS cross-redirect | — | — | ✓ | 2/3 |
+| judge's own executions | 3 | 5 | 3 | 3 · 2 · 5 |
+| judge tokens | 82k | 92k | 88k | 94k · 90k · 85k |
+| dispatch → written | 8:21 | 9:20 | 8:50 | 9:28 · 6:49 · 10:47 |
+
+Nothing moved. Same minutes, same tokens, one fewer card, cross-redirect
+down to 1/3 at n=3. The judge's runs were never going to the design
+cards — they go to reproducing the blockers the finders had already
+executed, and in two runs of three the first attempt at `flask routes`
+was a wrong invocation that had to be redone. "A blocker carries the
+run that shows the break" was read as "run it yourself", which is the
+double work PR A had tried to remove, now made mandatory in prose.
+
+Not merged. The ≤6-minute target is still open, and the next hypothesis
+is the precise one this run points at: a finder's executed demonstration
+satisfies the blocker's entry ticket; the judge re-runs a blocker only
+when it doubts the finder's output, and says which output it doubted.
+That is a one-sentence change and a separate measurement.
