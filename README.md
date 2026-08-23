@@ -17,14 +17,11 @@ punch cards, shipped through every era of the industry, and read the classics
 before they were classics. He doesn't care about your variable names — he cares
 whether the design fits the problem, and says exactly that.
 
-## See it
-
-<p align="center">
-  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
-</p>
-
-A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
-replayed from [`assets/demo-review.md`](assets/demo-review.md).
+Point him at a working tree, a branch or a pull request and he reads it at
+architecture altitude: module boundaries, dependency direction, the data
+model, the error paths, the cost of the next change. What comes back is one
+verdict, a summary table and one card per finding — inside whatever coding
+agent you already work in.
 
 ## What he read
 
@@ -63,7 +60,7 @@ That is Ousterhout, McConnell, Fowler's *Refactoring*, Beck's
 **F3** — "What makes duplication a finding" — where their disagreement was
 decided rather than averaged.
 
-On psf/requests#7520 that principle is finding #2 in the demo above: the
+On psf/requests#7520 that principle is finding #2 in the demo below: the
 quoted-string scanner now exists twice, so the blocker in #1 has to be fixed
 twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
 *quote rule duplicated*, **5/5** cold runs — `/code-review` never reported it.
@@ -86,6 +83,59 @@ One judge then holds the candidates against the constitution, runs `main` and
 the PR on the input that matters, and renders what survives: verdict, summary
 table, one card per finding. The [stability benchmark](benchmarks/stability-2026-08.md)
 shows what each of those decisions bought and what it cost.
+
+## See it
+
+<p align="center">
+  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
+</p>
+
+A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
+replayed from [`assets/demo-review.md`](assets/demo-review.md): the three
+finder passes, then the verdict and its one-line instruction, the summary
+table, and the three finding cards — the blocker run through `main` and the
+PR, the scanner that now exists twice, the branches no test covers.
+
+## The verdicts
+
+| Verdict | Meaning |
+|---|---|
+| 🟢 **Ship it.** | Nothing passed the gate. Merge, and here is what was verified. |
+| 🟡 **Ship with care.** | Mergeable as is; the findings are worth closing, ideally in this PR. |
+| 🟠 **Ship after #1…#N.** | The numbered findings are mandatory before merge; the rest can follow. |
+| 🔴 **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
+
+The verdict is followed by one sentence saying what to do right now, then a
+summary table, then the findings. A finding looks like this:
+
+---
+
+### 🔴 2 · Charge failures vanish silently
+
+`billing/api.py:48` · A failed charge leaves the order marked paid, and
+nobody learns until month-end reconciliation.
+
+The diff swallows every exception from the charge call, in `submit_order` at
+`billing/api.py:48`:
+
+```python
+try:
+    charge(order.total)
+except Exception:
+    pass          # ← a declined card is indistinguishable from a paid one
+```
+
+The order is then marked paid unconditionally, two lines later at
+`billing/api.py:52`:
+
+```python
+order.status = "paid"
+```
+
+> 🔧 **Fix:** let the charge failure reach the caller — the endpoint's error
+> handler already returns 502 and leaves the order unpaid.
+
+---
 
 ## Install
 
@@ -210,47 +260,6 @@ punchcard:
 ```
 
 </details>
-
-## The verdicts
-
-| Verdict | Meaning |
-|---|---|
-| 🟢 **Ship it.** | Nothing passed the gate. Merge, and here is what was verified. |
-| 🟡 **Ship with care.** | Mergeable as is; the findings are worth closing, ideally in this PR. |
-| 🟠 **Ship after #1…#N.** | The numbered findings are mandatory before merge; the rest can follow. |
-| 🔴 **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
-
-The verdict is followed by one sentence saying what to do right now, then a
-summary table, then the findings. A finding looks like this:
-
----
-
-### 🔴 2 · Charge failures vanish silently
-
-`billing/api.py:48` · A failed charge leaves the order marked paid, and
-nobody learns until month-end reconciliation.
-
-The diff swallows every exception from the charge call, in `submit_order` at
-`billing/api.py:48`:
-
-```python
-try:
-    charge(order.total)
-except Exception:
-    pass          # ← a declined card is indistinguishable from a paid one
-```
-
-The order is then marked paid unconditionally, two lines later at
-`billing/api.py:52`:
-
-```python
-order.status = "paid"
-```
-
-> 🔧 **Fix:** let the charge failure reach the caller — the endpoint's error
-> handler already returns 502 and leaves the order unpaid.
-
----
 
 ## Measured
 
