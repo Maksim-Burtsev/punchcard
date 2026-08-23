@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — unreleased
+
+- **No double work.** The three search passes bring back what they
+  executed; the judge re-runs only what decides a verdict and reads the
+  constitution once. Finders on a cheaper model were measured and
+  rejected — they lost a blocker that had never been missed. Measured in
+  `benchmarks/stability-2026-08.md`, "Faster".
+
 ## 1.0.0 — 2026-08
 
 The first release. Everything below was built and measured in the open;
