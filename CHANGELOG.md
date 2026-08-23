@@ -9,8 +9,10 @@
   78 principles. A root `plugin.json` covers the harnesses that install
   plugins; harnesses without slash commands post a review by saying `post`
   next to the target.
-- **The demo replays 2.5× faster.** 25.8 s down to 9.2 s, and the VHS tape
-  that renders it (`assets/demo.tape`) and the replayed review text
+- **The demo replays 2.9× faster, and shows the whole review.** 25.8 s down
+  to 9.0 s, streamed line by line: the verdict and readout, the summary
+  table, then all three finding cards. The VHS tape that renders it
+  (`assets/demo.tape`) and the replayed review text
   (`assets/demo-review.md`) are in the repository.
 - **The corpus gets a face.** ISBNs for all 30 books in `CORPUS.md`, a
   cover collage in `assets/corpus.png` built by `scripts/covers.py`, and a

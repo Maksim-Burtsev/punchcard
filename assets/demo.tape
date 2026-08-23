@@ -6,17 +6,20 @@
 # at the prompt. Everything typed here is ASCII on purpose: vhs 0.11 drops
 # multibyte characters out of `Type`, so the check marks and the middle dots
 # are printed from octal escapes and the rest comes out of the review file.
+#
+# Pacing lives in the awk at the bottom: one constant sleep per line, and a
+# longer one before each finding-card title.
 
 Output assets/demo.gif
 
 Set Shell bash
-Set FontSize 14
-Set Width 1180
-Set Height 700
-Set Padding 20
+Set FontSize 13
+Set Width 1000
+Set Height 1060
+Set Padding 16
 Set Theme "Catppuccin Mocha"
 Set TypingSpeed 15ms
-Set Framerate 15
+Set Framerate 30
 
 Hide
 Type `PS1=$'\342\235\257 '` Enter
@@ -27,7 +30,7 @@ Type `  printf "\033[32m\342\234\223\033[0m \033[90mthree finder passes $D every
 Type `  sleep 0.6` Enter
 Type `  printf "\033[32m\342\234\223\033[0m \033[90mjudging 7 candidates against the constitution $D running main and this PR\033[0m\n\n"` Enter
 Type `  sleep 0.5` Enter
-Type `  awk -v E=$'\033[' '{ if ($0 ~ /Ship after/) $0=E "1;38;5;214m" $0 E "0m"; else if ($0 ~ /^  [0-9] /) { sub(/BLOCKER/, E "38;5;204m&" E "0m"); sub(/DESIGN/, E "38;5;179m&" E "0m") } else if ($0 ~ /One stray/) $0=E "1;38;5;204m" $0 E "0m"; else if ($0 ~ /severity/) $0=E "90m" $0 E "0m"; else if ($0 ~ /^src/) sub(/^[^ ]+/, E "90m&" E "0m"); else if ($0 ~ /Fix:/) sub(/Fix:.*/, E "1m&" E "0m"); print; system("sleep 0.12") }' assets/demo-review.md` Enter
+Type `  awk -v E=$'\033[' '{ p=0.045; if ($0 ~ /Ship after/) $0=E "1;38;5;214m" $0 E "0m"; else if ($0 ~ /^  [0-9] /) { sub(/BLOCKER/, E "38;5;204m&" E "0m"); sub(/DESIGN/, E "38;5;179m&" E "0m") } else if ($0 ~ /One stray/) { $0=E "1;38;5;204m" $0 E "0m"; p=0.5 } else if ($0 ~ /scanner now exists|load-bearing branches/) { $0=E "1;38;5;179m" $0 E "0m"; p=0.5 } else if ($0 ~ /severity/) $0=E "90m" $0 E "0m"; else if ($0 ~ /^src/) sub(/^[^ ]+/, E "90m&" E "0m"); else if ($0 ~ /passed,/) $0=E "32m" $0 E "0m"; else if ($0 ~ /Fix:/) sub(/Fix:.*/, E "1m&" E "0m"); system("sleep " p); print }' assets/demo-review.md` Enter
 Type `}` Enter
 Type "clear" Enter
 Show

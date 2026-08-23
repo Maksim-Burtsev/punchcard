@@ -20,7 +20,7 @@ whether the design fits the problem, and says exactly that.
 ## See it
 
 <p align="center">
-  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, one finding with the same input run through main and the PR" width="900">
+  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
 </p>
 
 A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
