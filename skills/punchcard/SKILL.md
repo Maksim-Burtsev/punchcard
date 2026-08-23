@@ -462,8 +462,9 @@ reader stops trusting. Never splice non-adjacent lines without an ellipsis.
 ## Posting to a PR/MR
 
 Post the review into the PR/MR only when posting was asked for: the
-`/punchcard:pr` command, an explicit request in the conversation, or a
-headless run whose task is to post. In an interactive session, show the
+`/punchcard:pr` command, the word `post` next to the target in any harness
+(`$punchcard post <url>` in Codex), an explicit request in the
+conversation, or a headless run whose task is to post. In an interactive session, show the
 verdict line and ask before posting — posting is publishing. In a
 headless run (`claude -p`, CI), post without asking: the run itself is
 the permission. When posting was not asked for, this section does not
