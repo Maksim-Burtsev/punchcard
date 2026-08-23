@@ -13,6 +13,7 @@
     "code-review",
     "architecture",
     "design-review",
-    "claude-code-plugin"
+    "claude-code-plugin",
+    "agent-skill"
   ]
 }

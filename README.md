@@ -6,126 +6,91 @@
 
 <h1 align="center">Punchcard</h1>
 
-<p align="center">Architecture-level code review for Claude Code.<br>
+<p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
-<strong>Measured: the same blockers as Claude Code's <code>/code-review</code>, plus the design class it never sees — zero nit sections in 53 runs.</strong></p>
+<strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — and not one nitpick.</strong></p>
 
 ---
 
-Punchcard is the reviewer every team wishes it had: the veteran who started
-on punch cards, shipped through every era of the industry, and read the
-classics before they were classics. He doesn't care about your variable
-names. He cares whether the design fits the problem — and says exactly
-that, nothing padded, nothing cut.
+Punchcard is the reviewer every team wishes it had: the veteran who started on
+punch cards, shipped through every era of the industry, and read the classics
+before they were classics. He doesn't care about your variable names — he cares
+whether the design fits the problem, and says exactly that.
 
-## See it
+Point him at a working tree, a branch or a pull request and he reads it at
+architecture altitude: module boundaries, dependency direction, the data
+model, the error paths, the cost of the next change. What comes back is one
+verdict, a summary table and one card per finding — inside whatever coding
+agent you already work in.
+
+## What he read
 
 <p align="center">
-  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, one finding with the same input run through main and the PR" width="900">
+  <img src="assets/corpus.png" alt="The thirty books of the corpus: cover collage, five shelves, in the order they are listed in CORPUS.md" width="100%">
 </p>
 
-A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
-replayed: the verdict, the table, and the first card, with the same input run
-through `main` and the PR.
+Fifty years of the industry's best thinking, read cover to cover: thirty
+books, five shelves, no others. Distilled into 349 principles, then into the
+78 that decide a review. Every finding cites one — so he argues from the
+canon, never from mood.
+
+- **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
+- **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
+- **III. Architecture, change, technical debt** — Richards & Ford, Ford & Sadalage & Dehghani, Parsons & Kua, Tornhill, Spinellis
+- **IV. Tests as proof of behavior** — Beck, Freeman & Pryce, Khorikov
+- **V. Data, production, reliability, security** — Kleppmann, Nygard, Adkins et al., Johnsson & Deogun & Sawano
+
+The shelf with ISBNs is [`CORPUS.md`](CORPUS.md); the distillations are in
+[`corpus/distillates/`](corpus/distillates/), the decided forks in
+[`corpus/conflicts.md`](corpus/conflicts.md), the constitution itself in
+[`skills/punchcard/constitution/`](skills/punchcard/constitution/).
+
+<details>
+<summary><strong>One trace: book → principle → verdict</strong></summary>
+
+Principle **1.4**, "Treat duplicated knowledge as a defect on sight", closes
+with the line that makes it accountable:
+
+```
+**Sources:** (01, 02, 05, 13, 14, 18; F3)
+```
+
+That is Ousterhout, McConnell, Fowler's *Refactoring*, Beck's
+*Implementation Patterns*, Wirfs-Brock & McKean and Fairbanks, plus fork
+**F3** — "What makes duplication a finding" — where their disagreement was
+decided rather than averaged.
+
+On psf/requests#7520 that principle is finding #2 in the demo below: the
+quoted-string scanner now exists twice, so the blocker in #1 has to be fixed
+twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
+*quote rule duplicated*, **5/5** cold runs — `/code-review` never reported it.
+
+</details>
 
 ## How it reviews
 
 Search and judgement are different jobs, so they run in different places.
-Three finders read the diff independently, each from one side — every
-changed value to its last consumer, inside the repository and inside the
-packages it calls; every guarantee a deleted line used to make, to the place
-the new code makes it again; every changed behavior to the test that goes
-red when it is reverted — and return candidates, not findings. One judge
-then holds them against a constitution of 78 principles, runs `main` and the
-PR on the input that matters, and renders what survives: one verdict, a
-summary table, and a card per finding with the code that proves it. The
-[stability benchmark](benchmarks/stability-2026-08.md) shows what each of
-those decisions bought and what it cost.
+Three finders read the same diff independently and return candidates, not
+findings:
 
-## Why another review tool
+| Pass | Reads the diff as | Returns |
+|---|---|---|
+| 1 | every changed value, traced to its last consumer — inside the repository and inside the packages it calls | where the value lands wrong |
+| 2 | every guarantee a deleted line used to make | the place the new code makes it again, or doesn't |
+| 3 | every changed behavior | the test that goes red when it is reverted, or the missing case |
 
-Ask a stock agent for a code review and you get a wall of text: nitpicks
-about naming, a paragraph praising your structure, and a different verdict
-every run. Punchcard is built on three constraints instead:
+One judge then holds the candidates against the constitution, runs `main` and
+the PR on the input that matters, and renders what survives: verdict, summary
+table, one card per finding. The [stability benchmark](benchmarks/stability-2026-08.md)
+shows what each of those decisions bought and what it cost.
 
-- **Altitude lock.** Boundaries, dependency direction, data model, error
-  paths, cost of the next change. Never naming, formatting, or anything a
-  linter catches — that's someone else's job.
-- **The gate.** Every finding must have a real consequence, cite a numbered
-  principle, and change how the code works or evolves — not how it reads.
-  Every finding that earns its place is rendered; none is invented to
-  fill a list. "Ship it." is a complete review.
-- **A constitution, not a mood.** Every finding is grounded in a numbered
-  principle before it survives the gate, so two runs argue from the same
-  ground rather than from taste. The constitution is 78 principles in 11
-  chapters, [synthesized](CORPUS.md) from 30 classic software engineering
-  books and a register of the decided conflicts between their schools.
+## See it
 
-## Install
+<p align="center">
+  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
+</p>
 
-```
-/plugin marketplace add Maksim-Burtsev/punchcard
-/plugin install punchcard@punchcard   # plugin@marketplace
-```
-
-Or load it for one session without installing:
-
-```
-claude --plugin-dir path/to/punchcard
-```
-
-## Use
-
-```
-/punchcard                  # review working tree, or current branch vs default
-/punchcard main..feature    # review a range
-/punchcard <MR/PR url>      # review a PR/MR, render in the conversation
-/punchcard:pr <url|number>  # review a PR/MR and post the review into it
-```
-
-`/punchcard:pr` posts the review as one PR review on GitHub (locations
-permalinked to the reviewed sha, which GitHub expands into code cards) or
-one MR note on GitLab — a single coherent report, never scattered inline
-comments. Re-run it after a push and it updates that same review in
-place rather than adding another — one Punchcard entry per PR, for the
-life of the PR. No access to post? The review is rendered in the reply
-instead, with one line saying why.
-
-### In CI
-
-A fresh runner has no plugins installed, so load Punchcard explicitly
-with `--plugin-dir` pointing at a checkout of this repository.
-
-GitHub Actions, review every PR ([claude-code-action](https://github.com/anthropics/claude-code-action)):
-
-```yaml
-permissions:
-  pull-requests: write   # note: fork PRs get a read-only token
-steps:
-  - uses: actions/checkout@v4
-  - uses: actions/checkout@v4
-    with:
-      repository: Maksim-Burtsev/punchcard
-      path: .punchcard
-  - uses: anthropics/claude-code-action@v1
-    with:
-      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-      prompt: "/punchcard:pr ${{ github.event.pull_request.html_url }}"
-      claude_args: '--plugin-dir ./.punchcard --allowedTools "Bash(gh:*),Bash(git:*),Read,Grep,Glob"'
-```
-
-GitLab CI:
-
-```yaml
-punchcard:
-  script:
-    - git clone --depth 1 https://github.com/Maksim-Burtsev/punchcard /tmp/punchcard
-    - claude -p "/punchcard:pr $CI_MERGE_REQUEST_IID" \
-        --plugin-dir /tmp/punchcard \
-        --allowedTools "Bash(glab:*),Bash(git:*),Read,Grep,Glob"
-  variables:
-    GITLAB_TOKEN: $CI_JOB_TOKEN
-```
+> A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520) — [the full text](assets/demo-review.md), as the skill rendered it.
 
 ## The verdicts
 
@@ -168,57 +133,166 @@ order.status = "paid"
 
 ---
 
+## Install
+
+```
+npx skills add Maksim-Burtsev/punchcard
+```
+
+Any agent: this installs the skill into every harness it finds on the
+machine. Everything below is the same skill, installed by hand.
+
+<details>
+<summary><strong>Claude Code</strong> — as a plugin, with <code>/punchcard</code> and <code>/punchcard:pr</code></summary>
+
+```
+/plugin marketplace add Maksim-Burtsev/punchcard
+/plugin install punchcard@punchcard   # plugin@marketplace
+```
+
+Or load it for one session without installing:
+
+```
+claude --plugin-dir path/to/punchcard
+```
+
+</details>
+
+<details>
+<summary><strong>Codex · Cursor · Gemini CLI · Copilot · OpenCode · Amp · Zed · Cline · Pi</strong></summary>
+
+```
+npx skills add Maksim-Burtsev/punchcard -a codex     # or cursor, gemini-cli, copilot, …
+```
+
+Or drop it in by hand — the skill is one self-contained directory:
+
+```
+cp -r skills/punchcard .agents/skills/
+```
+
+Invoke it as `$punchcard <target>` in Codex, `/punchcard <target>`
+elsewhere; add the word `post` next to the target to have the review posted
+into the PR/MR.
+
+</details>
+
+<details>
+<summary><strong>Kiro · Windsurf · Goose · Droid · Hermes · Junie</strong></summary>
+
+```
+npx skills add Maksim-Burtsev/punchcard -a <agent>
+```
+
+</details>
+
+<details>
+<summary><strong>Aider</strong></summary>
+
+```
+/read-only skills/punchcard/SKILL.md
+```
+
+</details>
+
+Where the harness has no subagents, the three passes run one after another
+in the same session — the same review, only slower.
+
+## Use
+
+```
+/punchcard                  # review working tree, or current branch vs default
+/punchcard main..feature    # review a range
+/punchcard <MR/PR url>      # review a PR/MR, render in the conversation
+/punchcard:pr <url|number>  # review a PR/MR and post the review into it
+```
+
+The slash form is how Claude Code names a skill. Codex spells it
+`$punchcard <target>`, and every other harness has its own way in — asking for
+a Punchcard review of the target in plain words works everywhere. Where there
+is no `:pr` command, put the word `post` next to the target instead.
+
+Posting puts one PR review on GitHub (locations permalinked to the reviewed sha,
+which GitHub expands into code cards) or one MR note on GitLab. Re-run it after a
+push and it updates that same review in place — one entry per PR, for the life of
+the PR. No access to post? The review is rendered in the reply, with the reason.
+
+<details>
+<summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>
+
+A fresh runner has nothing installed, so load Punchcard explicitly from a
+checkout of this repository — below with `--plugin-dir`, in another harness
+with whatever it reads skills from.
+
+GitHub Actions, review every PR ([claude-code-action](https://github.com/anthropics/claude-code-action)):
+
+```yaml
+permissions:
+  pull-requests: write   # note: fork PRs get a read-only token
+steps:
+  - uses: actions/checkout@v4
+  - uses: actions/checkout@v4
+    with:
+      repository: Maksim-Burtsev/punchcard
+      path: .punchcard
+  - uses: anthropics/claude-code-action@v1
+    with:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+      prompt: "/punchcard:pr ${{ github.event.pull_request.html_url }}"
+      claude_args: '--plugin-dir ./.punchcard --allowedTools "Bash(gh:*),Bash(git:*),Read,Grep,Glob"'
+```
+
+GitLab CI:
+
+```yaml
+punchcard:
+  script:
+    - git clone --depth 1 https://github.com/Maksim-Burtsev/punchcard /tmp/punchcard
+    - claude -p "/punchcard:pr $CI_MERGE_REQUEST_IID" \
+        --plugin-dir /tmp/punchcard \
+        --allowedTools "Bash(glab:*),Bash(git:*),Read,Grep,Glob"
+  variables:
+    GITLAB_TOKEN: $CI_JOB_TOKEN
+```
+
+</details>
+
 ## Measured
 
-Every claim above was checked on real open-source pull requests, with
-the per-run reviews matched to a hand-verified list of defects and every
-factual claim re-executed against the code. Three reports in
-[`benchmarks/`](benchmarks/):
+Every claim above was checked on real open-source pull requests, with the
+per-run reviews matched to a hand-verified list of defects and every factual
+claim re-executed against the code.
 
-- [Calibration](benchmarks/calibration-2026-08.md) — six PRs, four
-  systematic faults found in the reviewer and fixed, the first clean
-  "Ship it."
-- [Stability](benchmarks/stability-2026-08.md) — cold runs on two PRs
-  plus a clean control, every edit to the reviewer measured before it
-  stayed: every blocker-class finding stable, zero noise, and the one
-  class it kept missing — a consequence that lands inside a dependency —
-  taken 3/3 once search became three independent passes; Go, JavaScript,
-  Rust and Java smoke runs; wall-clock time next to tokens.
-- [With and without](benchmarks/with-without-2026-08.md) — the same four
-  PRs reviewed by the bare model, by Punchcard, and by Claude Code's
-  built-in `/code-review`, three cold runs each. The bare model finds the
-  blockers too. What Punchcard changes: zero below-altitude noise against
-  2.3 nit sections per bare review, a verdict every time, reviews 37%
-  shorter (70% on a clean PR). The price is tokens and minutes: with
-  three search passes a review costs roughly 1.5–2× the bare prompt
-  and takes 6–13 minutes against `/code-review`'s 3–5, because every
-  claim is demonstrated by running both trees.
+| Report | What it shows | Headline number |
+|---|---|---|
+| [Calibration](benchmarks/calibration-2026-08.md) | six PRs, four systematic faults found in the reviewer and fixed | the first clean "Ship it." |
+| [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
+| [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
+
+Known trade-off, chosen on purpose: a review costs roughly 1.5–2× the tokens
+of a bare prompt and runs about twice as long as `/code-review`, because every
+claim is demonstrated by actually running both trees.
 
 ## Keeping it in the loop
 
-There is no hook and no daemon: you decide when the reviewer is worth
-ten minutes. The cheapest way to make that automatic for the agents
+There is no hook and no daemon: you decide when a change deserves the
+reviewer. The cheapest way to make that automatic for the agents
 working in a repository is to say so in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
-Before opening a pull request, run `/punchcard` on the branch and fix
-every BLOCKER it reports.
+Before opening a pull request, run the punchcard skill on the branch and
+fix every BLOCKER it reports.
 ```
 
 ## Punchcard and friends
 
-Claude Code's built-in `/code-review` hunts runtime bugs; Punchcard
-judges the shape of the change. Measured on the same four PRs, that is
-not a slogan: `/code-review` saw nothing of the duplicated knowledge,
-single-source and wrong-seam-test findings Punchcard reported every
-run, and for a while it alone found a routing regression buried inside
-a dependency — until Punchcard's search became three independent
-passes and took it 3/3. They still cover different defects; run both.
-[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
-build, the laziest solution that works; Punchcard judges whether what
-you built fits the problem. Three reviewers, one senior team; Punchcard
-is the one with the corner office and the punch card in his shirt
-pocket.
+A bug hunter and Punchcard look for different defects. Claude Code's
+`/code-review`, the one the benchmarks measure against, hunts runtime bugs;
+Punchcard judges the shape of the change. On the same four PRs it saw nothing
+of the duplicated-knowledge, single-source and wrong-seam-test findings
+Punchcard reported every run — so run both, whatever your harness calls its
+bug reviewer. And
+[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
 
 ## License
 
