@@ -7,6 +7,10 @@
   constitution once. Finders on a cheaper model were measured and
   rejected — they lost a blocker that had never been missed. Measured in
   `benchmarks/stability-2026-08.md`, "Faster".
+- **Runs go where they decide something.** The main-vs-PR demonstration
+  is mandatory for every blocker and for whatever the verdict turns on;
+  design and question cards are proven by the code, in execution order.
+  A blocker that was not run is not a blocker.
 
 ## 1.0.0 — 2026-08
 

@@ -356,8 +356,12 @@ short REPL-style block (` ```pycon `, or the ecosystem's equivalent) runs
 the same input through both versions, labeled `# main` and `# this PR`.
 Outputs in that block must come from actually executing the code — if you
 could not run it, state the divergence in prose instead of fabricating a
-session. This block replaces paragraphs of description; use it whenever the
-finding has a demonstrable input.
+session. The block is mandatory for every `BLOCKER` and for any card the
+verdict line turns on: a blocker you did not run is not a blocker. For a
+`DESIGN` or `QUESTION` card the copied snippets in execution order are the
+evidence, and a run you or a finder already made may be quoted — but do
+not start an interpreter to decorate a card that merges either way. Runs
+go where they decide something.
 
 **For duplication findings**, the evidence is both copies as real snippets,
 back to back, each introduced with its `path:line` — the reader sees the
@@ -412,6 +416,8 @@ Severities:
   comment, docstring or description already states the behavior you object
   to, it is a `QUESTION` — you are disputing a decision, not reporting a
   defect; and if you cannot name who is hurt and how, it is a `DESIGN`.
+  And one entry ticket: a `BLOCKER` carries the run that shows the break —
+  if you could not execute it, it is not a `BLOCKER`.
 - `DESIGN` — merges today, taxes every change after; fix now or file it.
 - `QUESTION` — the diff and its stated intent disagree, or you are disputing
   a documented decision; the answer will dissolve the finding or escalate
