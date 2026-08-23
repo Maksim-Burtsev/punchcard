@@ -1,17 +1,46 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Punchcard — reviewing code since it came on cardboard." width="900">
+  <img src="assets/doyen.png" alt="Punchcard — the doyen, coffee in hand, books at his elbow" width="320">
 </p>
 
-# Punchcard
+<p align="center"><em>"There are two ways of constructing a software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."</em><br>— C. A. R. Hoare, Turing Award lecture, 1980</p>
 
-> Reviewing code since it came on cardboard.
+<h1 align="center">Punchcard</h1>
 
-**Architecture-level code review for Claude Code.** Punchcard is the reviewer
-every team wishes it had: the veteran who started on punch cards, shipped
-through every era of the industry, and read the classics before they were
-classics. He doesn't care about your variable names. He cares whether the
-design fits the problem — and says exactly that, nothing padded, nothing
-cut.
+<p align="center">Architecture-level code review for Claude Code.<br>
+Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
+<strong>Measured: the same blockers as Claude Code's <code>/code-review</code>, plus the design class it never sees — zero nit sections in 53 runs.</strong></p>
+
+---
+
+Punchcard is the reviewer every team wishes it had: the veteran who started
+on punch cards, shipped through every era of the industry, and read the
+classics before they were classics. He doesn't care about your variable
+names. He cares whether the design fits the problem — and says exactly
+that, nothing padded, nothing cut.
+
+## See it
+
+<p align="center">
+  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, one finding with the same input run through main and the PR" width="900">
+</p>
+
+A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520),
+replayed: the verdict, the table, and the first card, with the same input run
+through `main` and the PR.
+
+## How it reviews
+
+Search and judgement are different jobs, so they run in different places.
+Three finders read the diff independently, each from one side — every
+changed value to its last consumer, inside the repository and inside the
+packages it calls; every guarantee a deleted line used to make, to the place
+the new code makes it again; every changed behavior to the test that goes
+red when it is reverted — and return candidates, not findings. One judge
+then holds them against a constitution of 78 principles, runs `main` and the
+PR on the input that matters, and renders what survives: one verdict, a
+summary table, and a card per finding with the code that proves it. The
+[stability benchmark](benchmarks/stability-2026-08.md) shows what each of
+those decisions bought and what it cost.
 
 ## Why another review tool
 
@@ -153,8 +182,8 @@ factual claim re-executed against the code. Three reports in
   plus a clean control, every edit to the reviewer measured before it
   stayed: every blocker-class finding stable, zero noise, and the one
   class it kept missing — a consequence that lands inside a dependency —
-  taken 3/3 once search became three independent passes; plus Go and
-  JavaScript smoke runs, and wall-clock time next to tokens.
+  taken 3/3 once search became three independent passes; Go, JavaScript,
+  Rust and Java smoke runs; wall-clock time next to tokens.
 - [With and without](benchmarks/with-without-2026-08.md) — the same four
   PRs reviewed by the bare model, by Punchcard, and by Claude Code's
   built-in `/code-review`, three cold runs each. The bare model finds the
