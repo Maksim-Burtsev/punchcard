@@ -347,17 +347,17 @@ Tokens ~117k / ~156k; wall clock ~6 / ~8 minutes.
 One run per language is a smoke test, as before — evidence the search
 shape ports, not a recall figure.
 
-## Faster — PR A (in progress)
+## Faster — PR A
 
 ROADMAP 9 asks for the same recall at `/code-review`'s speed. The
 minutes go to the judge, not the finders — so the first PR changes what
 the judge does with what finders bring back, and tried a cheaper model
-for the finders. Cold runs on Opus (medium), flask#5918, the coordinator
-asked to timestamp four points.
+for the finders. Cold runs on Opus (medium), the coordinator asked to
+timestamp four points.
 
-**S1 — finders on a cheaper model: rejected.** Three runs with the three
-passes on Sonnet (two by instruction, one where the coordinator chose it
-on its own after the instruction was removed):
+**S1 — finders on a cheaper model: rejected.** Three flask runs with the
+three passes on Sonnet (two by instruction, one where the coordinator
+chose it on its own after the instruction was removed):
 
 | Key | Sonnet finders (3 runs) | 1.0.0 (three passes, Opus) |
 |---|---|---|
@@ -374,28 +374,45 @@ on the judge's own model, and why.
 
 **S3 + S4 — finders bring their executed runs; the judge re-runs only
 what decides a verdict; the constitution is read once, by the judge.**
-Two valid runs so far (a third ran its finders on Sonnet by the
-coordinator's own choice and is counted above, not here):
+Three valid flask runs, one requests, one control:
 
-| | run 1 | run 2 | 1.0.0 three-pass (flask) |
+| | flask 1 | flask 2 | flask 3 | 1.0.0 flask ×3 |
+|---|---|---|---|---|
+| verdict | 🟠 after #1–#3 | 🔴 Wrong shape | 🟠 after #1–#4 | 🟠 · 🟠 · 🔴 |
+| cards | 8 | 8 | 9 | 6 · 6 · 6 |
+| hooks skip · routes · required_methods | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | 3/3 each |
+| OPTIONS cross-redirect | — | ✓ | ✓ | 3/3 |
+| coverage card | ✓ | ✓ | ✓ | 3/3 |
+| judge's own executions | 3 | 2 | 5 | every card |
+| judge tokens | 94k | 90k | 85k | 152k · 183k · 191k |
+| dispatch → written | 9:28 | 6:49 | 10:47 | ~13 min |
+
+| | requests | celery control | 1.0.0 |
 |---|---|---|---|
-| verdict | 🟠 Ship after #1–#3 | 🔴 Wrong shape | 🟠 / 🟠 / 🔴 |
-| cards | 8 | 8 | 6 / 6 / 6 |
-| hooks skip · routes · required_methods | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | 3/3 · 3/3 · 3/3 |
-| OPTIONS cross-redirect | — | ✓ | 3/3 |
-| coverage card | ✓ | ✓ | 3/3 |
-| judge's own executions | 3 | 2 | every card |
-| judge tokens | 94k | 90k | 152k / 183k / 191k |
-| wall clock, dispatch → written | 9:28 | 6:49 | ~13 min |
+| verdict | 🟠 after #1 | 🟡 Ship with care | 🟠 · 🟢 (one earlier control was the same 🟡) |
+| keys | quote blocker ✓, escape tests ✓, duplication → out of scope | one verified DESIGN: the smoke test passes on `main` too | 2/2 · 2/2 · 2/2 |
+| judge tokens | 84k | 75k | 124k · 131k · ~140k |
+| dispatch → written | 4:56 | 4:58 | 6:38 · 8:43 |
 
-What the two runs say: the judge's half of the review halved in tokens
-(~92k against ~175k) and the clock fell from ~13 minutes to 7–9, with
-recall intact on every blocker and the coverage card. In run 1 the judge
-distrusted all three finders on the `flask routes` mutation, re-ran it,
-found its own invocation was wrong, and rendered the finders' result —
-the "re-run only what you doubt" rule working as written. Cross-redirect
-is 1/2 here; the gate for this PR is ≥2/3, so it needs its third valid
-run, plus requests ×1 and the celery control, before it can be merged.
+What the runs say. The judge's half of the review halved in tokens
+(85–94k against 152–191k on flask, 75–84k against 124–140k on requests
+and the control) and the clock fell from ~13 minutes to 7–11 on flask
+and from ~7–9 to 5 on the smaller diffs — `/code-review` takes 4.7 and
+2.8 on the same two PRs, so the gap is now 1.5–2× instead of 2.5×.
+Recall held: every blocker on every run, cross-redirect 2/3 (gate ≥2/3),
+the coverage card every time, the control still clean of noise. In
+flask run 1 the judge distrusted all three finders on the `flask routes`
+mutation, re-ran it, found its own invocation was wrong, and rendered
+the finders' result — "re-run only what you doubt" working as written.
+
+Two things on the record. Flask run 3 carries the first wrong sentence
+in this whole measurement: its coverage card says `test_all_methods`
+"was weakened", which two earlier judges and a finder had checked and
+refuted (the new assertion pair is strictly stronger). The card's main
+claim — no test covers the four regressions — stands; the sentence does
+not. And the ≤6-minute target for flask was not reached: 6:49 once,
+9–11 twice, because on a diff with four demonstrable blockers the judge
+still runs four demonstrations. That is PR B's question, not this one's.
 
 One harness lesson, now in the skill: a coordinator that dispatches
 finders in the background and ends its turn to "wait" can sleep until
