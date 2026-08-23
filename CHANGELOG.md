@@ -49,6 +49,14 @@ each line links to the pull request that landed it.
   missing case. Measured: the requests escape-branch finding back at
   3/3, a coverage card on every flask run, zero noise
   ([#20](https://github.com/Maksim-Burtsev/punchcard/pull/20)).
+- **Three independent search passes.** The one class the reviewer kept
+  missing — a consequence that terminates inside a dependency — resisted
+  three prose edits. Reading Claude Code's built-in `/code-review` showed
+  why: it searches from several independent angles and one of them asks
+  what every removed line used to guarantee. Search is now three finder
+  passes in separate contexts, judged in one; the class went from 1 in 11
+  to 3/3, the clean control stayed clean, at about 1.7× the tokens
+  ([#21](https://github.com/Maksim-Burtsev/punchcard/pull/21)).
 - **With and without.** The same four PRs reviewed by the bare model,
   by Punchcard, and by Claude Code's built-in `/code-review`, three cold
   runs each, matched by mechanism — so the trade can be made with numbers

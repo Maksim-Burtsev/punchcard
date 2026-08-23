@@ -26,12 +26,12 @@
   commits, fifty reviews), and PR creation comes after the work is done.
   When to call a reviewer is a human judgement; a line in `AGENTS.md`
   expresses it exactly and costs nothing.
-- [~] **6. Benchmarks & release** — with/without measured on four real
-  PRs, 24 cold runs (`benchmarks/with-without-2026-08.md`): same blockers
-  found by both, zero below-altitude noise with Punchcard against 2.3
-  sections per stock review, a verdict every time, 37% shorter, ~1.6× the
-  tokens, a slightly thinner tail. Remaining: logo, README pass, version
-  1.0.0, marketplace listing, release.
+- [x] **6. Benchmarks & release** — with/without measured on four real
+  PRs, 24 cold runs (`benchmarks/with-without-2026-08.md`), and against
+  the built-in `/code-review`: same blockers, zero below-altitude noise
+  against 2.3 sections per stock review, a verdict every time, 37%
+  shorter. Banner, README, 1.0.0, CHANGELOG done; the tag and the
+  marketplace listing are the release itself.
 - [x] **7. PR/MR comments as a render surface** — `/punchcard:pr` reviews
   a GitHub PR / GitLab MR and posts into it: one review (`COMMENT`) on
   GitHub whose body is the full render with sha permalinks, one MR note
@@ -42,8 +42,15 @@
   so a PR carries one Punchcard entry for its whole life. No posting
   access → the review renders in the reply with one line saying why.
 
-- [ ] **8. Deep mode (open question)** — the stability measurement
-  (`benchmarks/stability-2026-08.md`) showed blocker findings are stable
-  across runs while low-consequence tail findings trade places under the
-  seven-finding cap. If union coverage is ever worth N× the cost, the
-  mechanism is N merged finder passes, not a longer single review.
+- [x] **8. Deep mode — done differently.** The open question was whether
+  union coverage was worth N identical finder passes. The answer was
+  three *different* ones: every value to its last consumer, every removed
+  guarantee to its new home, the test that goes red on revert — run as
+  independent subagents, judged in one place. The class that three prose
+  edits had failed on (a consequence terminating inside a dependency)
+  went 3/3, a new key nobody had found appeared, the clean control stayed
+  clean; cost ~1.7× tokens and about twice the minutes on a complex diff
+  (`benchmarks/stability-2026-08.md`, "Independent search passes").
+- [ ] **9. Faster.** Punchcard now finds at least what `/code-review`
+  finds, for more tokens and more minutes. The next measurement is the
+  other direction: the same recall at its speed or better.
