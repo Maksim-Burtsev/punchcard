@@ -163,11 +163,19 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    You review the change against what it claims to do.
 3. **Search in three independent passes.** The three passes below are three
    readings of the same diff, run by finders that do not see each other's
-   notes. When a subagent tool is available, dispatch them in parallel:
-   give each the target, the repository path and its own pass, and have it
-   return candidates only — file, line, the mechanism, and the concrete
-   consequence it traced to the end — with no severity, no verdict and no
-   card. When no subagent tool is available, run the three passes yourself
+   notes. When a subagent tool is available, dispatch them in parallel and
+   wait for all three to return before you judge — never end your turn,
+   set a timer or poll while a finder is still running; their return is
+   what resumes you. Run them on the model you are running on — a cheaper
+   finder was measured and it lost a blocker no full-strength finder had
+   ever missed. Give each the target, the repository path and its own
+   pass, and have it
+   return candidates only — file, line, the mechanism, the concrete
+   consequence it traced to the end, and for each claim the command it ran
+   and what that printed, or the words "not executed" — with no severity,
+   no verdict and no card. Finders do not read the constitution; the
+   chapters are loaded once, by you, in step 4. When no subagent tool is
+   available, run the three passes yourself
    in sequence, starting each one from the diff again rather than from what
    the last pass concluded. Independence is the whole point: a reviewer who
    has written down one consequence of a value stops looking at that value,
@@ -216,6 +224,10 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    change", revert it and run the test. If you cannot run the suite, you may
    say what a test does not cover, but never that it would still pass — and
    read every assertion in a test you attack, not the first few lines.
+   A finder's executed demonstration is evidence: its command and output
+   stand as the run, and you re-run it only when the output decides a
+   verdict and you have a reason to doubt it — never to reproduce what is
+   already on the page. Your own runs go where no finder ran.
    One mandatory check before you leave this step: name the test that goes
    red if this change is reverted. If the diff adds a module, route or
    public function with no test, or changes behavior — a new branch, a
