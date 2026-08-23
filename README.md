@@ -149,21 +149,26 @@ factual claim re-executed against the code. Three reports in
 - [Calibration](benchmarks/calibration-2026-08.md) — six PRs, four
   systematic faults found in the reviewer and fixed, the first clean
   "Ship it."
-- [Stability](benchmarks/stability-2026-08.md) — ten cold runs on two
-  PRs: every blocker-class finding at 5/5, zero noise; plus Go and
-  JavaScript smoke runs.
+- [Stability](benchmarks/stability-2026-08.md) — cold runs on two PRs
+  plus a clean control, every edit to the reviewer measured before it
+  stayed: every blocker-class finding stable, zero noise, and the one
+  class it kept missing — a consequence that lands inside a dependency —
+  taken 3/3 once search became three independent passes; plus Go and
+  JavaScript smoke runs, and wall-clock time next to tokens.
 - [With and without](benchmarks/with-without-2026-08.md) — the same four
   PRs reviewed by the bare model, by Punchcard, and by Claude Code's
   built-in `/code-review`, three cold runs each. The bare model finds the
   blockers too. What Punchcard changes: zero below-altitude noise against
   2.3 nit sections per bare review, a verdict every time, reviews 37%
-  shorter (70% on a clean PR), a slightly thinner tail — at about 1.6×
-  the tokens.
+  shorter (70% on a clean PR). The price is tokens and minutes: with
+  three search passes a review costs roughly 1.5–2× the bare prompt
+  and takes 6–13 minutes against `/code-review`'s 3–5, because every
+  claim is demonstrated by running both trees.
 
 ## Keeping it in the loop
 
 There is no hook and no daemon: you decide when the reviewer is worth
-three minutes. The cheapest way to make that automatic for the agents
+ten minutes. The cheapest way to make that automatic for the agents
 working in a repository is to say so in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
@@ -175,10 +180,11 @@ every BLOCKER it reports.
 
 Claude Code's built-in `/code-review` hunts runtime bugs; Punchcard
 judges the shape of the change. Measured on the same four PRs, that is
-not a slogan: `/code-review` found a routing-internals regression three
-times out of three that Punchcard never saw, and saw nothing of the
-duplicated knowledge, single-source and wrong-seam-test findings that
-Punchcard reported every run. Run both — they cover different defects.
+not a slogan: `/code-review` saw nothing of the duplicated knowledge,
+single-source and wrong-seam-test findings Punchcard reported every
+run, and for a while it alone found a routing regression buried inside
+a dependency — until Punchcard's search became three independent
+passes and took it 3/3. They still cover different defects; run both.
 [Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
 build, the laziest solution that works; Punchcard judges whether what
 you built fits the problem. Three reviewers, one senior team; Punchcard
