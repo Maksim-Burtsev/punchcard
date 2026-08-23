@@ -2,3 +2,6 @@
 books/
 
 .DS_Store
+
+# Downloaded book covers — the collage in assets/corpus.png is what ships
+assets/covers/
