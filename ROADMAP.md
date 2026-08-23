@@ -55,3 +55,9 @@
 - [ ] **9. Faster.** Punchcard now finds at least what `/code-review`
   finds, for more tokens and more minutes. The next measurement is the
   other direction: the same recall at its speed or better.
+
+- [x] **10. Any harness ✔** — the skill is self-contained (constitution
+  next to `SKILL.md`), installs with `npx skills add` into 116 harnesses,
+  and names its own fallback: without subagents the three passes run in
+  sequence. Codex, Cursor, Gemini CLI and the rest get the same reviewer
+  Claude Code gets.
