@@ -166,7 +166,10 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    notes. When a subagent tool is available, dispatch them in parallel and
    wait for all three to return before you judge — never end your turn,
    set a timer or poll while a finder is still running; their return is
-   what resumes you. Run them on the model you are running on — a cheaper
+   what resumes you. The wait is not idle: while the finders run, do steps 2
+   and 4 yourself — read the change's intent, match the routing table, load
+   the chapters — so that when the last finder returns, judging starts, not
+   preparation. Run them on the model you are running on — a cheaper
    finder was measured and it lost a blocker no full-strength finder had
    ever missed. Give each the target, the repository path and its own
    pass, and have it
@@ -214,7 +217,11 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    changed behavior — a new branch, a widened effect, a new code path —
    that no test in the diff exercises, is a candidate: name the missing
    case, the input that reaches the branch and the assertion nobody makes
-   about it.
+   about it. This pass runs targeted experiments, not suites: a named test
+   or a single case, never a whole file, and at most three executions in
+   total — beyond that, name the missing case by reading. The one
+   revert-and-run experiment that decides a verdict belongs to the judge,
+   run once.
 
 4. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
