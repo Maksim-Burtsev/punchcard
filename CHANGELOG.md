@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- **Adaptive depth.** A triage at the top of the search: a small
+  (~≤100 changed lines) or purely mechanical diff runs the three passes
+  inline, in sequence, with no subagent fan-out; larger diffs keep the
+  full pipeline, and a small diff that proves bigger mid-pass escalates
+  one-way. Measured on planted-flaw fixtures: full recall in all eleven
+  adaptive runs, zero noise, 1–3 minutes and ~50–70k tokens where the
+  fanned-out baseline takes 4–6 minutes and ~195k on the same diffs;
+  the large-diff control still dispatched all three finders
+  (`benchmarks/stability-2026-08.md`, "adaptive depth").
+
 ## 1.2.0 — 2026-08-24
 
 - **The wait is working time.** While the three finders search, the judge

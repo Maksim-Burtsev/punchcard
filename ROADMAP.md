@@ -52,16 +52,22 @@
   went 3/3, a new key nobody had found appeared, the clean control stayed
   clean; cost ~1.7× tokens and about twice the minutes on a complex diff
   (`benchmarks/stability-2026-08.md`, "Independent search passes").
-- [ ] **9. Faster.** Punchcard now finds at least what `/code-review`
-  finds, for more tokens and more minutes. The next measurement is the
-  other direction: the same recall at its speed or better. 1.2.0 took the
-  first half (the judge prepares while the finders search; pass 3 probes);
-  small diffs now run roughly even, large ones still cost ~1.5–2×.
-  The one significant lever left is **adaptive depth**: a cheap triage up
-  front — a small or mechanical diff gets a single pass with no fan-out,
-  the full three-finder pipeline runs only when the diff earns it.
-  Measured the same way deep mode was: small planted-flaw fixtures must
-  keep full recall before the shortcut stays.
+- [x] **9. Faster.** Punchcard now finds at least what `/code-review`
+  finds, for more tokens and more minutes. The measurement went the
+  other direction: the same recall at its speed or better. 1.2.0 took
+  the first half (the judge prepares while the finders search; pass 3
+  probes); **adaptive depth** took the second: a triage at the top of
+  step 3 — a small (~≤100 changed lines) or purely mechanical diff runs
+  the three passes inline with no fan-out, everything else keeps the
+  pipeline, and a small diff that proves bigger mid-pass escalates
+  one-way. Measured the way this item demanded: eleven cold runs on
+  small planted-flaw fixtures kept full recall — every key, every run,
+  zero noise — at 1–3 minutes and ~50–70k tokens, against 4–6 minutes
+  and ~195k for the fanned-out baseline on the same diffs; the
+  124-insertion control still dispatched all three finders
+  (`benchmarks/stability-2026-08.md`, "adaptive depth"). Large complex
+  diffs keep the pipeline and its measured ~1.5–2× cost — that is the
+  price of executed proofs, stated in the README.
 
 - [x] **10. Any harness ✔** — the skill is self-contained (constitution
   next to `SKILL.md`), installs with `npx skills add` into 116 harnesses,
