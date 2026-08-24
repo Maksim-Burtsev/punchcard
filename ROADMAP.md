@@ -54,7 +54,14 @@
   (`benchmarks/stability-2026-08.md`, "Independent search passes").
 - [ ] **9. Faster.** Punchcard now finds at least what `/code-review`
   finds, for more tokens and more minutes. The next measurement is the
-  other direction: the same recall at its speed or better.
+  other direction: the same recall at its speed or better. 1.2.0 took the
+  first half (the judge prepares while the finders search; pass 3 probes);
+  small diffs now run roughly even, large ones still cost ~1.5–2×.
+  The one significant lever left is **adaptive depth**: a cheap triage up
+  front — a small or mechanical diff gets a single pass with no fan-out,
+  the full three-finder pipeline runs only when the diff earns it.
+  Measured the same way deep mode was: small planted-flaw fixtures must
+  keep full recall before the shortcut stays.
 
 - [x] **10. Any harness ✔** — the skill is self-contained (constitution
   next to `SKILL.md`), installs with `npx skills add` into 116 harnesses,
