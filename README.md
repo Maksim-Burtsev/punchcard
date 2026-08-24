@@ -4,6 +4,12 @@
 
 <p align="center"><em>"There are two ways of constructing a software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."</em><br>— C. A. R. Hoare, Turing Award lecture, 1980</p>
 
+<p align="center">
+  <a href="https://github.com/Maksim-Burtsev/punchcard/releases"><img src="https://img.shields.io/github/v/release/Maksim-Burtsev/punchcard?display_name=release&label=release&color=2ea44f" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+  <a href="https://github.com/Maksim-Burtsev/punchcard#install"><img src="https://img.shields.io/badge/install-npx%20skills%20add-8A2BE2" alt="Install with npx skills add"></a>
+</p>
+
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
 <strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — and not one nitpick.</strong></p>
