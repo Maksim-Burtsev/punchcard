@@ -226,8 +226,9 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    read every assertion in a test you attack, not the first few lines.
    A finder's executed demonstration is evidence: its command and output
    stand as the run, and you re-run it only when the output decides a
-   verdict and you have a reason to doubt it — never to reproduce what is
-   already on the page. Your own runs go where no finder ran.
+   verdict and you have a reason to doubt it, and say which output you
+   doubted — never to reproduce what is already on the page. Your own runs
+   go where no finder ran.
    One mandatory check before you leave this step: name the test that goes
    red if this change is reverted. If the diff adds a module, route or
    public function with no test, or changes behavior — a new branch, a
@@ -357,8 +358,12 @@ short REPL-style block (` ```pycon `, or the ecosystem's equivalent) runs
 the same input through both versions, labeled `# main` and `# this PR`.
 Outputs in that block must come from actually executing the code — if you
 could not run it, state the divergence in prose instead of fabricating a
-session. This block replaces paragraphs of description; use it whenever the
-finding has a demonstrable input.
+session. The execution may be a finder's: paste its transcript as the block
+when its command and output already show the divergence — the requirement is
+that someone ran it, not that you did. Re-run it only when you doubt the
+output, and name in your notes which output you doubted. This block replaces
+paragraphs of description; use it whenever the finding has a demonstrable
+input.
 
 **For duplication findings**, the evidence is both copies as real snippets,
 back to back, each introduced with its `path:line` — the reader sees the
