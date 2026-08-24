@@ -1,10 +1,8 @@
 <p align="center">
-  <img src="assets/doyen.png" alt="Punchcard — the doyen, coffee in hand, books at his elbow" width="320">
+  <img src="assets/banner-card.png" alt="Punchcard — reviewing code since it came on cardboard" width="720">
 </p>
 
 <p align="center"><em>"There are two ways of constructing a software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."</em><br>— C. A. R. Hoare, Turing Award lecture, 1980</p>
-
-<h1 align="center">Punchcard</h1>
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
@@ -12,16 +10,11 @@ Three independent searches, one verdict, every blocker demonstrated by running t
 
 ---
 
-Punchcard is the reviewer every team wishes it had: the veteran who started on
-punch cards, shipped through every era of the industry, and read the classics
-before they were classics. He doesn't care about your variable names — he cares
-whether the design fits the problem, and says exactly that.
-
-Point him at a working tree, a branch or a pull request and he reads it at
-architecture altitude: module boundaries, dependency direction, the data
-model, the error paths, the cost of the next change. What comes back is one
-verdict, a summary table and one card per finding — inside whatever coding
-agent you already work in.
+Point Punchcard at a working tree, a branch or a pull request and he reads it
+the way the veteran who started on punch cards does: module boundaries,
+dependency direction, the data model, the error paths, the cost of the next
+change — never your variable names. Back comes one verdict, a summary table
+and one card per finding, inside whatever coding agent you already work in.
 
 ## What he read
 
