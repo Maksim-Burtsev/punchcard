@@ -496,3 +496,46 @@ minutes), or trimming what finders re-derive about the repository before
 they start. Speed work on the judge is done; three hypotheses in, the
 judge costs 85–110k and two named-doubt runs, and that is the shape of
 the product.
+
+## Faster — the judge prepares while the finders search (kept)
+
+Two edits, measured together because both aim at the clock's real floor —
+the finders' wall time — after three judge-side hypotheses closed that
+side. First: the coordinator's wait is working time — while the finders
+run, it reads the intent, matches the routing table and loads the
+chapters, so the last finder's return starts judging, not preparation.
+Second: pass 3 runs targeted experiments, not suites — a named test, at
+most three executions, and the one revert-and-run that decides a verdict
+belongs to the judge.
+
+Five cold flask runs, one requests, one control, Opus (medium), ready
+virtualenvs in every clone (the earlier environment-building confounder
+removed):
+
+| | flask ×5 | requests | celery control |
+|---|---|---|---|
+| dispatch → written | 6:56 · 8:33 · 5:54 · 7:05 · 5:59 — median **6:56** | **5:04** | **4:14** |
+| before this change | 6:49–10:47 (PR A), 8:16–11:18 (later variants) | 6:38 | 8:43 |
+| `/code-review` same PR | ~4.7 min | ~2.8 min | — |
+| hooks · routes · required_methods | 5/5 · 5/5 · 5/5 | — | — |
+| coverage card | 5/5 | ✓ | — |
+| OPTIONS cross-redirect | 2/5 | — | — |
+| judge's own executions | 2 · 4 · 1 · 7 · 2 | 1 | **0** |
+| noise | 0 | 0 | 0 |
+
+The pre-registered time gate — under 7:00 in two runs of three — was met
+in three of five, with the two misses at 7:05 and 8:33. The control run
+is the shape the design wants: two finders independently executed the
+deciding demonstration, the judge doubted nothing, ran nothing, and the
+review took 4:14 where 1.0.0 took 8:43.
+
+One number is reported raw rather than smoothed: the werkzeug
+cross-redirect key came up 2/5 here against 2/3 on the unchanged text —
+neither edit touches passes 1 and 2, whose wording finds that key, and
+across every variant measured this month the key has swung between 0/3
+and 3/3. It remains the flakiest key in the rubric, not a regression
+this change can explain — but 2/5 is what happened.
+
+Judge-side conclusions from the rejected hypotheses held up here: the
+judge re-ran only named doubts, and where two finders agreed it ran
+nothing at all.
