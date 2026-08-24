@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 — unreleased
+
+- **The wait is working time.** While the three finders search, the judge
+  reads the intent, routes the diff and loads its chapters; judging
+  starts when the last finder returns. And pass 3 probes instead of
+  running suites: named tests, at most three executions, the deciding
+  revert-and-run left to the judge. Measured: flask median 6:56 (was
+  8–13 min), requests 5:04, the clean control 4:14 with zero judge
+  re-runs; every stable key intact, noise zero
+  (`benchmarks/stability-2026-08.md`, "the judge prepares").
+
 ## 1.1.0 — 2026-08
 
 - **Installs in any agent harness.** Punchcard follows the Agent Skills
