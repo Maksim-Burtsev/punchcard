@@ -452,3 +452,47 @@ is the precise one this run points at: a finder's executed demonstration
 satisfies the blocker's entry ticket; the judge re-runs a blocker only
 when it doubts the finder's output, and says which output it doubted.
 That is a one-sentence change and a separate measurement.
+
+## Faster — the finder's run as the blocker's ticket (rejected)
+
+PR B's diagnosis pointed at one sentence: the REPL-block rule says outputs
+"must come from actually executing the code", and judges read that as
+"execute it yourself", re-reproducing blockers their finders had already
+run. The narrow edit (branch `finder-run-satisfies`, kept unmerged):
+the Finding-format paragraph now says the execution may be a finder's —
+paste its transcript; re-run only an output you doubt, and name which —
+and step 5's re-run clause grew the same "say which output you doubted".
+
+Three cold flask runs on Opus (medium). Two caveats first: the original
+benchmark clones were garbage-collected with the session scratchpad, so
+runs 1–2 worked in a fresh clone with no virtualenv and their finders
+spent time building one; run 3 got ready venvs in both trees and is the
+only clean comparison against PR B.
+
+| | run 1 | run 2 | run 3 (venv ready) | PR B (rejected) | PR A (merged) |
+|---|---|---|---|---|---|
+| verdict | 🟠 #1–#4 | 🟠 #1–#3 | 🟠 #1–#4 | 🟠 ×3 | 🟠 · 🔴 · 🟠 |
+| hooks · routes · required_methods | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | ✓ · ✓ · ✓ | 3/3 · 3/3 · 2/3+🟡 | 3/3 each |
+| OPTIONS cross-redirect | ✓ | — | ✓ | 1/3 | 2/3 |
+| judge's own executions | 2 | 3 | 2 | 3 · 5 · 3 | 3 · 2 · 5 |
+| judge tokens | 93k | 129k | 109k | 82–92k | 85–94k |
+| dispatch → written | 11:18 | 10:03 | 8:16 | 8:21–9:20 | 6:49–10:47 |
+
+Pre-registered gate: flask ≤7:00 in two runs of three, or the judge's own
+executions ≤1 on average. Neither happened — 0/3 and 2.3 — so the branch
+stays unmerged by its own rule. Read honestly, the edit is hygiene, not
+speed: every remaining judge run was a named doubt (a single-sourced
+verdict-deciding claim re-run and confirmed; a wrong claim killed before
+rendering), recall came back at full strength with cross-redirect 2/3,
+and the one REPL block re-executed by hand matched its printed output.
+But the minutes were never in those two runs. The clock's floor is the
+finders themselves — 5:36–8:17 of wall time before the judge starts —
+and no wording aimed at the judge can move it.
+
+What would move it is out of scope for prose and recorded for later:
+finders that share one warmed clone and environment instead of probing
+it each (run 1–2 vs run 3 shows environment setup alone is worth two
+minutes), or trimming what finders re-derive about the repository before
+they start. Speed work on the judge is done; three hypotheses in, the
+judge costs 85–110k and two named-doubt runs, and that is the shape of
+the product.
