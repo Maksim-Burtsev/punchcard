@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 — unreleased
+## 1.2.0 — 2026-08-24
 
 - **The wait is working time.** While the three finders search, the judge
   reads the intent, routes the diff and loads its chapters; judging
