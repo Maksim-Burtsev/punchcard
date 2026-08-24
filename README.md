@@ -1,13 +1,11 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/doyen-dark.png">
-    <img src="assets/doyen.png" alt="Punchcard — the doyen, coffee in hand, books at his elbow" width="320">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.png">
+    <img src="assets/banner.png" alt="Punchcard — reviewing code since it came on cardboard" width="720">
   </picture>
 </p>
 
 <p align="center"><em>"There are two ways of constructing a software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."</em><br>— C. A. R. Hoare, Turing Award lecture, 1980</p>
-
-<h1 align="center">Punchcard</h1>
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>

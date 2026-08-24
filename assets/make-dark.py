@@ -1,14 +1,14 @@
-"""Dark-theme variants of the ink drawings: flood the white background to
-transparency and leave the drawing itself untouched, so the light and dark
-versions are the same picture rather than a negative of each other.
+"""Dark-theme variant of the banner: flood the white background to transparency
+and leave the drawing itself untouched, so the light and dark versions are the
+same picture rather than a negative of each other.
 
 Regenerate with:  uv run --with pillow python assets/make-dark.py
 
-Anything not connected to the drawing — ink splatters, and on the banner the
-hand-lettered title — is black on white and would vanish on a dark page, so
-those parts are inverted to white instead of dropped.
+Anything not connected to the drawing — the hand-lettered title, the ink
+splatters — is black on white and would vanish on a dark page, so those parts
+are inverted to white instead.
 
-# ponytail: per-pixel Python loops, seconds per asset — fine for a one-off.
+# ponytail: per-pixel Python loops, ~2s — fine for a one-off asset.
 """
 from PIL import Image, ImageDraw, ImageFilter
 from collections import deque
@@ -88,5 +88,4 @@ def cut(src, out_rgba, out_prev, bg=(13, 17, 23), close=9, white=232):
     print(f"{out_rgba}: drawing {len(drawing)}px, {len(rest)} other parts, of {w * h}")
 
 
-cut("assets/doyen.png", "assets/doyen-dark.png", "/tmp/doyen-dark-preview.png")
 cut("assets/banner.png", "assets/banner-dark.png", "/tmp/banner-dark-preview.png")
