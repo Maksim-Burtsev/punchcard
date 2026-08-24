@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.png">
-    <img src="assets/banner.png" alt="Punchcard — reviewing code since it came on cardboard" width="720">
-  </picture>
+  <img src="assets/banner-card.png" alt="Punchcard — reviewing code since it came on cardboard" width="720">
 </p>
 
 <p align="center"><em>"There are two ways of constructing a software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."</em><br>— C. A. R. Hoare, Turing Award lecture, 1980</p>
