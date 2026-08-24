@@ -539,3 +539,63 @@ this change can explain — but 2/5 is what happened.
 Judge-side conclusions from the rejected hypotheses held up here: the
 judge re-ran only named doubts, and where two finders agreed it ran
 nothing at all.
+
+## Faster — adaptive depth (kept, pending merge)
+
+ROADMAP 9's last lever: the clock's floor is the finders, and on a small
+diff the fan-out buys nothing to protect — a reviewer can hold thirty
+changed lines whole. The edit puts a triage at the top of step 3: up to
+roughly a hundred changed lines, or a purely mechanical change set, and
+the coordinator runs the three passes itself, inline, in sequence — the
+same readings, the same rules, no dispatch. Escalation is one-way: a
+small diff that proves bigger mid-pass (a value crossing into a
+dependency, a guarantee with no visible home) gets the full pipeline
+after all. Everything else fans out as before.
+
+Measured on four small planted-flaw fixtures built for this purpose (the
+originals were never committed) plus one large one, cold runs on Opus
+(medium), ready virtualenvs, each run in its own copy of the fixture.
+The pre-registered gate from the roadmap: small fixtures keep full
+recall or the shortcut goes.
+
+| Fixture (planted keys) | adaptive, recall | inline chosen | wall | tokens |
+|---|---|---|---|---|
+| retry swallows failure · timeout dropped · test weakened (3 keys, 30 lines) | 3/3 · 3/3 · 3/3 | 3/3 runs | 2:26–2:45 | 63–69k |
+| price format duplicated · name lies · no test (3 keys, 16 lines) | 3/3 · 3/3 · 3/3 | 3/3 runs | 1:07–1:53 | 49–58k |
+| limit off-by-one · test weakened in same diff (2 keys, 11 lines) | 3/3 · 3/3 | 3/3 runs | 1:16–2:03 | 57–62k |
+| clean mechanical rename (control) | — | 2/2 runs | 1:23–1:48 | 55–60k |
+| large: transfers feature, 124 insertions, 9 files | see below | **fan-out, 3 finders** | 6:55 | ~130k |
+
+Every planted key was found in every adaptive run — most demonstrated by
+executing both trees — and the verdicts were stable across runs. Noise:
+zero below-altitude findings in eleven adaptive runs. One control run
+rendered a card on the renamed `get` contradicting dict `get` semantics;
+the unchanged baseline rendered the same card on the same diff with its
+full fan-out, so the shortcut did not invent it.
+
+The baseline for the same small fixtures, same protocol: with the
+fan-out actually running (three finders), 4:11–5:46 and ~195–200k
+tokens per run, same recall. Where the harness denied the baseline its
+subagents and it fell back to sequential passes, it ran 1:49–4:42 at
+59–82k — still behind the triaged runs, which skip the fallback's
+re-reading along with the dispatch. So on small diffs adaptive depth is
+roughly 2–3× faster and ~3× cheaper than the shipped pipeline at equal
+recall, which closes the class of diffs where Punchcard was paying the
+most for the least.
+
+The large fixture is the other half of the gate: triage must not eat
+the pipeline. Run solo, it dispatched all three finders, and the review
+came back with two blockers the rubric had not even planted — a
+negative transfer amount draining the destination (executed, including
+`nan` corrupting the stored ledger) and the fee account creatable by a
+customer — plus the planted audit-log split and float-money keys. The
+escalation clause exists for the day triage misjudges; it was not
+needed in these runs.
+
+Two honest limits. The fixtures are synthetic and small-N (eleven
+adaptive runs, five baseline); the real-PR rubric (flask, requests)
+stays the recall benchmark for the pipeline itself, which this change
+does not touch. And one harness observation from the baseline runs, on
+the record: a coordinator that dispatches finders and ends its turn can
+sleep until nudged, and finders could not always message the judge back
+— the inline path removes that whole failure class from small reviews.
