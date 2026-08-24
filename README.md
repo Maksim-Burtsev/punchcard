@@ -287,6 +287,12 @@ Punchcard reported every run — so run both, whatever your harness calls its
 bug reviewer. And
 [Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
 
+## Contributing
+
+Issues and pull requests are welcome — a review that missed something, a
+false positive, a harness where the install stumbles. A reproducible diff
+(or PR link) is the perfect bug report.
+
 ## License
 
 MIT
