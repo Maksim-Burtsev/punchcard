@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.4.0 — 2026-08-25
+
+- **Measured three ways on Sonnet 5, on unseen PRs.** Five PRs — three
+  from repositories no Punchcard benchmark had touched — by the bare
+  model, Punchcard, and `/code-review`: four cold runs each, 60 in all,
+  with determinism and token cost captured for every condition for the
+  first time. Punchcard was the only condition to catch the campaign's
+  deepest blocker (zod#6461's emitted JSON Schema accepting objects the
+  parser rejects — verified by execution), the only one with zero
+  disproven claims in 20 runs, and the only one with a verdict every
+  time, at a median cost in the bare prompt's bracket. Also on the
+  record: recall parity, tail instability for everyone, two 🟢 verdicts
+  that missed that same zod blocker, and the death of the noise gap on
+  Sonnet (`benchmarks/three-way-sonnet-2026-08.md`).
+- **The README sells what the numbers support.** The hero claim now
+  cites the three-way benchmark instead of the Opus-era comparison, what
+  the doyen reads is a list rather than a sentence, the research question
+  behind the corpus is stated out loud, and a "Built, measured, rejected"
+  record shows the features that didn't survive their own numbers. The
+  zod catch — the real card, word for word, in `assets/zod-catch.md` —
+  is linked where it belongs, one clause in "Punchcard and friends".
+
 ## 1.3.0 — 2026-08-25
 
 - **Adaptive depth.** A triage at the top of the search: a diff that is

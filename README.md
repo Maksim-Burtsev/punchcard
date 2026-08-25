@@ -12,15 +12,16 @@
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
-<strong>Measured against Claude Code's built-in <code>/code-review</code> on the same PRs: the same blockers, plus the design class it never sees — and not one nitpick.</strong></p>
+<strong>Benchmarked head-to-head with Claude Code's <code>/code-review</code> on real PRs: more blockers reported, the deepest caught by Punchcard alone, one verdict every single run — not a list when it feels like it. <a href="benchmarks/three-way-sonnet-2026-08.md">The numbers.</a></strong></p>
 
 ---
 
-Point Punchcard at a working tree, a branch or a pull request and he reads it
-the way the veteran who started on punch cards does: module boundaries,
+Point Punchcard at a working tree, a branch or a pull request and he reads
+it the way the veteran who started on punch cards does: module boundaries,
 dependency direction, the data model, the error paths, the cost of the next
-change — never your variable names. Back comes one verdict, a summary table
-and one card per finding, inside whatever coding agent you already work in.
+change. Back comes the same review every time — one verdict, a summary
+table, one card per finding, every claim shown on the code — inside
+whatever coding agent you already work in.
 
 ## What he read
 
@@ -29,9 +30,12 @@ and one card per finding, inside whatever coding agent you already work in.
 </p>
 
 Fifty years of the industry's best thinking, read cover to cover: thirty
-books, five shelves, no others. Distilled into 349 principles, then into the
-78 that decide a review. Every finding cites one — so he argues from the
-canon, never from mood.
+books, five shelves, no others — distilled into 349 principles, then into
+the 78 that decide a review. Every finding cites one, so he argues from
+the canon, never from mood. Underneath the persona is a research question
+asked in the open — what does a reviewer become when a specialist
+bookshelf is condensed into one decided list of practices? — and the
+benchmarks below are its measured answer so far.
 
 - **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
 - **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
@@ -62,7 +66,7 @@ decided rather than averaged.
 On psf/requests#7520 that principle is finding #2 in the demo below: the
 quoted-string scanner now exists twice, so the blocker in #1 has to be fixed
 twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
-*quote rule duplicated*, **5/5** cold runs — `/code-review` never reported it.
+*quote rule duplicated*, **5/5** cold runs.
 
 </details>
 
@@ -78,10 +82,9 @@ findings:
 | 2 | every guarantee a deleted line used to make | the place the new code makes it again, or doesn't |
 | 3 | every changed behavior | the test that goes red when it is reverted, or the missing case |
 
-One judge then holds the candidates against the constitution, runs `main` and
-the PR on the input that matters, and renders what survives: verdict, summary
-table, one card per finding. The [stability benchmark](benchmarks/stability-2026-08.md)
-shows what each of those decisions bought and what it cost.
+One judge then holds the candidates against the constitution, runs `main`
+and the PR on the input that matters, and renders what survives: verdict,
+summary table, one card per finding.
 
 ## See it
 
@@ -263,15 +266,42 @@ punchcard:
 
 ## Measured
 
-Every claim above was checked on real open-source pull requests, with the
-per-run reviews matched to a hand-verified list of defects and every factual
-claim re-executed against the code.
+Nothing on this page is a vibe: four benchmark reports, more than 150 cold
+runs, fifteen-plus pull requests across a dozen repositories in six
+languages. Every per-run review is matched by mechanism to a hand-verified
+list of defects, and every factual claim re-executed against the code —
+the reviewer's own claims included.
 
 | Report | What it shows | Headline number |
 |---|---|---|
 | [Calibration](benchmarks/calibration-2026-08.md) | six PRs, four systematic faults found in the reviewer and fixed | the first clean "Ship it." |
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
-| [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
+| [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each, on Opus | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
+| [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by the bare model, Punchcard, and `/code-review`, with determinism and tokens measured for every condition | the most blockers reported, the deepest one caught by Punchcard alone, zero disproven claims, a verdict every time, median cost at bare-prompt level |
+
+<details>
+<summary><strong>Built, measured, rejected</strong> — the features that didn't survive their own numbers</summary>
+
+A reviewer that only ever adds features is a wrapper. These were built,
+measured against real work, and removed — each with the number that killed
+it on the record:
+
+- **Auto mode** — a Stop hook that reviewed on every turn. No automatic
+  trigger fits the workflow; one line in `AGENTS.md` does the job exactly
+  ([ROADMAP](ROADMAP.md), item 5).
+- **Cheaper finder models** — measured and rejected: they lost a blocker
+  that had never been missed ([CHANGELOG](CHANGELOG.md), 1.1.0).
+- **A mandatory contract-enumeration sweep** — lifted the tail keys and
+  dropped the stable fives; reverted, with the diagnosis written down
+  ([stability report](benchmarks/stability-2026-08.md)).
+- **The finding count** — "aim for three to five" was being read as a
+  search budget and crowded out a blocker; removed, and the review got
+  cheaper, not longer ([stability report](benchmarks/stability-2026-08.md)).
+- **Inline PR comments** — split design-level cards across Files Changed
+  and broke the verdict's reading order in live tests; one coherent review
+  per PR instead ([ROADMAP](ROADMAP.md), item 7).
+
+</details>
 
 Known trade-off, chosen on purpose: on a large or deep diff — the ones that
 run the full pipeline — a review costs roughly 1.5–2× the tokens of a bare
@@ -293,12 +323,14 @@ fix every BLOCKER it reports.
 ## Punchcard and friends
 
 A bug hunter and Punchcard look for different defects. Claude Code's
-`/code-review`, the one the benchmarks measure against, hunts runtime bugs;
-Punchcard judges the shape of the change. On the same four PRs it saw nothing
-of the duplicated-knowledge, single-source and wrong-seam-test findings
-Punchcard reported every run — so run both, whatever your harness calls its
-bug reviewer. And
-[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
+`/code-review`, the one the benchmarks measure against, hunts runtime bugs
+and returns a flat list — sometimes with the blocker, sometimes without it,
+never with a decision. Punchcard judges the shape of the change and always
+renders one. Measured from both sides on the same PRs, each catches things
+the other doesn't; the deepest catch of the latest campaign — [a merged fix
+whose emitted schema accepts exactly what its own parser
+rejects](assets/zod-catch.md) — was Punchcard's alone. So run both,
+whatever your harness calls its bug reviewer.
 
 ## Contributing
 
