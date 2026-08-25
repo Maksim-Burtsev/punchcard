@@ -330,8 +330,7 @@ renders one. Measured from both sides on the same PRs, each catches things
 the other doesn't; the deepest catch of the latest campaign — [a merged fix
 whose emitted schema accepts exactly what its own parser
 rejects](assets/zod-catch.md) — was Punchcard's alone. So run both,
-whatever your harness calls its bug reviewer. And
-[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
+whatever your harness calls its bug reviewer.
 
 ## Contributing
 
