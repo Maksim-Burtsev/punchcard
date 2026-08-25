@@ -652,3 +652,31 @@ into the rule. The mechanical clause lost its "of any size": a large
 mechanical sweep keeps the pipeline. These edits shipped in this PR
 after the measurement; the flask boundary case is recorded as the
 reason.
+
+### The tightened triage, verified on the boundary case
+
+Three more cold runs of flask#5918 on the small-AND-shallow rule, run
+solo so escalation always had subagent slots:
+
+| | run 1 | run 2 | run 3 | master pipeline (historical) |
+|---|---|---|---|---|
+| escalated to 3 finders | ✓ | ✓ | ✓ | always fans out |
+| blueprint hooks skip (the missed blocker) | ✓ BLOCKER | ✓ BLOCKER | ✓ BLOCKER | 5/5 |
+| routes mutates live rule | ✓ | ✓ | ✓ | 5/5 |
+| required_methods flip | ✓ | ✓ | ✓ | 3/3 |
+| werkzeug cross-redirect | — | — | ✓ #1, 308 demonstrated | 2/5, flakiest key |
+| `except: pass` → silent 405 | ✓ | ✓ | ✓ | 1/3 |
+| sansio registers a view only Flask supplies | — | — | ✓ | 1/3 |
+| explicit provide_automatic_options=True inert | — | ✓ | ✓ | **never found before** |
+| noise | 0 | 0 | 0 | 0 |
+| dispatch → written | ~7:31 | 8:10 | 8:51 | 6:56 median |
+
+The rule that misjudged flask once now escalates it three times out of
+three, the blocker that the inline run had missed is back at 3/3, and
+two runs surfaced a key no condition in this project's history had
+found — the explicitly-passed flag that the rewrite silently ignores.
+Run 3 also demonstrated judge discipline under escalation: it dropped a
+"weakened test" candidate after checking that the assertion does go red
+on revert. Quality on the boundary case is at or above the shipped
+pipeline's record; the shortcut's speed gains on genuinely small diffs
+are unchanged, because those diffs were never near the boundary.
