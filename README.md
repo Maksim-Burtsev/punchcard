@@ -25,8 +25,9 @@ it the way the veteran who started on punch cards does:
 - the tests, as evidence of behavior
 - the cost of the next change
 
-— never your variable names. Back comes one verdict, a summary table and
-one card per finding, inside whatever coding agent you already work in.
+— and back comes the same review every time: one verdict, a summary
+table, one card per finding, every claim shown on the code itself —
+inside whatever coding agent you already work in.
 
 ## What he read
 
@@ -35,15 +36,12 @@ one card per finding, inside whatever coding agent you already work in.
 </p>
 
 Fifty years of the industry's best thinking, read cover to cover: thirty
-books, five shelves, no others. Distilled into 349 principles, then into the
-78 that decide a review. Every finding cites one — so he argues from the
-canon, never from mood.
-
-Underneath the persona sits a research question asked in the open: what
-does a reviewer become when a specialist bookshelf is distilled into one
-explicit, decided list of practices — and how does that compare, measured,
-to the same model with no skill at all? The benchmarks below are the
-answer so far.
+books, five shelves, no others — distilled into 349 principles, then into
+the 78 that decide a review. Every finding cites one, so he argues from
+the canon, never from mood. Underneath the persona is a research question
+asked in the open — what does a reviewer become when a specialist
+bookshelf is condensed into one decided list of practices? — and the
+benchmarks below are its measured answer so far.
 
 - **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
 - **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
@@ -90,10 +88,9 @@ findings:
 | 2 | every guarantee a deleted line used to make | the place the new code makes it again, or doesn't |
 | 3 | every changed behavior | the test that goes red when it is reverted, or the missing case |
 
-One judge then holds the candidates against the constitution, runs `main` and
-the PR on the input that matters, and renders what survives: verdict, summary
-table, one card per finding. The [stability benchmark](benchmarks/stability-2026-08.md)
-shows what each of those decisions bought and what it cost.
+One judge then holds the candidates against the constitution, runs `main`
+and the PR on the input that matters, and renders what survives: verdict,
+summary table, one card per finding.
 
 ## See it
 
