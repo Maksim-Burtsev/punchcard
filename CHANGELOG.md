@@ -2,15 +2,20 @@
 
 ## Unreleased
 
-- **Adaptive depth.** A triage at the top of the search: a small
-  (~≤100 changed lines) or purely mechanical diff runs the three passes
-  inline, in sequence, with no subagent fan-out; larger diffs keep the
-  full pipeline, and a small diff that proves bigger mid-pass escalates
-  one-way. Measured on planted-flaw fixtures: full recall in all eleven
-  adaptive runs, zero noise, 1–3 minutes and ~50–70k tokens where the
-  fanned-out baseline takes 4–6 minutes and ~195k on the same diffs;
-  the large-diff control still dispatched all three finders
-  (`benchmarks/stability-2026-08.md`, "adaptive depth").
+- **Adaptive depth.** A triage at the top of the search: a diff that is
+  both small (~under 100 changed lines) and shallow — one concern, no
+  rewired control flow — runs the three passes inline, in sequence, with
+  no subagent fan-out; complexity overrides size, a mechanical sweep
+  qualifies only while it stays small, and escalation is one-way with
+  nothing discarded. Measured twice: on planted-flaw fixtures (every
+  planted key in all eight keyed runs, zero noise in eleven, 1–3 minutes
+  and ~50–70k tokens against 4–6 minutes and ~195k for the fanned-out
+  baseline in the same harness), and on the real-PR rubric against
+  `/code-review` and the bare model three ways. The flask boundary case
+  — 86 lines of rerouted dispatch, one run inline missing a blocker the
+  escalated run then took in full — is what put the shallowness test
+  and "when in doubt, fan out" into the rule
+  (`benchmarks/stability-2026-08.md`, "adaptive depth" and "three ways").
 
 ## 1.2.0 — 2026-08-24
 

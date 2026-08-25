@@ -194,8 +194,13 @@ npx skills add Maksim-Burtsev/punchcard -a <agent>
 
 </details>
 
-Where the harness has no subagents, the three passes run one after another
-in the same session — the same review, only slower.
+A small, single-concern diff skips the fan-out entirely: the reviewer runs
+the same three passes itself, in sequence — same readings, same rules, a
+fraction of the cost. The full three-finder pipeline runs when the diff is
+large, or small but deep — rewired control flow, behavior moved between
+layers, tests edited alongside a semantic change. Where the harness has no
+subagents, the three passes run one after another in the same session —
+the same review, only slower.
 
 ## Use
 
@@ -268,9 +273,11 @@ claim re-executed against the code.
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
 | [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
 
-Known trade-off, chosen on purpose: a review costs roughly 1.5–2× the tokens
-of a bare prompt and runs about twice as long as `/code-review`, because every
-claim is demonstrated by actually running both trees.
+Known trade-off, chosen on purpose: on a large or deep diff — the ones that
+run the full pipeline — a review costs roughly 1.5–2× the tokens of a bare
+prompt and runs about twice as long as `/code-review`, because every claim
+is demonstrated by actually running both trees. A small, shallow diff skips
+the fan-out and reviews in the bare model's cost bracket.
 
 ## Keeping it in the loop
 

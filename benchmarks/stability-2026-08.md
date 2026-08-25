@@ -599,3 +599,56 @@ does not touch. And one harness observation from the baseline runs, on
 the record: a coordinator that dispatches finders and ends its turn can
 sleep until nudged, and finders could not always message the judge back
 — the inline path removes that whole failure class from small reviews.
+
+## Adaptive depth on the real-PR rubric, three ways — August 2026
+
+The synthetic measurement above left two debts: the rubric PRs were
+never re-run under adaptive depth (most of them are under the ~100-line
+threshold, so triage changes which path reviews them), and the cost
+comparison had no external reference. This run pays both: the rubric
+PRs reviewed by adaptive-depth Punchcard, by Claude Code's built-in
+`/code-review` (medium), and by the bare model with no skill — cold
+runs on Opus (medium), every condition in its own repo copy, ready
+virtualenvs. Wall clocks below are from one shared harness (agents
+driving agents), which inflates `/code-review`'s minutes badly on some
+runs — its historical `claude -p` figures (logrus ~0.7 min, requests
+~2.8, flask ~4.7) are the fairer clock for it, and both are given.
+Token figures for Punchcard and the bare model are complete;
+`/code-review`'s count covers only its top-level session, not the
+finder subagents it spawns, so its true cost is higher than shown.
+
+| PR (changed lines) | Punchcard adaptive | `/code-review` medium | bare Opus |
+|---|---|---|---|
+| logrus#1574 (43) | key as BLOCKER 2/2 · inline · 1:06–1:15 · 52–53k · noise 0 | key 2/2 · 1:35–9:36 (harness) · ≥33k | key 2/2 · 0:27–1:06 · 35k · style noise both runs |
+| requests#7520 (89) | quote regression 1/2, dup 2/2, escape-untested 2/2 · inline · 2:35–3:34 · 59–70k · noise 0 | quote regression 2/2 · 3:51–12:22 (harness) · ≥33k | quote regression 2/2 · 0:23–0:37 · 35–36k · nits both runs |
+| celery#10493 (clean control) | 🟢 Ship it., zero cards · inline · 1:44 · 61k | zero findings · 2:09 · ≥32k | "should land" plus five issues, incl. a comment-wording rewrite · 0:43 · 40k |
+| flask#5918 (86) | run 1 inline: 3 blockers, hooks-skip **missed**; run 2 escalated to 3 finders: **all seven keys**, incl. both dependency-deep ones · 5:19 / 8:47 · 81k / 128k | both deep keys + four more, 6 findings · 8:35 (harness) · ≥33k | 5 real findings, hooks-skip and required_methods missed · 2:14 · 47k |
+
+What the three columns say. The bare model is the fastest and cheapest
+and finds the headline key on small PRs, but it pays in discipline:
+style and wording notes in five of six flawed-PR runs, a five-issue
+list on the clean control that Punchcard and `/code-review` both
+correctly waved through, and on flask it missed the two keys that need
+tracing (the blueprint-hooks skip, `required_methods`). `/code-review`
+matched Punchcard's recall on the small PRs and beat the inline path
+on flask; one of its runs also reported two findings from files the
+diff does not touch. Punchcard's inline path held its zero-noise
+record across all seven runs and stayed in the bare model's cost
+bracket (~50–70k, 1–4 min) rather than the pipeline's.
+
+The flask pair is the finding of this measurement. At 86 changed lines
+the diff sits in the triage boundary band: one run read it as small
+and went inline — three blockers found, the blueprint-hooks blocker
+missed — and the other escalated to the full pipeline and produced the
+best flask review of the whole month (all seven keys, including the
+werkzeug cross-redirect through `provides_defaults_for`, the flakiest
+key in the rubric's history). Line count alone misjudged a diff whose
+whole point is rerouting dispatch. The triage rule was tightened in
+response: the shortcut now requires small *and* shallow — a diff that
+rewires control flow, moves behavior between layers, changes what a
+framework matches or dispatches, or edits tests alongside a semantic
+change fans out at any size, and "when in doubt, fan out" is written
+into the rule. The mechanical clause lost its "of any size": a large
+mechanical sweep keeps the pipeline. These edits shipped in this PR
+after the measurement; the flask boundary case is recorded as the
+reason.
