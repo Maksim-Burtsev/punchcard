@@ -12,60 +12,88 @@
 
 <p align="center">Architecture-level code review <strong>for any coding agent</strong>.<br>
 Three independent searches, one verdict, every blocker demonstrated by running the code.<br><br>
-<strong>Benchmarked three ways — against the bare model and Claude Code's <code>/code-review</code>, 60 cold runs on five real PRs, three of them from repositories no Punchcard benchmark had ever touched: the most blockers reported, one of them caught by nobody else, zero disproven claims in its twenty runs, and a verdict every single time. <a href="benchmarks/three-way-sonnet-2026-08.md">The numbers.</a></strong></p>
+<strong>Benchmarked head-to-head with Claude Code's <code>/code-review</code> on real PRs: more blockers reported, the deepest caught by Punchcard alone, one verdict every single run — not a list when it feels like it. <a href="benchmarks/three-way-sonnet-2026-08.md">The numbers.</a></strong></p>
 
 ---
 
-Point Punchcard at a working tree, a branch or a pull request and he reads it
-the way the veteran who started on punch cards does: module boundaries,
-dependency direction, the data model, the error paths, the cost of the next
-change — never your variable names. Back comes one verdict, a summary table
-and one card per finding, inside whatever coding agent you already work in.
+Point Punchcard at a working tree, a branch or a pull request and he reads
+it the way the veteran who started on punch cards does:
 
-## The catch
+- module boundaries and dependency direction
+- the data model and its single sources of truth
+- the error paths, and what they silently swallow
+- the tests, as evidence of behavior
+- the cost of the next change
 
-A strong model finds most bugs with or without a skill — the benchmarks
-below say so honestly. What a skill can change is what the reviewer treats
-as evidence. Punchcard's rule is that every claim must be demonstrated by
-running the code, both trees, and that rule occasionally sees what nobody
-else does.
+— never your variable names. Back comes one verdict, a summary table and
+one card per finding, inside whatever coding agent you already work in.
 
-[colinhacks/zod#6461](https://github.com/colinhacks/zod/pull/6461) — an
-already-merged fix in a 40k-star repository, making `z.toJSONSchema()`
-emit a valid schema for object intersections. Twelve cold reviews looked
-at it: four by the bare model, four by `/code-review`, four by Punchcard.
-Eleven missed it. One — a Punchcard run — built the input the tests never
-construct, ran it through the parser and through the emitted schema, and
-reported this (verbatim, trimmed):
+## What he read
 
-> ### 🔴 1 · Nested property fold pools two unrelated members' schemas, so the emitted JSON Schema accepts values the parser rejects
->
-> ```ts
-> // this PR
-> const A = z.object({ x: z.object({ a: z.string() }).strict() }).strict();
-> const B = z.object({ x: z.object({ b: z.string() }).strict() }).strict();
-> const C = A.and(B);
-> z.toJSONSchema(C);
-> // → properties.x = { properties: {a, b}, required: [a, b], additionalProperties: false }
-> C.safeParse({ x: { a: "1", b: "2" } });
-> // → success: false — two unrecognized_keys errors at path ["x"]
-> ```
->
-> Run against `main`, the same schema correctly emits
-> `allOf: [{x:{a}}, {x:{b}}]`, which any JSON Schema validator correctly
-> rejects `{x:{a,b}}` on — matching the parser. This diff turns a case that
-> was already correct into one that is wrong, which is the same defect
-> class the PR is fixing, just one level deeper than the fold's own
-> reasoning accounts for.
+<p align="center">
+  <img src="assets/corpus.png" alt="The thirty books of the corpus: cover collage, five shelves, in the order they are listed in CORPUS.md" width="100%">
+</p>
 
-The full review is [`assets/zod-catch.md`](assets/zod-catch.md), word for
-word; the repro was re-executed against both trees before the finding
-entered the [benchmark record](benchmarks/three-way-sonnet-2026-08.md).
-The same record also shows two Punchcard runs passing this PR 🟢 — no
-reviewer's tail is stable, and the report says so — but across the whole
-campaign Punchcard reported the most blockers (7/12, against 6 and 5),
-was the only condition to catch this one, and the only one whose every
-checked claim survived re-execution.
+Fifty years of the industry's best thinking, read cover to cover: thirty
+books, five shelves, no others. Distilled into 349 principles, then into the
+78 that decide a review. Every finding cites one — so he argues from the
+canon, never from mood.
+
+Underneath the persona sits a research question asked in the open: what
+does a reviewer become when a specialist bookshelf is distilled into one
+explicit, decided list of practices — and how does that compare, measured,
+to the same model with no skill at all? The benchmarks below are the
+answer so far.
+
+- **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
+- **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
+- **III. Architecture, change, technical debt** — Richards & Ford, Ford & Sadalage & Dehghani, Parsons & Kua, Tornhill, Spinellis
+- **IV. Tests as proof of behavior** — Beck, Freeman & Pryce, Khorikov
+- **V. Data, production, reliability, security** — Kleppmann, Nygard, Adkins et al., Johnsson & Deogun & Sawano
+
+The shelf with ISBNs is [`CORPUS.md`](CORPUS.md); the distillations are in
+[`corpus/distillates/`](corpus/distillates/), the decided forks in
+[`corpus/conflicts.md`](corpus/conflicts.md), the constitution itself in
+[`skills/punchcard/constitution/`](skills/punchcard/constitution/).
+
+<details>
+<summary><strong>One trace: book → principle → verdict</strong></summary>
+
+Principle **1.4**, "Treat duplicated knowledge as a defect on sight", closes
+with the line that makes it accountable:
+
+```
+**Sources:** (01, 02, 05, 13, 14, 18; F3)
+```
+
+That is Ousterhout, McConnell, Fowler's *Refactoring*, Beck's
+*Implementation Patterns*, Wirfs-Brock & McKean and Fairbanks, plus fork
+**F3** — "What makes duplication a finding" — where their disagreement was
+decided rather than averaged.
+
+On psf/requests#7520 that principle is finding #2 in the demo below: the
+quoted-string scanner now exists twice, so the blocker in #1 has to be fixed
+twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
+*quote rule duplicated*, **5/5** cold runs.
+
+</details>
+
+## How it reviews
+
+Search and judgement are different jobs, so they run in different places.
+Three finders read the same diff independently and return candidates, not
+findings:
+
+| Pass | Reads the diff as | Returns |
+|---|---|---|
+| 1 | every changed value, traced to its last consumer — inside the repository and inside the packages it calls | where the value lands wrong |
+| 2 | every guarantee a deleted line used to make | the place the new code makes it again, or doesn't |
+| 3 | every changed behavior | the test that goes red when it is reverted, or the missing case |
+
+One judge then holds the candidates against the constitution, runs `main` and
+the PR on the input that matters, and renders what survives: verdict, summary
+table, one card per finding. The [stability benchmark](benchmarks/stability-2026-08.md)
+shows what each of those decisions bought and what it cost.
 
 ## See it
 
@@ -74,6 +102,47 @@ checked claim survived re-execution.
 </p>
 
 > A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520) — [the full text](assets/demo-review.md), as the skill rendered it.
+
+## The verdicts
+
+| Verdict | Meaning |
+|---|---|
+| 🟢 **Ship it.** | Nothing passed the gate. Merge, and here is what was verified. |
+| 🟡 **Ship with care.** | Mergeable as is; the findings are worth closing, ideally in this PR. |
+| 🟠 **Ship after #1…#N.** | The numbered findings are mandatory before merge; the rest can follow. |
+| 🔴 **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
+
+The verdict is followed by one sentence saying what to do right now, then a
+summary table, then the findings. A finding looks like this:
+
+---
+
+### 🔴 2 · Charge failures vanish silently
+
+`billing/api.py:48` · A failed charge leaves the order marked paid, and
+nobody learns until month-end reconciliation.
+
+The diff swallows every exception from the charge call, in `submit_order` at
+`billing/api.py:48`:
+
+```python
+try:
+    charge(order.total)
+except Exception:
+    pass          # ← a declined card is indistinguishable from a paid one
+```
+
+The order is then marked paid unconditionally, two lines later at
+`billing/api.py:52`:
+
+```python
+order.status = "paid"
+```
+
+> 🔧 **Fix:** let the charge failure reach the caller — the endpoint's error
+> handler already returns 502 and leaves the order unpaid.
+
+---
 
 ## Install
 
@@ -137,6 +206,14 @@ npx skills add Maksim-Burtsev/punchcard -a <agent>
 
 </details>
 
+A small, single-concern diff skips the fan-out entirely: the reviewer runs
+the same three passes itself, in sequence — same readings, same rules, a
+fraction of the cost. The full three-finder pipeline runs when the diff is
+large, or small but deep — rewired control flow, behavior moved between
+layers, tests edited alongside a semantic change. Where the harness has no
+subagents, the three passes run one after another in the same session —
+the same review, only slower.
+
 ## Use
 
 ```
@@ -196,105 +273,20 @@ punchcard:
 
 </details>
 
-## The verdicts
-
-| Verdict | Meaning |
-|---|---|
-| 🟢 **Ship it.** | Nothing passed the gate. Merge, and here is what was verified. |
-| 🟡 **Ship with care.** | Mergeable as is; the findings are worth closing, ideally in this PR. |
-| 🟠 **Ship after #1…#N.** | The numbered findings are mandatory before merge; the rest can follow. |
-| 🔴 **Wrong shape. Talk before more code.** | The design doesn't fit the problem. Stop. |
-
-The verdict opens every review, followed by one sentence saying what to do
-right now, a summary table, and one card per finding. A card leads with the
-consequence, shows the evidence as executed code from both trees — never a
-paraphrase — and closes with a Fix that is a direction, not a patch. Two
-real ones, exactly as rendered: [requests#7520](assets/demo-review.md) and
-[zod#6461](assets/zod-catch.md). A 🟢 is not silence either: it is the
-checklist of what was verified, revert-and-run included.
-
-## How it reviews
-
-Search and judgement are different jobs, so they run in different places.
-Three finders read the same diff independently and return candidates, not
-findings:
-
-| Pass | Reads the diff as | Returns |
-|---|---|---|
-| 1 | every changed value, traced to its last consumer — inside the repository and inside the packages it calls | where the value lands wrong |
-| 2 | every guarantee a deleted line used to make | the place the new code makes it again, or doesn't |
-| 3 | every changed behavior | the test that goes red when it is reverted, or the missing case |
-
-One judge then holds the candidates against the constitution, runs `main` and
-the PR on the input that matters, and renders what survives: verdict, summary
-table, one card per finding.
-
-A small, single-concern diff skips the fan-out entirely: the reviewer runs
-the same three passes itself, in sequence — same readings, same rules, a
-fraction of the cost. The full three-finder pipeline runs when the diff is
-large, or small but deep — rewired control flow, behavior moved between
-layers, tests edited alongside a semantic change. Where the harness has no
-subagents, the three passes run one after another in the same session —
-the same review, only slower.
-
-## What he read
-
-<p align="center">
-  <img src="assets/corpus.png" alt="The thirty books of the corpus: cover collage, five shelves, in the order they are listed in CORPUS.md" width="100%">
-</p>
-
-Fifty years of the industry's best thinking, read cover to cover: thirty
-books, five shelves, no others. Distilled into 349 principles, then into the
-78 that decide a review. Every finding cites one — so he argues from the
-canon, never from mood.
-
-- **I. The engineering canon** — Ousterhout, McConnell, Thomas & Hunt, Kernighan & Pike, Fowler, Feathers, Farley, Winters, Seemann, Hermans, Martin, the Gang of Four
-- **II. Local design and responsibilities** — Beck, Wirfs-Brock & McKean, Evans, Fowler, Martin, Fairbanks
-- **III. Architecture, change, technical debt** — Richards & Ford, Ford & Sadalage & Dehghani, Parsons & Kua, Tornhill, Spinellis
-- **IV. Tests as proof of behavior** — Beck, Freeman & Pryce, Khorikov
-- **V. Data, production, reliability, security** — Kleppmann, Nygard, Adkins et al., Johnsson & Deogun & Sawano
-
-The shelf with ISBNs is [`CORPUS.md`](CORPUS.md); the distillations are in
-[`corpus/distillates/`](corpus/distillates/), the decided forks in
-[`corpus/conflicts.md`](corpus/conflicts.md), the constitution itself in
-[`skills/punchcard/constitution/`](skills/punchcard/constitution/).
-
-<details>
-<summary><strong>One trace: book → principle → verdict</strong></summary>
-
-Principle **1.4**, "Treat duplicated knowledge as a defect on sight", closes
-with the line that makes it accountable:
-
-```
-**Sources:** (01, 02, 05, 13, 14, 18; F3)
-```
-
-That is Ousterhout, McConnell, Fowler's *Refactoring*, Beck's
-*Implementation Patterns*, Wirfs-Brock & McKean and Fairbanks, plus fork
-**F3** — "What makes duplication a finding" — where their disagreement was
-decided rather than averaged.
-
-On psf/requests#7520 that principle is finding #2 in the demo above: the
-quoted-string scanner now exists twice, so the blocker in #1 has to be fixed
-twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
-*quote rule duplicated*, **5/5** cold runs.
-
-</details>
-
 ## Measured
 
-Nothing on this page is a vibe. Four benchmark reports, more than 150 cold
+Nothing on this page is a vibe: four benchmark reports, more than 150 cold
 runs, fifteen-plus pull requests across a dozen repositories in six
-languages — every per-run review matched by mechanism to a hand-verified
-list of defects, and every factual claim re-executed against the code,
-including the reviewer's own.
+languages. Every per-run review is matched by mechanism to a hand-verified
+list of defects, and every factual claim re-executed against the code —
+the reviewer's own claims included.
 
 | Report | What it shows | Headline number |
 |---|---|---|
 | [Calibration](benchmarks/calibration-2026-08.md) | six PRs, four systematic faults found in the reviewer and fixed | the first clean "Ship it." |
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
 | [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each, on Opus | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
-| [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by all three conditions, four cold runs each, 60 runs, determinism and tokens measured for every condition | the only condition to catch the blocker that makes a merged fix unsound; zero disproven claims in 20 runs; a verdict 20/20; median cost at bare-prompt level |
+| [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by the bare model, Punchcard, and `/code-review`, with determinism and tokens measured for every condition | the most blockers reported, the deepest one caught by Punchcard alone, zero disproven claims, a verdict every time, median cost at bare-prompt level |
 
 <details>
 <summary><strong>Built, measured, rejected</strong> — the features that didn't survive their own numbers</summary>
@@ -339,15 +331,16 @@ fix every BLOCKER it reports.
 
 ## Punchcard and friends
 
-A bug hunter and Punchcard look for different defects, and the honest
-version of that sentence is now measured from both sides. On the same PRs,
-Claude Code's `/code-review` was the only reviewer to see a
-target-matrix gap and the repository's own convention contract; Punchcard
-was the only one to see the executed-semantic-contract class — the zod
-catch above — and the untested seam. Neither replaces the other: run both,
+A bug hunter and Punchcard look for different defects. Claude Code's
+`/code-review`, the one the benchmarks measure against, hunts runtime bugs
+and returns a flat list — sometimes with the blocker, sometimes without it,
+never with a decision. Punchcard judges the shape of the change and always
+renders one. Measured from both sides on the same PRs, each catches things
+the other doesn't; the deepest catch of the latest campaign — [a merged fix
+whose emitted schema accepts exactly what its own parser
+rejects](assets/zod-catch.md) — was Punchcard's alone. So run both,
 whatever your harness calls its bug reviewer. And
-[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you
-build.
+[Ponytail](https://github.com/DietrichGebert/ponytail) governs what you build.
 
 ## Contributing
 

@@ -14,12 +14,13 @@
   record: recall parity, tail instability for everyone, two 🟢 verdicts
   that missed that same zod blocker, and the death of the noise gap on
   Sonnet (`benchmarks/three-way-sonnet-2026-08.md`).
-- **The README sells what the numbers support.** Rebuilt as a product
-  page: the zod catch — with the real card, word for word, in
-  `assets/zod-catch.md` — leads, install moved above the fold, the
-  invented example card replaced by two real reviews, and a "Built,
-  measured, rejected" record of the features that didn't survive their
-  own numbers. Every headline claim traces to a benchmark line.
+- **The README sells what the numbers support.** The hero claim now
+  cites the three-way benchmark instead of the Opus-era comparison, what
+  the doyen reads is a list rather than a sentence, the research question
+  behind the corpus is stated out loud, and a "Built, measured, rejected"
+  record shows the features that didn't survive their own numbers. The
+  zod catch — the real card, word for word, in `assets/zod-catch.md` —
+  is linked where it belongs, one clause in "Punchcard and friends".
 
 ## 1.3.0 — 2026-08-25
 
