@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- **Measured three ways on Sonnet 5, on unseen PRs.** Five PRs — three
+  from repositories no Punchcard benchmark had touched — by the bare
+  model, Punchcard, and `/code-review`: four cold runs each, 60 in all,
+  with determinism and token cost captured for every condition for the
+  first time. Punchcard was the only condition to catch the campaign's
+  deepest blocker (zod#6461's emitted JSON Schema accepting objects the
+  parser rejects — verified by execution), the only one with zero
+  disproven claims in 20 runs, and the only one with a verdict every
+  time, at a median cost in the bare prompt's bracket. Also on the
+  record: recall parity, tail instability for everyone, two 🟢 verdicts
+  that missed that same zod blocker, and the death of the noise gap on
+  Sonnet (`benchmarks/three-way-sonnet-2026-08.md`).
+
 ## 1.3.0 — 2026-08-25
 
 - **Adaptive depth.** A triage at the top of the search: a diff that is

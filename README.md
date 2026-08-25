@@ -271,7 +271,8 @@ claim re-executed against the code.
 |---|---|---|
 | [Calibration](benchmarks/calibration-2026-08.md) | six PRs, four systematic faults found in the reviewer and fixed | the first clean "Ship it." |
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
-| [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
+| [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each, on Opus | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
+| [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by all three conditions, four cold runs each, 60 runs, determinism and tokens measured for every condition | the only condition to catch the blocker that makes a merged fix unsound; zero disproven claims in 20 runs; a verdict 20/20; median cost at bare-prompt level |
 
 Known trade-off, chosen on purpose: on a large or deep diff — the ones that
 run the full pipeline — a review costs roughly 1.5–2× the tokens of a bare
