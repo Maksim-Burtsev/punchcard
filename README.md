@@ -303,12 +303,10 @@ it on the record:
 
 </details>
 
-The cost, measured rather than promised: the median Punchcard review runs
-in the bare prompt's token bracket — adaptive depth keeps small and
-shallow diffs inline — and on the heaviest PR of the latest campaign it
-spent half the tokens `/code-review` did. A deep diff buys the full
-pipeline, and the pipeline buys the proof: every claim demonstrated by
-actually running both trees.
+The cost, measured: a typical review runs at the price of a bare prompt.
+A deep diff runs the full pipeline — and even there, the heaviest PR of
+the latest campaign cost half of what `/code-review` spent on it. The
+extra tokens buy one thing: every claim proven by running both trees.
 
 ## Keeping it in the loop
 
