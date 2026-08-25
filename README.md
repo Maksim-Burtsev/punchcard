@@ -303,11 +303,13 @@ it on the record:
 
 </details>
 
-Known trade-off, chosen on purpose: on a large or deep diff — the ones that
-run the full pipeline — a review costs roughly 1.5–2× the tokens of a bare
-prompt and runs about twice as long as `/code-review`, because every claim
-is demonstrated by actually running both trees. A small, shallow diff skips
-the fan-out and reviews in the bare model's cost bracket.
+The cost, measured rather than promised: the median Punchcard review now
+runs at the bare prompt's token bracket — adaptive depth keeps small and
+shallow diffs inline. The price appears on large or deep diffs, where the
+full pipeline spends 2–3× a bare prompt's tokens and takes a few minutes
+longer, because every claim is demonstrated by actually running both
+trees. Even there it stays under `/code-review`'s fan-out on a monorepo —
+half its tokens on the heaviest PR of the latest campaign.
 
 ## Keeping it in the loop
 
