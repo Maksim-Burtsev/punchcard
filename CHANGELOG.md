@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.0 — 2026-08-25
 
 - **Measured three ways on Sonnet 5, on unseen PRs.** Five PRs — three
   from repositories no Punchcard benchmark had touched — by the bare
