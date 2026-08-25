@@ -17,17 +17,11 @@ Three independent searches, one verdict, every blocker demonstrated by running t
 ---
 
 Point Punchcard at a working tree, a branch or a pull request and he reads
-it the way the veteran who started on punch cards does:
-
-- module boundaries and dependency direction
-- the data model and its single sources of truth
-- the error paths, and what they silently swallow
-- the tests, as evidence of behavior
-- the cost of the next change
-
-— and back comes the same review every time: one verdict, a summary
-table, one card per finding, every claim shown on the code itself —
-inside whatever coding agent you already work in.
+it the way the veteran who started on punch cards does: module boundaries,
+dependency direction, the data model, the error paths, the cost of the next
+change. Back comes the same review every time — one verdict, a summary
+table, one card per finding, every claim shown on the code — inside
+whatever coding agent you already work in.
 
 ## What he read
 
