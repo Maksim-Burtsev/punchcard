@@ -52,9 +52,25 @@
   went 3/3, a new key nobody had found appeared, the clean control stayed
   clean; cost ~1.7× tokens and about twice the minutes on a complex diff
   (`benchmarks/stability-2026-08.md`, "Independent search passes").
-- [ ] **9. Faster.** Punchcard now finds at least what `/code-review`
-  finds, for more tokens and more minutes. The next measurement is the
-  other direction: the same recall at its speed or better.
+- [x] **9. Faster.** Punchcard now finds at least what `/code-review`
+  finds, for more tokens and more minutes. The measurement went the
+  other direction: the same recall at its speed or better. 1.2.0 took
+  the first half (the judge prepares while the finders search; pass 3
+  probes); **adaptive depth** took the second: a triage at the top of
+  step 3 — a diff that is both small (~under 100 changed lines) and
+  shallow runs the three passes inline with no fan-out; complexity
+  overrides size, escalation is one-way, and "when in doubt, fan out"
+  is written into the rule. Measured twice, the way this item demanded:
+  planted-flaw fixtures (every key in all eight keyed runs, zero noise
+  in eleven, 1–3 min and ~50–70k tokens against 4–6 min and ~195k for
+  the fanned-out baseline in the same harness), then the real-PR rubric
+  three ways against `/code-review` and the bare model — where the
+  flask boundary case (86 lines of rerouted dispatch; one inline run
+  missed a blocker the escalated run then took in full) put the
+  shallowness test into the triage rule. Large or deep diffs keep the
+  pipeline and its measured ~1.5–2× cost — the price of executed
+  proofs, scoped in the README
+  (`benchmarks/stability-2026-08.md`, "adaptive depth", "three ways").
 
 - [x] **10. Any harness ✔** — the skill is self-contained (constitution
   next to `SKILL.md`), installs with `npx skills add` into 116 harnesses,

@@ -2,7 +2,7 @@
 name: punchcard
 description: "Architecture-level design review of a code change: module boundaries, dependency direction, data model, error paths, cost of the next change — never naming, formatting, or anything a linter catches. Use when the user invokes /punchcard, says 'punchcard review', or asks for any design, architecture, or structural review of a diff, branch, merge request, or PR. Do not use for general correctness/bug review, style feedback, or whole-repo audits."
 license: MIT
-compatibility: "Needs git and a shell; gh/glab only to post into a PR/MR. Runs the three finders in parallel when the harness has a subagent tool, sequentially otherwise."
+compatibility: "Needs git and a shell; gh/glab only to post into a PR/MR. Runs the three finders in parallel when the harness has a subagent tool, sequentially otherwise; a small or mechanical diff skips the fan-out entirely."
 ---
 
 # Punchcard
@@ -161,9 +161,41 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    you skipped in one line.
 2. **Intent first.** Read the MR/PR description, commit messages, or task.
    You review the change against what it claims to do.
-3. **Search in three independent passes.** The three passes below are three
+3. **Triage, then search in three independent passes.** Size the change
+   before dispatching anything, and size it by what it does, not only by
+   how long it is. A diff earns the no-fan-out shortcut only when both
+   are true: it is small — as a rule of thumb, under about a hundred
+   changed lines across a couple of files — and it is shallow: one
+   concern, no change to how anything is dispatched, routed, or decided.
+   A purely mechanical change set (one hat: a rename, a move, a
+   dependency bump, a formatting sweep) also qualifies while it stays
+   small enough to read whole; a large mechanical sweep keeps the
+   pipeline and step 1's huge-diff rule. Complexity overrides size in
+   one direction only: a diff that rewires control flow, moves a
+   behavior between layers or files, changes what a framework matches
+   or dispatches, or edits tests alongside a semantic change gets the
+   full pipeline however few lines it touches — line count measures
+   reading effort, and what the fan-out protects is search effort. When
+   in doubt, fan out.
+
+   On the shortcut, run the three passes yourself, in sequence, each
+   starting from the diff again, exactly as when no subagent tool is
+   available. On a change one screen tall the independence that
+   subagents buy protects nothing — you can hold all of it at once —
+   and their dispatch is most of what such a review costs. Triage moves
+   in one direction only: when the small diff proves bigger than it
+   looked mid-pass — a value crosses into a dependency, a removed
+   guarantee has no visible home, the mechanical change turns out to
+   hide a behavior change — stop and dispatch all three passes as
+   subagents after all; the candidates you already collected go to the
+   gate alongside theirs, and nothing is discarded. A triage decision
+   is never a reason to trace less, and never a reason to skip a pass:
+   the shortcut skips the dispatch, not the readings.
+
+   The three passes below are three
    readings of the same diff, run by finders that do not see each other's
-   notes. When a subagent tool is available, dispatch them in parallel and
+   notes. When a subagent tool is available and triage chose the full
+   pipeline, dispatch them in parallel and
    wait for all three to return before you judge — never end your turn,
    set a timer or poll while a finder is still running; their return is
    what resumes you. The wait is not idle: while the finders run, do steps 2
