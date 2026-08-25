@@ -14,6 +14,12 @@
   record: recall parity, tail instability for everyone, two 🟢 verdicts
   that missed that same zod blocker, and the death of the noise gap on
   Sonnet (`benchmarks/three-way-sonnet-2026-08.md`).
+- **The README sells what the numbers support.** Rebuilt as a product
+  page: the zod catch — with the real card, word for word, in
+  `assets/zod-catch.md` — leads, install moved above the fold, the
+  invented example card replaced by two real reviews, and a "Built,
+  measured, rejected" record of the features that didn't survive their
+  own numbers. Every headline claim traces to a benchmark line.
 
 ## 1.3.0 — 2026-08-25
 
