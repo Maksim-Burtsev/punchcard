@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0 — 2026-08-25
 
 - **Adaptive depth.** A triage at the top of the search: a diff that is
   both small (~under 100 changed lines) and shallow — one concern, no
