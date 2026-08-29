@@ -100,3 +100,47 @@ correct and the transition machinery (dual writes, sync triggers, proxies) is it
 not demand reverse migrations; they double testing and cannot honestly undo destructive steps. Once
 a version genuinely has no traffic and no stored records, deleting it is the point.
 **Sources:** (04, 05, 21, 27; F12)
+
+### 5.7 Reach shared mutable state under one named guard, reads included
+**Finding:** The diff touches a field reachable from more than one thread — a request handler and a
+background job, a timer, a framework callback, a pool worker — and not every access site takes the
+same guard. A bare read beside a guarded write is the finding and not an optimization: the reader can
+see a stale or torn value, and a field taken under one lock here and a different lock or a lone
+atomic there is guarded by nothing. The same finding fires where two variables are tied by one
+invariant — bound and value, value and version, a count and the collection it counts — and each was
+made individually thread-safe: between the two updates every observer sees the invariant broken, and
+a composite of thread-safe parts stops being thread-safe the moment a constraint spans them. Flag the
+in-process check-then-act window too — contains-then-add, null-check-then-create, size-then-index —
+where nothing makes the pair one indivisible step. The guard nobody wrote down is a finding of its
+own, because an unrecorded policy is what the next diff breaks silently; and the diff that first
+gives existing state a second thread — a scheduled task, a listener, a handler that reads it — makes
+every one of that state's existing access sites a finding at once.
+**Unless:** Genuinely independent variables may each delegate to their own thread-safe holder; that
+is the baseline design, not a violation. A compound action handed whole to a primitive that is atomic
+itself — a compare-and-set, a put-if-absent — needs nothing around it, and a race whose worst outcome
+is cheap duplicated idempotent work may be accepted knowingly, provided the diff says so. State that
+is never shared, immutable, or structurally confined to one thread needs no guard at all, and what
+makes those escapes real is 5.8's. Where the contended state lives in a store rather than in memory,
+5.3 owns it.
+**Sources:** (31)
+
+### 5.8 Give every cross-thread handoff a real ordering edge, and take the cheap escape before the lock
+**Finding:** The diff hands an object or a value from one thread to another — a field set here and
+read by a worker, a listener, a cached instance, a lazily built singleton — with nothing between the
+write and the read but a plain assignment. That is not publication. The reader is allowed to see the
+reference before the state the constructor set: a live pointer to a half-built object, which is worse
+than a stale null because it reads as valid and the damage surfaces far from here. Name the edge from
+the diff, and it has to be one of a lock both sides take, an atomic, a thread start or join, or a
+concurrent structure whose handoff its own contract documents. Two shapes fail this by construction —
+a lazily initialized shared field checked without the lock before taking it, and visibility borrowed
+from unrelated synchronization that happens to sit nearby, which is statement-order luck that
+evaporates at the next refactor.
+**Unless:** The escapes outrank the choreography, and taking one is the better answer rather than a
+weaker one: do not share the state, or make it immutable — an immutable object survives any
+publication, correct or not — or confine it structurally to one thread, in locals or a per-thread
+holder. Confinement asserted in a comment instead of enforced by scope is the finding restated, not
+an escape. Where the handoff is real, a proven concurrent building block — a blocking queue, a latch,
+a concurrent map — beats hand-rolled flag-and-wait; eager initialization and a small synchronized
+accessor are cheap enough that a clever lazy path owes a measurement; and novel lock-free code needs
+a cited published algorithm.
+**Sources:** (31)
