@@ -1,6 +1,6 @@
 # The Corpus
 
-Thirty books. Not a survey of the industry — a deliberate, narrow worldview.
+Thirty-four books. Not a survey of the industry — a deliberate, narrow worldview.
 Punchcard's constitution is synthesized from these sources and no others;
 repeated authors are a feature, not sampling bias: this is *who you hire*
 when you install the plugin. Where the schools disagree, the conflict is
@@ -61,6 +61,15 @@ resolved explicitly (see `corpus/conflicts.md`, phase 3 of the
 | 28 | **Release It!, 2nd ed.** — Michael Nygard | Stability patterns: timeouts, circuit breakers, bulkheads, failure containment. | 9781680502398 |
 | 29 | **Building Secure and Reliable Systems** — Adkins et al. | Security and reliability co-designed: least privilege, resilience, recovery. Officially free. | 9781492083122 |
 | 30 | **Secure by Design** — Johnsson, Deogun, Sawano | Security as a design property: domain primitives, validation, safe error handling. | 9781617294358 |
+
+## VI. Concurrency, APIs, integration, performance
+
+| # | Book | Why it's here | ISBN |
+|---|---|---|---|
+| 31 | **Java Concurrency in Practice** — Goetz, Peierls, Bloch, Bowbeer, Holmes, Lea | Visibility, atomicity, safe publication, invariants under threads — concurrency defects a diff shows and style rules can't see. | 9780321349606 |
+| 32 | **Patterns for API Design** — Zimmermann, Stocker, Lübke, Pautasso, Zdun | APIs as contracts: versioning, compatibility, granularity, quality of the published surface. | 9780137670109 |
+| 33 | **Systems Performance, 2nd ed.** — Brendan Gregg | Measurement discipline: performance claims priced by a profile, never by intuition. | 9780136820154 |
+| 34 | **Enterprise Integration Patterns** — Hohpe, Woolf | Messaging as the second concurrency: idempotent consumers, redelivery, ordering, correlation, compensation. | 9780321200686 |
 
 ## Sourcing rules
 

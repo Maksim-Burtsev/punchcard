@@ -77,3 +77,12 @@
   and names its own fallback: without subagents the three passes run in
   sequence. Codex, Cursor, Gemini CLI and the rest get the same reviewer
   Claude Code gets.
+- [ ] **11. Corpus expansion 31–34** — four books for the uncovered
+  domains: Java Concurrency in Practice (concurrency), Patterns for API
+  Design (APIs as contracts), Systems Performance (measurement
+  discipline), Enterprise Integration Patterns (messaging — the thinnest
+  cluster). Same pipeline as phase 3, same models (distillation on
+  Fable, benchmark on sonnet-5 mirroring
+  `benchmarks/three-way-sonnet-2026-08.md`). Gate: the old-vs-new
+  benchmark decides whether the constitution changes ship or the
+  distillates land as dataset only.
