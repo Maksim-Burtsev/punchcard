@@ -149,3 +149,141 @@ starting. Run each condition three times cold via `claude -p` as specified. The
 pre-registration, per-run outputs and the key×run matrices live in the session
 scratchpad; the k8s K3 confirmation is `TestEventSeriesWithEventSinkImplRace`
 under `-race` (1 failure in 300 runs at the PR head, 0 in 1500 on its base).
+
+---
+
+# Addendum: the two concurrency principles alone
+
+The verdict above said a next attempt should add 5.7 and 5.8 by themselves and
+measure them. That was done immediately, on the same three PRs, same protocol,
+three cold runs: **9 runs, $16.45**. Only the new arm was run — the other columns
+are the numbers already recorded above, with one re-tally noted below.
+
+`conc` = the shipped 78-principle constitution plus exactly two appended
+principles (5.7 shared mutable state under one named guard, reads included;
+5.8 cross-thread handoff needs a real ordering edge). No amendments to existing
+principles, no routing change, no `SKILL.md` change beyond the count.
+
+**Re-tally, stated because it changes the comparison:** the kubernetes table
+above credits the 86-principle arm with 4 keys because K10/K11/K12 were counted
+separately as keys it discovered. Scored over the same eleven keys the `conc` arm
+was scored against, that arm reaches 7. The corrected kubernetes row and the
+corrected totals below use the eleven-key basis for every arm.
+
+## Union keys reached
+
+| PR | conc (80) | new (86) | old (78) | bare | /code-review |
+|---|---|---|---|---|---|
+| rabbitmq | 4 | 3 | **5** | 3 | 2 |
+| grpc-go | **2** | 0 | 2 | 1 | 1 |
+| kubernetes | 5 | **7** | 3 | — | — |
+| **total** | **11** | 10 | 10 | | |
+
+## False claims
+
+| | conc (80) | new (86) | old (78) |
+|---|---|---|---|
+| rabbitmq | 1 | 0 | 2 |
+| grpc-go | 2 | 3 | 0 |
+| kubernetes | 4 | **8** | 1 |
+| **total** | **7** | **11** | **3** |
+
+Two principles instead of eight recovers the recall the 86-principle version lost
+and then some — one key ahead of both other arms — and roughly halves its
+false-claim rate. It does not reach the shipped constitution's discipline: seven
+disproven statements against three, and one of them turns a minor finding into a
+merge-blocker on a wrong pre-diff comparison (`conc-3` claims the pre-diff
+goroutine had crash handling; it had none, so a panic killed the process).
+
+## What it found that fifteen prior runs did not
+
+- **rabbitmq RB1** (0/12 before): the `prioritise_cast` delete stream starving
+  compaction in `gen_server2`'s merged queue — the mechanism family behind the
+  upstream revert. One run named it with all four citations verbatim-correct.
+- **grpc-go G1** (0/12 before): `ClientStream.RecvMsg`'s untouched doc comment
+  still promises `io.EOF` while the code now returns `Internal`, and the diff's
+  own new test is cited as *proof the contract broke* rather than as safety
+  evidence — inverting the pattern every other run in the campaign fell into.
+  Upstream reverted this PR for exactly that.
+- **grpc-go G6** (new union key): the change silently reclassifies these RPCs
+  from success to failure in `DoneInfo`, stats and channelz, because both
+  `finish` paths normalize `io.EOF` to `nil` before the callbacks run.
+
+On kubernetes it added nothing either other arm had not already found.
+
+## What it still does not buy
+
+The kubernetes correlation break stays 0-for-every-arm-ever-measured, and `conc`
+is further from it than the 86-principle arm was: that arm at least raised K3
+(unordered same-key sink writes); no `conc` run mentions output ordering at all.
+The two principles moved attention to goroutine *lifecycle* — shutdown
+cancellation, a panic-shrunk pool — and not to the handoff's ordering edge, which
+is the half of 5.8 that would have mattered here.
+
+Cost sits between the two: median $1.73 per run against $2.00 for the
+86-principle version and $1.02 for the shipped one; median 2.7 minutes.
+
+## Status
+
+Not shipped. It wins the recall column by one key and loses the discipline column
+by four, and discipline is what the main campaign was decided on. Three runs per
+cell on three PRs the previous campaign already used is enough to justify a wider
+measurement and not enough to change the constitution — and the grpc-go win in
+particular sits entirely in one run of three, on a PR whose defect is an API
+contract rather than concurrency, so it is as consistent with variance as with
+the principles doing the work.
+
+A wider measurement should use PRs whose defect is concurrency proper, four cold
+runs per cell, and should treat the false-claim column as the gate. The two
+principles are written out below so this record does not depend on a branch
+surviving.
+
+## The two principles as measured
+
+Verbatim, as they were appended to chapter 5 for the nine runs above. Not part
+of the shipped constitution — recorded here so a future attempt starts from the
+text that produced these numbers rather than re-deriving it from distillate 31.
+
+> ### 5.7 Reach shared mutable state under one named guard, reads included
+> **Finding:** The diff touches a field reachable from more than one thread — a request handler and a
+> background job, a timer, a framework callback, a pool worker — and not every access site takes the
+> same guard. A bare read beside a guarded write is the finding and not an optimization: the reader can
+> see a stale or torn value, and a field taken under one lock here and a different lock or a lone
+> atomic there is guarded by nothing. The same finding fires where two variables are tied by one
+> invariant — bound and value, value and version, a count and the collection it counts — and each was
+> made individually thread-safe: between the two updates every observer sees the invariant broken, and
+> a composite of thread-safe parts stops being thread-safe the moment a constraint spans them. Flag the
+> in-process check-then-act window too — contains-then-add, null-check-then-create, size-then-index —
+> where nothing makes the pair one indivisible step. The guard nobody wrote down is a finding of its
+> own, because an unrecorded policy is what the next diff breaks silently; and the diff that first
+> gives existing state a second thread — a scheduled task, a listener, a handler that reads it — makes
+> every one of that state's existing access sites a finding at once.
+> **Unless:** Genuinely independent variables may each delegate to their own thread-safe holder; that
+> is the baseline design, not a violation. A compound action handed whole to a primitive that is atomic
+> itself — a compare-and-set, a put-if-absent — needs nothing around it, and a race whose worst outcome
+> is cheap duplicated idempotent work may be accepted knowingly, provided the diff says so. State that
+> is never shared, immutable, or structurally confined to one thread needs no guard at all, and what
+> makes those escapes real is 5.8's. Where the contended state lives in a store rather than in memory,
+> 5.3 owns it.
+> **Sources:** (31)
+>
+> ### 5.8 Give every cross-thread handoff a real ordering edge, and take the cheap escape before the lock
+> **Finding:** The diff hands an object or a value from one thread to another — a field set here and
+> read by a worker, a listener, a cached instance, a lazily built singleton — with nothing between the
+> write and the read but a plain assignment. That is not publication. The reader is allowed to see the
+> reference before the state the constructor set: a live pointer to a half-built object, which is worse
+> than a stale null because it reads as valid and the damage surfaces far from here. Name the edge from
+> the diff, and it has to be one of a lock both sides take, an atomic, a thread start or join, or a
+> concurrent structure whose handoff its own contract documents. Two shapes fail this by construction —
+> a lazily initialized shared field checked without the lock before taking it, and visibility borrowed
+> from unrelated synchronization that happens to sit nearby, which is statement-order luck that
+> evaporates at the next refactor.
+> **Unless:** The escapes outrank the choreography, and taking one is the better answer rather than a
+> weaker one: do not share the state, or make it immutable — an immutable object survives any
+> publication, correct or not — or confine it structurally to one thread, in locals or a per-thread
+> holder. Confinement asserted in a comment instead of enforced by scope is the finding restated, not
+> an escape. Where the handoff is real, a proven concurrent building block — a blocking queue, a latch,
+> a concurrent map — beats hand-rolled flag-and-wait; eager initialization and a small synchronized
+> accessor are cheap enough that a clever lazy path owes a measurement; and novel lock-free code needs
+> a cited published algorithm.
+> **Sources:** (31)
