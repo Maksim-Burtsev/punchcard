@@ -77,12 +77,18 @@
   and names its own fallback: without subagents the three passes run in
   sequence. Codex, Cursor, Gemini CLI and the rest get the same reviewer
   Claude Code gets.
-- [ ] **11. Corpus expansion 31–34** — four books for the uncovered
-  domains: Java Concurrency in Practice (concurrency), Patterns for API
-  Design (APIs as contracts), Systems Performance (measurement
-  discipline), Enterprise Integration Patterns (messaging — the thinnest
-  cluster). Same pipeline as phase 3, same models (distillation on
-  Fable, benchmark on sonnet-5 mirroring
-  `benchmarks/three-way-sonnet-2026-08.md`). Gate: the old-vs-new
-  benchmark decides whether the constitution changes ship or the
-  distillates land as dataset only.
+- [x] **11. Corpus expansion 31–34 — corpus shipped, constitution didn't.**
+  Four books for the domains the corpus had no book for: concurrency,
+  APIs as contracts, measurement discipline, messaging. Distilled by the
+  same three-stage pipeline as phase 3 (47 principles, one revision
+  round), folded into the clusters, and three forks decided (F16–F18).
+  Then measured: 36 cold runs on three reverted-upstream PRs, the
+  86-principle constitution against the 78-principle one. It found fewer
+  pre-registered defects (7 union keys against 10), made nearly four
+  times the disproven claims (11 against 3), cost twice the median per
+  review, and no condition saw any of the three defects that caused the
+  upstream reverts. So the distillates, clusters and forks are merged as
+  dataset and the constitution stays at 78
+  (`benchmarks/corpus-expansion-2026-08.md`, which also records the
+  first campaign thrown away for plugin contamination and what a next
+  attempt should try instead).
