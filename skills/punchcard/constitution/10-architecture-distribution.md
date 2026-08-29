@@ -1,8 +1,9 @@
 # 10. Architecture at Scale and Distribution
 
 This chapter answers what a reviewer owes a change that is expensive to undo: which decisions in the
-diff are one-way doors, what the author gave up to buy them, and whether a new boundary between
-deployable units actually delivers the independence it claims.
+diff are one-way doors, what the author gave up to buy them, whether a new boundary between
+deployable units actually delivers the independence it claims, and what a hop between them must state
+once messages rather than calls carry the work.
 
 ### 10.1 Price the review by what it costs to undo this change, not by how many lines it touches
 **Finding:** The diff contains an edit whose reversal would need other people's schedules — a new
@@ -19,7 +20,7 @@ reversibility, exposure or churn. Reversibility is not a license to wave through
 merely looks reversible; the test is whether every consumer can be moved back by this team alone.
 High impact with genuinely low likelihood is not a blocker, and a decision already made in context,
 with its consequences recorded, is not relitigated on every read of the file.
-**Sources:** (16, 18, 19, 20, 22; F2)
+**Sources:** (16, 18, 19, 20, 22, 32; F2)
 
 ### 10.2 Make a structural change state what it gives up, and where the reason will still be readable
 **Finding:** The change picks between structural alternatives — synchronous or asynchronous, shared
@@ -37,7 +38,7 @@ inside one module belong to the author. A tally of pluses and minuses is not a v
 unweighted until this system's context weights them. A few decisions really are binary (a vendor-fixed
 protocol, an on/off switch), and "it is a spectrum" is not permission to skip deciding: a middle
 position still has to name its point and its costs.
-**Sources:** (16, 18, 19, 20; F15)
+**Sources:** (16, 18, 19, 20, 32, 34; F15)
 
 ### 10.3 Keep the burden of proof on the new process boundary, and name the driver that pays for it
 **Finding:** The diff carves a new deployable unit out of an existing one, or turns a local call into
@@ -57,7 +58,7 @@ A split made to put sensitive data out of reach is endorsed when the reviewer ca
 that becomes unreachable and the per-request end-user context the callee enforces; otherwise ask for
 in-process isolation first. Background flows where nobody waits tolerate far more chatter than a
 user-facing path.
-**Sources:** (16, 18, 19, 20, 29; F9)
+**Sources:** (16, 18, 19, 20, 29, 32, 34; F9)
 
 ### 10.4 Check claimed independence against the operational dependency set, not the diagram
 **Finding:** The change describes a component as independently deployable while adding, or leaving in
@@ -74,7 +75,7 @@ not have is. A monolith or modular monolith is one unit by design and sharing a 
 nothing extra. A few closely related services that are really one bounded context may legitimately
 share data when the team accepts the single-unit consequence. Read-only replicas or caches fed by the
 one owning writer are the normal middle path, not a violation.
-**Sources:** (17, 19, 20, 21; F9)
+**Sources:** (17, 19, 20, 21, 34; F9)
 
 ### 10.5 License shared code across a deployment boundary by how slowly it changes, and pin it by version
 **Finding:** The diff extracts a shared library or canonical service carrying domain rules across
@@ -92,7 +93,7 @@ security primitives) are exactly where a single shared implementation beats cons
 and are never a reason to merge services. A runtime shared service is right for polyglot estates or
 fast-changing behavior, at the cost of latency, scaling and availability. Very fine library
 granularity makes the dependency graph the new problem.
-**Sources:** (20, 21, 22; F3)
+**Sources:** (20, 21, 22, 32, 34; F3)
 
 ### 10.6 Give a workflow that spans services a named owner for its state, and choose the coordination style deliberately
 **Finding:** The diff adds a multi-step process across services, or a failure branch, cancellation,
@@ -105,13 +106,14 @@ synchronous-atomic-orchestrated corner is the most expensive place to live. Flag
 was defaulted into rather than chosen. Also flag a choreographed flow where each new error branch
 adds links the happy path never needed, pushing workflow knowledge into services that should know
 only their own domain, and two channels between the same pair where a notification can outrun the
-data it announces.
+data it announces. The identifier that state is filed under, and the expiry that keeps it from
+growing forever, belong to 10.10; this rule is about who owns the state and how the flow coordinates.
 **Unless:** A mediator is itself a coupling point, a bottleneck and a single point of failure; for
 linear fire-and-forget flows with rare errors, choreography scales better and an orchestrator is
 over-building. Workflow state can legitimately ride in the message at the price of a fatter contract.
 High coupling is sometimes the right purchase — transactional integrity really is easier with
 synchronous mediated calls; the finding is the unexamined position, not the expensive one.
-**Sources:** (19, 20, 27; F10)
+**Sources:** (19, 20, 27, 34; F10)
 
 ### 10.7 When one capability's changelist touches most of the fleet, review the boundaries instead of the pieces
 **Finding:** A single feature arrives as coordinated edits across most services or modules, or needs
@@ -129,7 +131,7 @@ genuinely separate units and the cross-cutting thing is a variation point, the r
 component inside each obeying the local dependency rule, not a merge. Reorganizing people costs far
 more than moving code, so this argues for placing new boundaries where ownership already sits, never
 for demanding a reorg inside a review.
-**Sources:** (17, 20, 21, 22; F9)
+**Sources:** (17, 20, 21, 22, 34; F9)
 
 ### 10.8 Turn a boundary rule you would otherwise police by eye into a check the build runs
 **Finding:** The change introduces or leans on an architectural rule that only a reviewer's memory
@@ -147,3 +149,74 @@ inherent in a hard problem from complexity caused by bad factoring. Single-conce
 all pass while the combination regresses, so name the quality a caching, replication or retry change
 might quietly break.
 **Sources:** (19, 20, 21; F15)
+
+### 10.9 Treat arrival order as an accident, and price what buying it back costs
+**Finding:** The diff makes a consumer depend on the order messages arrive in: updates applied in
+receipt order across channels, partitions or retries; replica count or handler concurrency raised on
+an order-sensitive handler; a multi-part send routed to a load-balanced pool with nothing pinning one
+sequence to one consumer. Independent routing, retries and parallel consumers all reorder, so order
+is never given — it is bought. Read the purchase when the diff makes one: a concurrency limit of one,
+or a per-item acknowledgement gating the next dispatch, restores order by deleting the parallelism the
+fan-out existed for, and that trade is stated rather than merged as a bug fix. The two honest remedies
+are one consumer per ordered stream, or resequencing behind a bounded buffer, and both owe the same
+three things — consecutive numbers assigned where the items are produced, in a field of their own; a
+capacity on the buffer; and a timeout on a gap. Gap detection keyed on message ids, UUIDs or
+timestamps does not work, because identifiers minted for uniqueness are neither ordered nor
+consecutive, and a hardcoded start index or window size only holds while both ends restart together.
+**Unless:** Within one ordered partition consumed by one instance the guarantee is real and needs no
+machinery. Where order does not matter, competing consumers are the cheap and correct way to scale and
+demanding sequence numbers there is ceremony. Windowed flow control needs influence over the producer,
+which the receiving end of someone else's stream does not have — buffering and reordering is all there
+is. A stand-in for a missing item is legitimate where approximate data beats late data, provided the
+substitution is visible to whoever reads the result.
+**Sources:** (34)
+
+### 10.10 Correlate on an identifier the flow owns, and bound whatever accumulates behind it
+**Finding:** The change pairs a response to a request, or gathers several messages into one result,
+and the match runs on something the flow does not control: arrival order, timing, a content heuristic,
+a broker-assigned message id or delivery tag, or a business key now carrying two meanings. Transport
+ids are re-minted by every intermediary that consumes and republishes — a router, a translator, a tap,
+a proxy — and some platforms instead copy one id onto every derived message, so it is not even unique.
+Ask for a dedicated identifier the flow mints and carries end to end, in the envelope rather than the
+body, so routers, taps and monitors can filter without parsing payloads; where an intermediary funnels
+many callers onto one downstream channel, it mints its own and restores the caller's id and reply
+address on the way back. Then follow whatever that key accumulates — an aggregate, a pending-request
+map, a callback registry, a dedup history, a process instance — and find three answers in the diff:
+what makes the set complete, what evicts an entry whose awaited message never arrives, and what the
+flow does when one expires. Entries added on send and removed only on reply leak forever, because lost
+replies are normal; purge too eagerly and a latecomer silently opens a fresh group under the same
+identity. A completeness test that is an assumed count, with no timeout path and no record of a
+dropped latecomer, is the same finding.
+**Unless:** One caller, one outstanding request, no intermediaries, a private reply channel — there
+the channel itself is the correlation. Where a reply becomes the next request, carrying forward the
+identifier it arrived with is correct, and minting a fresh one per hop pays only where someone must
+retrace the path step by step. Where the responder only echoes transport ids, a request-id-to-task map
+is the right shape rather than a smell, and body fields are the documented fallback on transports with
+no custom headers. Fire-and-forget fan-out needs no accumulator at all; where an incomplete result is
+meaningless, wait-for-all plus an explicit timeout error is the correct completeness rule; and storing
+only the fact of closure is cheap, so generous retention margins cost little. Who owns the workflow
+state and which coordination style it runs under is 10.6.
+**Sources:** (34)
+
+### 10.11 Treat a new consumer, replica or subscription as a change to the contract
+**Finding:** The diff attaches something new to an existing channel, or scales what is already there,
+and the delivery semantics decide what that means: a second logical consumer on a point-to-point
+channel silently steals messages from the first, while extra instances on a broadcast subscription
+each process everything and duplicate every side effect, so parallelism there has to come from inside
+one consumer. Both arrive disguised — a logging, audit or monitoring consumer hung on a work queue, a
+channel flipped to broadcast so it can be, replicas added to a broadcast subscriber to share the load,
+a queue sharded by hand to get concurrency. Observation belongs on a tap that republishes, never on
+the working channel. Two obligations ship with the subscription itself: a stable identity with a
+teardown path, because an inactive durable subscription accumulates without limit and anything
+presenting the same identity inherits the backlog, including a different application; and a stated
+bound on consumption rate — a concurrency or prefetch cap for push delivery, a blocking wait rather
+than a busy poll for pull, and never a thread, process or task per message.
+**Unless:** Competing instances of one logical consumer are exactly what a point-to-point channel is
+for, and where the backlog is genuine and the capacity exists, adding them is the right answer. Push
+is more efficient than polling for sparse traffic, and pull costs a cycle of latency that is wrong
+where immediate forwarding is the requirement. Broker-side filtering beats receiving and discarding,
+but criteria too rich for its filter language legitimately live in code — and filtering is not access
+control. Dropping updates is safe for full snapshots and loses fields when applied to deltas. Where a
+consumer cannot keep up, slowing the producer leaves the wrong party in control; that is a finding
+about rate, not a reason to refuse the consumer.
+**Sources:** (34)
