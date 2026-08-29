@@ -156,13 +156,19 @@ under `-race` (1 failure in 300 runs at the PR head, 0 in 1500 on its base).
 
 The verdict above said a next attempt should add 5.7 and 5.8 by themselves and
 measure them. That was done immediately, on the same three PRs, same protocol,
-three cold runs: **9 runs, $16.45**. Only the new arm was run — the other three
-columns are the numbers already recorded above.
+three cold runs: **9 runs, $16.45**. Only the new arm was run — the other columns
+are the numbers already recorded above, with one re-tally noted below.
 
 `conc` = the shipped 78-principle constitution plus exactly two appended
 principles (5.7 shared mutable state under one named guard, reads included;
 5.8 cross-thread handoff needs a real ordering edge). No amendments to existing
-principles, no routing change, no `SKILL.md` core change beyond the count.
+principles, no routing change, no `SKILL.md` change beyond the count.
+
+**Re-tally, stated because it changes the comparison:** the kubernetes table
+above credits the 86-principle arm with 4 keys because K10/K11/K12 were counted
+separately as keys it discovered. Scored over the same eleven keys the `conc` arm
+was scored against, that arm reaches 7. The corrected kubernetes row and the
+corrected totals below use the eleven-key basis for every arm.
 
 ## Union keys reached
 
@@ -170,23 +176,24 @@ principles, no routing change, no `SKILL.md` core change beyond the count.
 |---|---|---|---|---|---|
 | rabbitmq | 4 | 3 | **5** | 3 | 2 |
 | grpc-go | **2** | 0 | 2 | 1 | 1 |
-| kubernetes | **4** | 4 | 3 | — | — |
-| **total** | **10** | 7 | **10** | | |
+| kubernetes | 5 | **7** | 3 | — | — |
+| **total** | **11** | 10 | 10 | | |
 
-## False claims — the column that killed the 86-principle version
+## False claims
 
 | | conc (80) | new (86) | old (78) |
 |---|---|---|---|
 | rabbitmq | 1 | 0 | 2 |
 | grpc-go | 2 | 3 | 0 |
-| kubernetes | **0** | **8** | 1 |
-| **total** | **3** | **11** | **3** |
+| kubernetes | 4 | **8** | 1 |
+| **total** | **7** | **11** | **3** |
 
-Two principles instead of eight recovers the whole recall gap and costs nothing
-in factual discipline: it ties the shipped constitution on both columns. On
-kubernetes — the PR these principles exist for — it is the only arm measured with
-zero false claims and zero wrong clean bills, against the 86-principle version's
-eight false claims including a fabricated blocker.
+Two principles instead of eight recovers the recall the 86-principle version lost
+and then some — one key ahead of both other arms — and roughly halves its
+false-claim rate. It does not reach the shipped constitution's discipline: seven
+disproven statements against three, and one of them turns a minor finding into a
+merge-blocker on a wrong pre-diff comparison (`conc-3` claims the pre-diff
+goroutine had crash handling; it had none, so a panic killed the process).
 
 ## What it found that fifteen prior runs did not
 
@@ -196,28 +203,36 @@ eight false claims including a fabricated blocker.
 - **grpc-go G1** (0/12 before): `ClientStream.RecvMsg`'s untouched doc comment
   still promises `io.EOF` while the code now returns `Internal`, and the diff's
   own new test is cited as *proof the contract broke* rather than as safety
-  evidence — inverting the anti-credit pattern every other run in the campaign
-  fell into. Upstream reverted this PR for exactly that.
+  evidence — inverting the pattern every other run in the campaign fell into.
+  Upstream reverted this PR for exactly that.
 - **grpc-go G6** (new union key): the change silently reclassifies these RPCs
   from success to failure in `DoneInfo`, stats and channelz, because both
   `finish` paths normalize `io.EOF` to `nil` before the callbacks run.
 
+On kubernetes it added nothing either other arm had not already found.
+
 ## What it still does not buy
 
-The kubernetes correlation break stays 0-for-every-arm-ever-measured. On that PR
-`conc`'s four keys are the cheap half of the union — a dropped queue at shutdown,
-a shared log line, a `defer` in the wrong scope, no tests — while K1, K3, K7 and
-K8 need tracing into `watch.Broadcaster` or reasoning about the pool's output
-ordering, and it reaches none of them. It buys reliability, not depth.
+The kubernetes correlation break stays 0-for-every-arm-ever-measured, and `conc`
+is further from it than the 86-principle arm was: that arm at least raised K3
+(unordered same-key sink writes); no `conc` run mentions output ordering at all.
+The two principles moved attention to goroutine *lifecycle* — shutdown
+cancellation, a panic-shrunk pool — and not to the handoff's ordering edge, which
+is the half of 5.8 that would have mattered here.
 
 Cost sits between the two: median $1.73 per run against $2.00 for the
 86-principle version and $1.02 for the shipped one; median 2.7 minutes.
 
 ## Status
 
-Not shipped on this evidence alone. Three runs per cell, on three PRs the
-previous campaign already used, is enough to justify a wider measurement and not
-enough to change the constitution — and the grpc-go win in particular sits
-entirely in one run of three, on a PR whose defect is an API contract rather than
-concurrency, so it is as consistent with variance as with the principles doing
-the work. The branch is `concurrency-only-31`.
+Not shipped. It wins the recall column by one key and loses the discipline column
+by four, and discipline is what the main campaign was decided on. Three runs per
+cell on three PRs the previous campaign already used is enough to justify a wider
+measurement and not enough to change the constitution — and the grpc-go win in
+particular sits entirely in one run of three, on a PR whose defect is an API
+contract rather than concurrency, so it is as consistent with variance as with
+the principles doing the work.
+
+A wider measurement should use PRs whose defect is concurrency proper, four cold
+runs per cell, and should treat the false-claim column as the gate. The branch is
+`concurrency-only-31`.
