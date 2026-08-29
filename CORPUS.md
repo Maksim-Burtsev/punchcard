@@ -67,7 +67,7 @@ resolved explicitly (see `corpus/conflicts.md`, phase 3 of the
 | # | Book | Why it's here | ISBN |
 |---|---|---|---|
 | 31 | **Java Concurrency in Practice** — Goetz, Peierls, Bloch, Bowbeer, Holmes, Lea | Visibility, atomicity, safe publication, invariants under threads — concurrency defects a diff shows and style rules can't see. | 9780321349606 |
-| 32 | **Patterns for API Design** — Zimmermann, Stocker, Lübke, Pautasso, Zdun | APIs as contracts: versioning, compatibility, granularity, quality of the published surface. | 9780137670109 |
+| 32 | **Patterns for API Design** — Zimmermann, Stocker, Lübke, Zdun, Pautasso | APIs as contracts: versioning, compatibility, granularity, quality of the published surface. | 9780137670109 |
 | 33 | **Systems Performance, 2nd ed.** — Brendan Gregg | Measurement discipline: performance claims priced by a profile, never by intuition. | 9780136820154 |
 | 34 | **Enterprise Integration Patterns** — Hohpe, Woolf | Messaging as the second concurrency: idempotent consumers, redelivery, ordering, correlation, compensation. | 9780321200686 |
 
