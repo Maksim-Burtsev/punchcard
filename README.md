@@ -212,6 +212,7 @@ the same review, only slower.
 /punchcard main..feature    # review a range
 /punchcard <MR/PR url>      # review a PR/MR, render in the conversation
 /punchcard:pr <url|number>  # review a PR/MR and post the review into it
+/punchcard:brief <url|number|branch>  # orient before reviewing: claim, map, invariants, the hunks
 ```
 
 The slash form is how Claude Code names a skill. Codex spells it
