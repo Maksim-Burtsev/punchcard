@@ -225,6 +225,22 @@ which GitHub expands into code cards) or one MR note on GitLab. Re-run it after 
 push and it updates that same review in place — one entry per PR, for the life of
 the PR. No access to post? The review is rendered in the reply, with the reason.
 
+### The brief
+
+`/punchcard:brief` is the other half of the reviewer's day: not what is
+wrong with a change, but what it is. A diff is the delta of the text; the
+reviewer needs the delta of the behavior, and rebuilding one from the other
+is the hour the brief buys back. Four sections, always in this order —
+**The claim** (what the description promises, and its class), **The map** (a
+before/after drawing of the flow that changed, in plain ASCII, every node a
+name from the code), **The invariants** (a before/after table of what holds
+now), **The decision** (the hunks where behavior is chosen, copied from the
+diff at their real lines). No findings and no verdict: that is `/punchcard`'s
+job, and the brief is what to read before it. Two renders exactly as the
+skill produced them, a one-line change and a six-hundred-line feature:
+[assets/demo-brief.md](assets/demo-brief.md). The measurement behind it:
+[the brief benchmark](benchmarks/brief-2026-09.md).
+
 <details>
 <summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>
 
