@@ -145,7 +145,7 @@ Any agent: this installs the skill into every harness it finds on the
 machine. Everything below is the same skill, installed by hand.
 
 <details>
-<summary><strong>Claude Code</strong> — as a plugin, with <code>/punchcard</code> and <code>/punchcard:pr</code></summary>
+<summary><strong>Claude Code</strong> — as a plugin, with <code>/punchcard</code>, <code>/punchcard:pr</code> and <code>/punchcard:brief</code></summary>
 
 ```
 /plugin marketplace add Maksim-Burtsev/punchcard
