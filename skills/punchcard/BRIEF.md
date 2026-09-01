@@ -56,8 +56,13 @@ reviewer sees the difference.
    one honest sentence — "the linked task could not be opened" — never a task
    summary inferred from a title. A fabricated intent poisons every section
    under it.
-3. Every file the diff touches that you need for the map: open it, do not
-   guess it. The map draws calls and writes you have seen.
+3. The files whose nodes are on the map: open them, do not guess them. The
+   map draws calls and writes you have seen. With a local checkout, read them
+   there at the change's head. Without one — a PR or MR briefed by URL from
+   somewhere else — read them at the PR's head sha through the forge's API:
+   `gh api repos/<owner>/<repo>/contents/<path>?ref=<sha>` (the content comes
+   base64-encoded), or `glab api projects/<id>/repository/files/<path>/raw?ref=<sha>`.
+   Only the files the map needs; a hundred-file sweep is not a hundred calls.
 
 ## Load before reading
 
