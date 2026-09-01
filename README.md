@@ -295,6 +295,7 @@ the reviewer's own claims included.
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
 | [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each, on Opus | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
 | [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by the bare model, Punchcard, and `/code-review`, with determinism and tokens measured for every condition | the most blockers reported, the deepest one caught by Punchcard alone, zero disproven claims, a verdict every time, median cost at bare-prompt level |
+| [The brief](benchmarks/brief-2026-09.md) | twelve PRs in three languages briefed cold by URL, 38 Sonnet 5 runs in two rounds, scored against decision lists written before any run was read | decisions recalled 85/86, map at the right altitude 20/21, zero findings in 21 runs, 72/83 hunk anchors resolving in the file at head, median $0.39 a brief |
 
 <details>
 <summary><strong>Built, measured, rejected</strong> — the features that didn't survive their own numbers</summary>
