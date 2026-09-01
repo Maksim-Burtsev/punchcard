@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "punchcard",
-      "description": "Architecture-level review: design, boundaries, data, error paths. Never style. One verdict, every finding that earns its place, claims demonstrated in code. /punchcard for a diff, /punchcard:pr to post into a PR/MR.",
+      "description": "Architecture-level review: design, boundaries, data, error paths. Never style. One verdict, every finding that earns its place, claims demonstrated in code. /punchcard for a diff, /punchcard:pr to post into a PR/MR, /punchcard:brief to be oriented before reviewing.",
       "source": "./",
       "category": "productivity"
     }
