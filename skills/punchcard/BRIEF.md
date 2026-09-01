@@ -100,9 +100,10 @@ never retyped from memory or reconstructed from what the description says the
 code does. Each hunk is introduced by the sentence before it, naming what it
 decides and where it lives — "one counter per request; a nested limit
 retunes it instead of duplicating it — `starlette/middleware/body_limit.py:75`:"
-— before the fence renders it. Mark the load-bearing lines with a short `←`
-note in a trailing comment, in the snippet's own comment syntax (`# ←`,
-`// ←`, `-- ←`), so the snippet stays valid code in any language. Show the
+— before the fence renders it. Mark the load-bearing line — one, at most two
+per hunk — with a short `←` note in a trailing comment, in the snippet's own
+comment syntax (`# ←`, `// ←`, `-- ←`), so the snippet stays valid code in any
+language; a hunk marked on every line is marked on none. Show the
 code, never point at it: a `path:line` in a list is a debt the reviewer pays
 by hand; the same `path:line` as the caption over the hunk is already paid.
 
@@ -142,11 +143,9 @@ code where they are decided.
 
 ### The claim
 
-What the change promises, and its class per 11.2 in two words at the end:
-existential (this input now yields that output, this bug no longer
-reproduces), universal (this never deadlocks, this is always authorized, this
-invariant always holds), or performance, capacity and compatibility. The class
-is named, never explained: which evidence would close it is the review's
+What the change promises, and its class per 11.2 as one word at the end —
+existential, universal, performance, capacity or compatibility. The class is
+named, never explained: which evidence would close it is the review's
 business, and a paragraph about it here is the review starting early.
 
 The claim is one paragraph, not a section of paragraphs. It reports what was
@@ -170,12 +169,12 @@ hour of mental execution, so it is drawn whenever a flow, a shape or a
 placement changed.
 
 When nothing structural moved — a value, a type, a rename, a mechanical
-sweep — the map is one sentence saying what did not move and what did: "the
-flow is unchanged; the container under `_tasks_to_resolve` went from an
-unbounded dict to an LRU cache". That sentence is information. The section is
-never skipped silently. A container swapped in place is drawn only when its
-shape is the change — what it evicts, what it keeps, when — and then the
-drawing is the shape, not the unchanged flow around it.
+sweep, a dependency bump — the map is one sentence saying what did not move
+and what did: "the flow is unchanged; `Client` became `HttpClient` at forty
+call sites". That sentence is information. The section is never skipped
+silently. A container whose retention changed — what it evicts, what it
+keeps, when — is a shape, and shapes are drawn: the drawing is the shape, not
+the unchanged flow around it.
 
 The section holds the drawing, with one caption sentence, or the sentence
 alone. It never narrates the flow in prose and then draws the same flow
@@ -203,22 +202,25 @@ paragraph. When the thing did not exist before, the before cell is a dash.
 
 The hunks where the idea actually lands: the 20% of the diff that buys 80% of
 the understanding. The section title appears once; under it, each hunk has its
-own caption sentence and its own fence. On a one-line change it is the one
-line; on a large change it is every place a decision is made, and a decision
-made in the diff and absent from this section is a hole the reviewer falls
-into later.
+own caption sentence and its own fence.
 
 A hunk is a place where the change chooses behavior the reviewer could not
 have predicted from the claim: where the counter lives, what is compared to
 what, which exception is swallowed, what happens on the second call. Plumbing
 that follows from the claim — a parameter threaded through four constructors,
 a wrapper applied where every other wrapper is applied, an import — is named
-in one caption sentence and never shown. The same choice made in three places
-is shown once, and the caption names the other two. Test code is never a
-hunk: tests are evidence for the review, not decisions of the change. Code
+in one caption sentence and never shown. On a large change most of the diff
+is plumbing, and the section stays short. The same choice made in three
+places is shown once, and the caption names the other two. Test code is never
+a hunk: tests are evidence for the review, not decisions of the change. Code
 from outside the repository is never a hunk: name the library semantics the
 change leans on in the caption, and show the line in this repository that
 leans on them.
+
+On a one-line change the section is the one line. On a large change it is
+each place where behavior is chosen and nothing else — and a choice made in
+the diff and absent from this section is a hole the reviewer falls into
+later.
 
 Plan knowledge, not code narration (10.9): the caption says what the hunk
 decides; the hunk shows it deciding. A sentence that walks the lines — "first
@@ -276,8 +278,8 @@ deleted. The measure is the corridor: the brief is what you would say to the
 next reviewer standing up, and every sentence that justifies why the brief
 says what it says — why this class, why this evidence, why this row — is the
 review starting early, and is deleted. The brief states; it never argues.
-Prose is whole sentences: telegraphic fragments read as a bot, not a
-reviewer.
+Prose is whole sentences, table cells excepted: telegraphic fragments read as
+a bot, not a reviewer.
 
 ## Before you render, check these six
 
