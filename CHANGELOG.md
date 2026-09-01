@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.5.0 — 2026-09-02
+
+- **The brief.** `/punchcard:brief <url|number|branch>` is the reviewer's
+  orientation before the review: what the change claims and the class of
+  the claim, an ASCII before/after map of the flow it changed — every node
+  a name from the code, drawn at the altitude the change lives at — a
+  before/after table of what holds now, and the hunks where behavior is
+  chosen, copied from the diff at their real lines. It bans findings the
+  way the review bans summaries. There is no page budget and no cap on
+  rows or hunks; length is held by a gate on each element, and a
+  mechanical change gets five lines. Briefed by URL with no local
+  checkout, it reads the files it needs at the PR's head sha. Measured on
+  Sonnet 5, 38 cold runs on twelve PRs in two rounds: decisions recalled
+  85/86 against lists written before any run was read, altitude right
+  20/21, zero findings in 21 runs, 72/83 hunk anchors resolving in the
+  file at head, median $0.39 and 2.4 minutes per brief
+  (`benchmarks/brief-2026-09.md`).
+- **What round one taught it, on the record.** Line numbers were diff
+  positions in ten of seventeen runs; a translation sweep got hunks and a
+  finding; seven replies opened with a sentence about being ready to
+  write. All fixed between rounds and re-measured, with the fixes named
+  for the runs that forced them (`benchmarks/brief-2026-09.md`, "What
+  changed between rounds").
+- **What it still does.** About a third of one-shot replies carry a stray
+  sentence before the header; a Russian request wrapped around the English
+  command got an English brief in every counted run; hunks on heavily
+  commented code lose a comment line from their middle. Logged as limits
+  with their rates, not smoothed over (`benchmarks/brief-2026-09.md`,
+  "Verdict on the brief").
+- **The manifests name three commands.** `/punchcard`, `/punchcard:pr`,
+  `/punchcard:brief`.
+
 ## 1.4.0 — 2026-08-25
 
 - **Measured three ways on Sonnet 5, on unseen PRs.** Five PRs — three
