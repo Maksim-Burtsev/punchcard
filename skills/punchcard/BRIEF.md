@@ -220,7 +220,8 @@ paragraph. When the thing did not exist before, the before cell is a dash.
 
 The hunks where the idea actually lands: the 20% of the diff that buys 80% of
 the understanding. The section title appears once; under it, each hunk has its
-own caption sentence and its own fence.
+own caption sentence and its own fence, and the caption is a sentence about
+what the hunk decides — never the section title written again.
 
 A hunk is a place where the change chooses behavior the reviewer could not
 have predicted from the claim: where the counter lives, what is compared to
@@ -288,8 +289,8 @@ then merges unseen, and silent truncation is the one thing the brief may never
 do.
 
 The other direction is just as binding. On a mechanical change — a rename, a
-sweep, a dependency bump, generated files, translation catalogs, a lockfile —
-every section is one line: the claim in a sentence, the map's sentence,
+sweep, a dependency bump, generated files, translation catalogs, a lockfile,
+a diff that touches only tests or benchmarks — every section is one line: the claim in a sentence, the map's sentence,
 "**The invariants** — none: data changed, behavior did not." and
 "**The decision** — none." A hunk that illustrates a pattern repeating across
 fifty files is not a decision, and the sentence naming the pattern is the
@@ -335,12 +336,13 @@ a bot, not a reviewer.
   the brief follows ("Now I have everything I need"), no sign-off, no offer to
   go deeper. Your reading happens before you write; the reply is the render.
 - The four section titles stay in English — they are the signature, the way
-  the verdict lines are the review's. Everything else is in the language the
-  request was written in: a request in Russian gets a Russian brief under
-  English titles, a request in English an English one, whatever language the
-  code, the description or this file are in. That covers the prose, the
-  captions, the table cells, the `← new` marks on the map and the `←` notes in
-  the hunks.
+  the verdict lines are the review's. Everything else is in the language of
+  the user's own words — the sentence they typed around the command, or the
+  conversation so far — never the language of the command's expansion, of
+  this file, of the code or of the description. `Сделай /punchcard:brief
+  <url>` is a Russian request, and it gets a Russian brief under English
+  titles. That covers the prose, the captions, the table cells, the `← new`
+  marks on the map and the `←` notes in the hunks.
 - No praise, no statistics block, no findings. If a sentence is arguing with
   the author or with the description, re-read the law.
 
