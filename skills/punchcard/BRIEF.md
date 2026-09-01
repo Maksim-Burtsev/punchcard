@@ -107,6 +107,20 @@ language; a hunk marked on every line is marked on none. Show the
 code, never point at it: a `path:line` in a list is a debt the reviewer pays
 by hand; the same `path:line` as the caption over the hunk is already paid.
 
+The hunk is the code as it reads at the change's head — copied from the file,
+or from the `+` side of the diff with the prefixes stripped — never a `+`/`-`
+diff fragment: what the code was is the map's and the table's business, the
+hunk shows what it is. It is copied whole: a comment line in the middle of it
+stays, and skipping lines inside a hunk is retyping. When the two interesting
+lines are far apart, that is two hunks or one caption.
+
+The number in `path:line` is the line of the hunk's first line in the file at
+the change's head, never its position in the diff output. Read it off the
+fetched file, or compute it from the hunk header: `@@ -a,b +c,d @@` means the
+first line under that header is line `c` of the new file, and every context
+line and every `+` line below it counts one. The path is repository-relative,
+from the root, exactly as the diff names it.
+
 **The map** is drawn by hand, and a hand-drawn diagram can lie in ways a copied
 hunk cannot, so it is grounded like a claim, not decorated like an
 illustration:
@@ -144,9 +158,10 @@ code where they are decided.
 ### The claim
 
 What the change promises, and its class per 11.2 as one word at the end —
-existential, universal, performance, capacity or compatibility. The class is
-named, never explained: which evidence would close it is the review's
-business, and a paragraph about it here is the review starting early.
+existential, universal, performance, capacity or compatibility — a word and
+a full stop, with nothing in parentheses after it. The class is named, never
+explained: which evidence would close it is the review's business, and a
+sentence about it here is the review starting early.
 
 The claim is one paragraph, not a section of paragraphs. It reports what was
 promised in the words it takes; it does not retell the history of the issue,
@@ -176,9 +191,12 @@ silently. A container whose retention changed — what it evicts, what it
 keeps, when — is a shape, and shapes are drawn: the drawing is the shape, not
 the unchanged flow around it.
 
-The section holds the drawing, with one caption sentence, or the sentence
-alone. It never narrates the flow in prose and then draws the same flow
-beneath: the drawing is the narration.
+The section holds the drawing, with one caption sentence before the fence, or
+the sentence alone. After the fence the next line is the next title: a
+paragraph under the drawing that explains it is the drawing failing, and is
+folded into the drawing or deleted. Two flows that both changed are two
+drawings, each with its own caption — never one drawing and a paragraph about
+the other.
 
 ### The invariants
 
@@ -263,12 +281,21 @@ node ──▶ node                       node ──▶ new node  ← new
 ## Length
 
 The brief is as long as the change has content, and not one line longer. A
-mechanical merge request gets a five-line brief with a one-sentence map,
-because that is all it contains; a four-hundred-line change with three
-decisions in it gets three hunks and a table as long as the truth. There is no
-budget on rows, no cap on hunks, no page limit — a cap is where the brief
-would start dropping what the reviewer then merges unseen, and silent
-truncation is the one thing the brief may never do.
+four-hundred-line change with three decisions in it gets three hunks and a
+table as long as the truth. There is no budget on rows, no cap on hunks, no
+page limit — a cap is where the brief would start dropping what the reviewer
+then merges unseen, and silent truncation is the one thing the brief may never
+do.
+
+The other direction is just as binding. On a mechanical change — a rename, a
+sweep, a dependency bump, generated files, translation catalogs, a lockfile —
+every section is one line: the claim in a sentence, the map's sentence,
+"**The invariants** — none: data changed, behavior did not." and
+"**The decision** — none." A hunk that illustrates a pattern repeating across
+fifty files is not a decision, and the sentence naming the pattern is the
+whole section; a row about what the sweep did not regenerate is a finding.
+The brief on a sweep is five lines, and that brevity is what the reviewer
+needed to know.
 
 What keeps it short is the gate on each element, not a count: a row that does
 not differ or does not speak about the system is deleted, a hunk that shows
@@ -281,7 +308,7 @@ review starting early, and is deleted. The brief states; it never argues.
 Prose is whole sentences, table cells excepted: telegraphic fragments read as
 a bot, not a reviewer.
 
-## Before you render, check these six
+## Before you render, check these seven
 
 1. Every cell, node and arrow traces to a diff line or a file you opened. A
    sentence taken from the description and never confirmed in the code lives
@@ -293,18 +320,27 @@ a bot, not a reviewer.
    once more looking only for places where behavior is chosen, and compare.
 5. Delete every fence and read what remains: still coherent, no holes. A
    brief that collapses without its fences was captioning, not writing.
-6. Every snippet was copied, and every `path:line` was re-checked against the
-   diff after any edit that moved it.
+6. Every snippet was copied whole, and every `path:line` was re-checked
+   against the file at the change's head, not against the diff's line count.
+7. The reply starts at the header line, and it is in the language the request
+   was written in.
 
 ## Output rules
 
 - The brief renders in the conversation. No file is written, no artifact is
   published, nothing is posted into the PR or MR. The brief is for the
   reviewer, not for the author.
+- The reply is the brief and nothing else. It opens with the header line and
+  closes with the last fence or the last caption: no sentence announcing that
+  the brief follows ("Now I have everything I need"), no sign-off, no offer to
+  go deeper. Your reading happens before you write; the reply is the render.
 - The four section titles stay in English — they are the signature, the way
-  the verdict lines are the review's. Everything else is in the language of
-  the conversation: the prose, the captions, the table cells, the `← new`
-  marks on the map, the `←` notes in the hunks.
+  the verdict lines are the review's. Everything else is in the language the
+  request was written in: a request in Russian gets a Russian brief under
+  English titles, a request in English an English one, whatever language the
+  code, the description or this file are in. That covers the prose, the
+  captions, the table cells, the `← new` marks on the map and the `←` notes in
+  the hunks.
 - No praise, no statistics block, no findings. If a sentence is arguing with
   the author or with the description, re-read the law.
 
