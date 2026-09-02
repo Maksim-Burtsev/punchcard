@@ -2,7 +2,7 @@
 name: punchcard-brief
 description: "Reviewer's orientation for a PR/MR/branch/diff, before the review: what the change claims, a before/after map of the flow it changed, the table of what held before and what holds now, and the hunks where the decision lands. Never a review, never findings — problems belong to the punchcard skill. Use when the user invokes /punchcard:brief, or asks what a change does, how it works now, or to be brought up to speed on a branch before reviewing it."
 license: MIT
-compatibility: "Needs git and a shell; gh or glab to fetch a PR/MR and its description, a tracker CLI or MCP tool only if one is on hand. Reads three files and the diff — no fan-out, no subagents."
+compatibility: "Needs git and a shell. A PR/MR is opened with whatever the harness has — gh or glab if installed, an MCP or browser tool otherwise. Reads three files and the diff — no fan-out, no subagents."
 ---
 
 # Punchcard — the brief
@@ -43,27 +43,29 @@ reviewer sees the difference.
 
 ## Acquire
 
-1. The target is one of two things. A PR or MR URL: fetch its description
-   and its diff with `gh` or `glab`. Or nothing: the current branch against
+1. The target is one of two things. A PR or MR URL: get its description
+   and its diff with whatever you have — `gh` or `glab` when they are on the
+   machine, an MCP tool or a browser when that is what the harness gives you;
+   the access is the user's, not a prescribed tool, and when nothing can open
+   the URL, say so and stop. Or nothing: the current branch against
    the repository's default branch, `git diff <default>...HEAD`, in the
    repository you are standing in; a branch name or a range given instead is
    read the same way. Standing on the default branch with no target, there is
    no branch to brief: say "On `<default>` — nothing to brief against it."
    and stop. Not a git repository and no target: say so and stop. An empty
    diff: "Nothing to brief." and stop.
-2. The task behind it: follow the issue or ticket the description links when a
-   tool on hand can open it — `gh` or `glab` on the same host, a tracker CLI or
-   MCP tool if the harness has one. When nothing can open it, The claim carries
+2. The task behind it: follow the issue or ticket the description links when
+   anything on hand can open it. When nothing can, The claim carries
    one honest sentence — "the linked task could not be opened" — never a task
    summary inferred from a title. A fabricated intent poisons every section
    under it.
 3. The files whose nodes are on the map: open them, do not guess them. The
    map draws calls and writes you have seen. With a local checkout, read them
    there at the change's head. Without one — a PR or MR briefed by URL from
-   somewhere else — read them at the PR's head sha through the forge's API:
-   `gh api repos/<owner>/<repo>/contents/<path>?ref=<sha>` (the content comes
-   base64-encoded), or `glab api projects/<id>/repository/files/<path>/raw?ref=<sha>`.
-   Only the files the map needs; a hundred-file sweep is not a hundred calls.
+   somewhere else — read them at the PR's head sha through whatever opened
+   the PR (with `gh`, that is `gh api repos/<owner>/<repo>/contents/<path>?ref=<sha>`,
+   base64-encoded). Only the files the map needs; a hundred-file sweep is not
+   a hundred calls.
 
 ## Load before reading
 
