@@ -212,6 +212,8 @@ the same review, only slower.
 /punchcard main..feature    # review a range
 /punchcard <MR/PR url>      # review a PR/MR, render in the conversation
 /punchcard:pr <url|number>  # review a PR/MR and post the review into it
+/punchcard:brief <url|branch>   # orient before reviewing: claim, map, invariants, the hunks
+/punchcard:brief                 # the same for the current branch against the default branch
 ```
 
 The slash form is how Claude Code names a skill. Codex spells it
@@ -223,6 +225,42 @@ Posting puts one PR review on GitHub (locations permalinked to the reviewed sha,
 which GitHub expands into code cards) or one MR note on GitLab. Re-run it after a
 push and it updates that same review in place — one entry per PR, for the life of
 the PR. No access to post? The review is rendered in the reply, with the reason.
+
+<details>
+<summary><strong>The brief</strong> — an orientation before the review, still being road-tested</summary>
+
+`/punchcard:brief` answers the other question a reviewer has: not what is
+wrong with a change, but what it is. A diff is the delta of the text; the
+reviewer needs the delta of the behavior. Four sections, always in this
+order — **The claim** (what the description promises, and its class),
+**The map** (a before/after drawing of the flow that changed, in plain
+ASCII, every node a name from the code), **The invariants** (a before/after
+table of what holds now), **The decision** (the hunks where behavior is
+chosen, copied from the diff at their real lines). No findings and no
+verdict: that is `/punchcard`'s job, and the brief is what to read before it.
+
+The same reviewer and the same shelf. From it the brief takes:
+
+- **Code Reading** (Spinellis): name the pattern the code already follows
+  and read the change against it; a description is an unverified claim, the
+  code wins; rebuild the model first, then the details.
+- **The Programmer's Brain** (Hermans): plan knowledge, not code narration;
+  the caption sits on the code, never a page away from it.
+- **A Philosophy of Software Design** (Ousterhout), **Software Design
+  X-Rays** (Tornhill), **Refactoring** (Fowler), **Building Evolutionary
+  Architectures** (Parsons & Kua): where the diff landed is evidence about
+  the boundaries, and that is the altitude the map is drawn at.
+- **Just Enough Software Architecture** (Fairbanks), **Modern Software
+  Engineering** (Farley), **Software Engineering at Google** (Winters),
+  **Code That Fits in Your Head** (Seemann): classify the claim before
+  pricing the evidence that would close it.
+
+Two renders exactly as the skill produced them, a one-line change and a
+six-hundred-line feature: [assets/demo-brief.md](assets/demo-brief.md). The
+measurement, with what still fails on the record:
+[benchmarks/brief-2026-09.md](benchmarks/brief-2026-09.md).
+
+</details>
 
 <details>
 <summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.5.0 — 2026-09-02
+
+- **The brief, road-testing.** `/punchcard:brief <url|branch>` is the
+  orientation before the review: what the change claims, an ASCII
+  before/after map of the flow it changed, a before/after table of what
+  holds now, the hunks where behavior is chosen, copied at their real
+  lines. No findings — the mirror of the review's ban on summaries. The
+  same reviewer, reading from the same shelf, three principles loaded
+  instead of 78. Measured on Sonnet 5, 38 cold runs on twelve PRs in two
+  rounds, with what still fails written down next to what holds — a stray
+  sentence before the header on about a third of one-shot replies, comment
+  lines elided from long hunks (`benchmarks/brief-2026-09.md`). The format
+  is expected to move as it gets used.
+
 ## 1.4.0 — 2026-08-25
 
 - **Measured three ways on Sonnet 5, on unseen PRs.** Five PRs — three

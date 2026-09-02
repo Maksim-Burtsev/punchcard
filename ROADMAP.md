@@ -92,3 +92,9 @@
   (`benchmarks/corpus-expansion-2026-08.md`, which also records the
   first campaign thrown away for plugin contamination and what a next
   attempt should try instead).
+- [x] **12. The brief — road-tested, not yet settled.** `/punchcard:brief`
+  hands the reviewer the model of a change before the diff: claim, an
+  ASCII before/after map, a before/after table, the hunks where behavior
+  is chosen. No findings. Measured on Sonnet 5 in two rounds and shipped
+  with its limits on the record; the format will move as it gets used
+  (`benchmarks/brief-2026-09.md`).
