@@ -145,7 +145,7 @@ Any agent: this installs the skill into every harness it finds on the
 machine. Everything below is the same skill, installed by hand.
 
 <details>
-<summary><strong>Claude Code</strong> — as a plugin, with <code>/punchcard</code>, <code>/punchcard:pr</code> and <code>/punchcard:brief</code></summary>
+<summary><strong>Claude Code</strong> — as a plugin, with <code>/punchcard</code> and <code>/punchcard:pr</code></summary>
 
 ```
 /plugin marketplace add Maksim-Burtsev/punchcard
@@ -226,39 +226,41 @@ which GitHub expands into code cards) or one MR note on GitLab. Re-run it after 
 push and it updates that same review in place — one entry per PR, for the life of
 the PR. No access to post? The review is rendered in the reply, with the reason.
 
-### The brief
+<details>
+<summary><strong>The brief</strong> — an orientation before the review, still being road-tested</summary>
 
-`/punchcard:brief` is the other half of the reviewer's day: not what is
+`/punchcard:brief` answers the other question a reviewer has: not what is
 wrong with a change, but what it is. A diff is the delta of the text; the
-reviewer needs the delta of the behavior, and rebuilding one from the other
-is the hour the brief buys back. Four sections, always in this order —
-**The claim** (what the description promises, and its class), **The map** (a
-before/after drawing of the flow that changed, in plain ASCII, every node a
-name from the code), **The invariants** (a before/after table of what holds
-now), **The decision** (the hunks where behavior is chosen, copied from the
-diff at their real lines). No findings and no verdict: that is `/punchcard`'s
-job, and the brief is what to read before it.
+reviewer needs the delta of the behavior. Four sections, always in this
+order — **The claim** (what the description promises, and its class),
+**The map** (a before/after drawing of the flow that changed, in plain
+ASCII, every node a name from the code), **The invariants** (a before/after
+table of what holds now), **The decision** (the hunks where behavior is
+chosen, copied from the diff at their real lines). No findings and no
+verdict: that is `/punchcard`'s job, and the brief is what to read before it.
 
-It is the same reviewer reading from the same shelf. The brief loads three
-principles of the constitution rather than all 78, because it is reading,
-not judging: **11.2**, classify the claim before pricing the evidence
-(Ousterhout, McConnell, Farley, Winters, Seemann, Fairbanks, Richards &
-Ford, Kleppmann); **9.1**, read where the diff landed as evidence about the
-boundaries (Ousterhout, Thomas & Hunt, Fowler, Farley, Parsons & Kua,
-Tornhill) — that is the altitude the map is drawn at; and **10.9** from
-Hermans' *The Programmer's Brain*, plan knowledge, not code narration —
-why the brief hands over a model instead of reading the diff aloud. Two
-more from Spinellis' *Code Reading* are written into the skill itself:
-**23.7**, name the pattern the code already follows and read the change
-against it; **23.9**, a description is an unverified claim and the code
-wins. The map's before/after form, the table, and the rule that the hunk is
-shown rather than pointed at come from the same book's account of how a
-reader rebuilds a mental model, and from Hermans on split attention: the
-caption sits on the code, never a page away from it.
+The same reviewer and the same shelf. From it the brief takes:
+
+- **Code Reading** (Spinellis): name the pattern the code already follows
+  and read the change against it; a description is an unverified claim, the
+  code wins; rebuild the model first, then the details.
+- **The Programmer's Brain** (Hermans): plan knowledge, not code narration;
+  the caption sits on the code, never a page away from it.
+- **A Philosophy of Software Design** (Ousterhout), **Software Design
+  X-Rays** (Tornhill), **Refactoring** (Fowler), **Building Evolutionary
+  Architectures** (Parsons & Kua): where the diff landed is evidence about
+  the boundaries, and that is the altitude the map is drawn at.
+- **Just Enough Software Architecture** (Fairbanks), **Modern Software
+  Engineering** (Farley), **Software Engineering at Google** (Winters),
+  **Code That Fits in Your Head** (Seemann): classify the claim before
+  pricing the evidence that would close it.
 
 Two renders exactly as the skill produced them, a one-line change and a
 six-hundred-line feature: [assets/demo-brief.md](assets/demo-brief.md). The
-measurement behind it: [the brief benchmark](benchmarks/brief-2026-09.md).
+measurement, with what still fails on the record:
+[benchmarks/brief-2026-09.md](benchmarks/brief-2026-09.md).
+
+</details>
 
 <details>
 <summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>
@@ -314,7 +316,6 @@ the reviewer's own claims included.
 | [Stability](benchmarks/stability-2026-08.md) | cold runs on two PRs plus a clean control, every edit measured before it stayed; Go, JS, Rust and Java smoke runs | every blocker-class finding stable, zero noise, the dependency-deep miss taken 3/3 |
 | [With and without](benchmarks/with-without-2026-08.md) | the same four PRs by the bare model, by Punchcard, and by `/code-review`, three cold runs each, on Opus | zero below-altitude noise against 2.3 nit sections per bare review, reviews 37% shorter |
 | [Three ways on Sonnet 5](benchmarks/three-way-sonnet-2026-08.md) | five PRs — three from repos no benchmark ever touched — by the bare model, Punchcard, and `/code-review`, with determinism and tokens measured for every condition | the most blockers reported, the deepest one caught by Punchcard alone, zero disproven claims, a verdict every time, median cost at bare-prompt level |
-| [The brief](benchmarks/brief-2026-09.md) | twelve PRs in three languages briefed cold by URL, 38 Sonnet 5 runs in two rounds, scored against decision lists written before any run was read | decisions recalled 85/86, map at the right altitude 20/21, zero findings in 21 runs, 72/83 hunk anchors resolving in the file at head, median $0.39 a brief |
 
 <details>
 <summary><strong>Built, measured, rejected</strong> — the features that didn't survive their own numbers</summary>

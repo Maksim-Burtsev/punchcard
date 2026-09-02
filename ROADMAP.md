@@ -92,18 +92,9 @@
   (`benchmarks/corpus-expansion-2026-08.md`, which also records the
   first campaign thrown away for plugin contamination and what a next
   attempt should try instead).
-- [x] **12. The brief — the orientation before the review.**
-  `/punchcard:brief` hands the reviewer the model of a change before they
-  open the diff: the claim and its class, an ASCII before/after map of the
-  flow that changed, a before/after table of what holds now, the hunks
-  where behavior is chosen, copied at their real lines. No findings — the
-  mirror of the review's ban on summaries. The format was chosen by
-  looking at real briefs on open-source PRs, not by describing options;
-  then measured: 38 cold Sonnet 5 runs on twelve PRs across Python, Rust
-  and TypeScript in two rounds, the skill corrected between them on what
-  the first round showed. Decisions recalled 85/86, map altitude right
-  20/21, zero findings in 21 runs on a set with a control built to tempt
-  one, 72/83 hunk anchors resolving in the file at head. What remains: a
-  stray sentence before the header on about a third of one-shot replies,
-  and the language rule losing to the command's language in `-p` mode
+- [x] **12. The brief — road-tested, not yet settled.** `/punchcard:brief`
+  hands the reviewer the model of a change before the diff: claim, an
+  ASCII before/after map, a before/after table, the hunks where behavior
+  is chosen. No findings. Measured on Sonnet 5 in two rounds and shipped
+  with its limits on the record; the format will move as it gets used
   (`benchmarks/brief-2026-09.md`).
