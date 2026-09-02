@@ -1,15 +1,15 @@
 ---
-description: Brief a PR, MR or branch with Punchcard — the reviewer's orientation before the review, never a review
-argument-hint: <PR/MR url | number | branch>
+description: Brief a PR, MR or the current branch with Punchcard — the reviewer's orientation before the review, never a review
+argument-hint: <PR/MR url | branch>
 ---
 
 Run the punchcard brief on the given target.
 
-Target: $ARGUMENTS — a GitHub PR / GitLab MR URL, a bare number resolved
-against the current repository's origin, or a branch or range. No
-argument: fall back to the local targets the brief prescribes —
-uncommitted work, otherwise the current branch against the default
-branch.
+Target: $ARGUMENTS — a GitHub PR / GitLab MR URL, or a branch or range in
+the current repository. No argument: the current branch against the
+repository's default branch. Standing on the default branch with no
+argument there is nothing to brief, and the brief says exactly that in
+one line and stops.
 
 Write the brief of that change exactly as `skills/punchcard/BRIEF.md`
 prescribes — it lives next to the punchcard skill — including its four

@@ -43,13 +43,14 @@ reviewer sees the difference.
 
 ## Acquire
 
-1. The target, in whatever form it came: a PR or MR URL, a bare number
-   resolved against the current repository's origin, a branch or a range. Fetch
-   its description and its diff with `gh` or `glab` when it is a PR/MR;
-   otherwise uncommitted work (`git diff HEAD`, staged included), otherwise the
-   current branch against the repository's default branch
-   (`git diff <default>...HEAD`). Not a git repo and no target: say so and
-   ask. Empty diff: "Nothing to brief." and stop.
+1. The target is one of two things. A PR or MR URL: fetch its description
+   and its diff with `gh` or `glab`. Or nothing: the current branch against
+   the repository's default branch, `git diff <default>...HEAD`, in the
+   repository you are standing in; a branch name or a range given instead is
+   read the same way. Standing on the default branch with no target, there is
+   no branch to brief: say "On `<default>` — nothing to brief against it."
+   and stop. Not a git repository and no target: say so and stop. An empty
+   diff: "Nothing to brief." and stop.
 2. The task behind it: follow the issue or ticket the description links when a
    tool on hand can open it — `gh` or `glab` on the same host, a tracker CLI or
    MCP tool if the harness has one. When nothing can open it, The claim carries

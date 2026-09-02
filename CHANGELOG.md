@@ -2,7 +2,7 @@
 
 ## 1.5.0 — 2026-09-02
 
-- **The brief.** `/punchcard:brief <url|number|branch>` is the reviewer's
+- **The brief.** `/punchcard:brief <url|branch>` is the reviewer's
   orientation before the review: what the change claims and the class of
   the claim, an ASCII before/after map of the flow it changed — every node
   a name from the code, drawn at the altitude the change lives at — a

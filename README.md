@@ -212,7 +212,8 @@ the same review, only slower.
 /punchcard main..feature    # review a range
 /punchcard <MR/PR url>      # review a PR/MR, render in the conversation
 /punchcard:pr <url|number>  # review a PR/MR and post the review into it
-/punchcard:brief <url|number|branch>  # orient before reviewing: claim, map, invariants, the hunks
+/punchcard:brief <url|branch>   # orient before reviewing: claim, map, invariants, the hunks
+/punchcard:brief                 # the same for the current branch against the default branch
 ```
 
 The slash form is how Claude Code names a skill. Codex spells it
@@ -236,10 +237,28 @@ before/after drawing of the flow that changed, in plain ASCII, every node a
 name from the code), **The invariants** (a before/after table of what holds
 now), **The decision** (the hunks where behavior is chosen, copied from the
 diff at their real lines). No findings and no verdict: that is `/punchcard`'s
-job, and the brief is what to read before it. Two renders exactly as the
-skill produced them, a one-line change and a six-hundred-line feature:
-[assets/demo-brief.md](assets/demo-brief.md). The measurement behind it:
-[the brief benchmark](benchmarks/brief-2026-09.md).
+job, and the brief is what to read before it.
+
+It is the same reviewer reading from the same shelf. The brief loads three
+principles of the constitution rather than all 78, because it is reading,
+not judging: **11.2**, classify the claim before pricing the evidence
+(Ousterhout, McConnell, Farley, Winters, Seemann, Fairbanks, Richards &
+Ford, Kleppmann); **9.1**, read where the diff landed as evidence about the
+boundaries (Ousterhout, Thomas & Hunt, Fowler, Farley, Parsons & Kua,
+Tornhill) — that is the altitude the map is drawn at; and **10.9** from
+Hermans' *The Programmer's Brain*, plan knowledge, not code narration —
+why the brief hands over a model instead of reading the diff aloud. Two
+more from Spinellis' *Code Reading* are written into the skill itself:
+**23.7**, name the pattern the code already follows and read the change
+against it; **23.9**, a description is an unverified claim and the code
+wins. The map's before/after form, the table, and the rule that the hunk is
+shown rather than pointed at come from the same book's account of how a
+reader rebuilds a mental model, and from Hermans on split attention: the
+caption sits on the code, never a page away from it.
+
+Two renders exactly as the skill produced them, a one-line change and a
+six-hundred-line feature: [assets/demo-brief.md](assets/demo-brief.md). The
+measurement behind it: [the brief benchmark](benchmarks/brief-2026-09.md).
 
 <details>
 <summary><strong>In CI</strong> — GitHub Actions and GitLab CI</summary>
