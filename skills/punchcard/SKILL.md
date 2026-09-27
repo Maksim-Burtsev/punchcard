@@ -543,7 +543,7 @@ report beats a split one.
 previous review on this PR
 (`gh api repos/{o}/{r}/pulls/{n}/reviews --jq '.[] | select(.body |
 startswith("<!-- punchcard -->"))'`). Found one: update it —
-`gh api -X PUT repos/{o}/{r}/pulls/{n}/reviews/{id} -f body=@review.md` —
+`gh api -X PUT repos/{o}/{r}/pulls/{n}/reviews/{id} -F body=@review.md` —
 and end the readout with one sentence naming the sha you just reviewed.
 None: post a new one. A PR gets one Punchcard entry in its timeline for
 its whole life, not one per run; a review that reposts itself on every
