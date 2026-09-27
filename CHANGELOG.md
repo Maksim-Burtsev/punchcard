@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **A review updated in place keeps its text.** The call that rewrites
+  the review passed `-f body=@review.md`, and `gh api -f` sends its value
+  as it is: the review's body became the literal `@review.md`. `-F` reads
+  the file.
+
 ## 1.5.0 — 2026-09-02
 
 - **The brief, road-testing.** `/punchcard:brief <url|branch>` is the
