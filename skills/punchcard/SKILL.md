@@ -168,24 +168,32 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    other's feet. So you prepare the comparison once, before anything is
    dispatched, and every pass starts from it.
 
-   *Two trees.* Pin the head sha and the merge-base sha and write both
-   down. In a scratch directory outside the user's tree (`mktemp -d`):
-   base is `git worktree add --detach <scratch>/base <merge-base>`; head
-   is `git worktree add --detach <scratch>/head <head>` for a branch or a
-   PR (fetch the head commit first when it is not local), and for
-   uncommitted work the user's working tree itself. A PR with no local
-   repository at all: read files at its head sha through whatever opened
-   it, as the brief does, and run nothing.
+   *Two trees.* Pin the base and head shas and write both down. Base is
+   `HEAD` for uncommitted work, `git merge-base <default> HEAD` for a
+   branch, and the merge-base of the PR's head with its target branch for
+   a PR. Head is the branch or PR head — fetch it first when it is not
+   local (`git fetch origin pull/<n>/head` on GitHub,
+   `merge-requests/<n>/head` on GitLab; `--unshallow` a shallow clone
+   before asking for a merge-base) — and for uncommitted work the sha
+   `git stash create` prints: a commit of the working tree, staged and
+   unstaged, written without touching the tree, the index or the stash
+   list; copy in any untracked file the change needs. Both go in a
+   scratch directory outside the user's tree (`mktemp -d`):
+   `git worktree add --detach <scratch>/base <base>`, the same for head.
+   A PR with no local repository: read files at its head sha through
+   whatever opened it, as the brief does, and run only what can run
+   without a checkout.
 
-   *The user's tree is read-only.* Never run `git stash`, `checkout`,
-   `switch`, `reset` or `restore` in it, and never edit a file in it —
-   not to revert, not for a moment. It may hold work that exists nowhere
-   else, and the other passes are reading it. Base and head are
-   read-only too. An experiment that reverts or edits code goes to its
-   own throwaway worktree:
-   `git worktree add --detach <scratch>/exp-<n> <sha>`, with
-   `git diff HEAD --binary | git -C <scratch>/exp-<n> apply` on top when
-   the target is uncommitted work.
+   *The user's tree is read-only.* Never run `git stash` — anywhere: its
+   list is shared by every worktree of the repository; `stash create`
+   above is the one form that writes nothing but a commit — nor
+   `checkout`, `switch`, `reset` or `restore` in the user's tree, never
+   edit a file in it and never run the code or its tests there — not to
+   revert, not for a moment. It may hold work that exists nowhere else. Base and head are read-only too, because
+   the other passes are reading them: an experiment that reverts or
+   edits code gets its own throwaway worktree,
+   `git worktree add --detach <scratch>/exp-<n> <base or head sha>`, and
+   reverts there with `git checkout <base sha> -- <file>`.
 
    *The environment, once.* Find the toolchain and the command that runs
    one test — `PYTHONPATH=src pytest tests/x.py -k name -q`,
@@ -210,8 +218,9 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    run. Finders do not re-derive what the pack states.
 
    *Cleanup.* When the review ends — rendered, posted, or stopped partway
-   — remove every worktree you added (`git worktree remove --force`, then
-   `git worktree prune`) and the scratch directory. The user's
+   — remove every worktree you added with `git worktree remove --force`
+   (it works when the directory is already gone; `prune` would also drop
+   the user's own entries) and the scratch directory. The user's
    repository is left with the worktrees it had.
 
    The shortcut and the sequential passes start from the same trees and

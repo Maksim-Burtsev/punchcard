@@ -73,7 +73,12 @@ twice. The [stability benchmark](benchmarks/stability-2026-08.md) records it as
 ## How it reviews
 
 Search and judgement are different jobs, so they run in different places.
-Three finders read the same diff independently and return candidates, not
+First the comparison is prepared once: `main` and the PR checked out as
+worktrees in a scratch directory, the environment found and checked in
+each, and one short context pack every pass starts from. Your working
+tree is read-only throughout — nothing stashed, checked out or reverted
+in it — and the worktrees are removed when the review ends. Then three
+finders read the same diff independently and return candidates, not
 findings:
 
 | Pass | Reads the diff as | Returns |
