@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.5.1 — 2026-10-01
 
+- **A posted review names where it came from.** A small line under the
+  marker, above the verdict: *Design review by Punchcard*, linking the
+  repo. Same on GitLab notes.
 - **A review updated in place keeps its text.** The call that rewrites
   the review passed `-f body=@review.md`, and `gh api -f` sends its value
   as it is: the review's body became the literal `@review.md`. `-F` reads
