@@ -539,7 +539,10 @@ cards already carry file, line, permalink and snippet. One coherent
 report beats a split one.
 
 **One review per PR, updated in place.** Start the body with the marker
-`<!-- punchcard -->` on its own line. Before posting, look for your own
+`<!-- punchcard -->` on its own line, and put the credit line under it,
+above the verdict heading:
+`<sub>Design review by [Punchcard](https://github.com/Maksim-Burtsev/punchcard)</sub>`.
+A reader who likes the review finds where it came from. Before posting, look for your own
 previous review on this PR
 (`gh api repos/{o}/{r}/pulls/{n}/reviews --jq '.[] | select(.body |
 startswith("<!-- punchcard -->"))'`). Found one: update it —
@@ -551,7 +554,7 @@ push is the noise everyone mutes.
 
 **GitLab — one MR note.** Post the standard render as a single note:
 `glab mr note {iid} -m "$(cat review.md)"`, with the same
-`<!-- punchcard -->` marker and the same update-in-place rule
+`<!-- punchcard -->` marker, credit line and update-in-place rule
 (`glab api -X PUT projects/:id/merge_requests/{iid}/notes/{note_id}`).
 GitLab does not expand blob
 permalinks into snippets, so location lines are plain markdown links to
