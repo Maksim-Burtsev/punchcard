@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="886" height="594" viewBox="0 0 886 594" role="img" aria-label="Punchcard reviewing psf/requests#7520: verdict Ship after #1, a summary table of three findings, and finding #1 run through main and the PR">
+<style>
+  svg { --bg: #ffffff; --bar: #f6f8fa; --line: #d1d9e0; --fg: #1f2328; --dim: #59636e; --red: #cf222e; --orange: #bc4c00; --yellow: #9a6700; --green: #1a7f37; }
+  @media (prefers-color-scheme: dark) {
+    svg { --bg: #0d1117; --bar: #151b23; --line: #3d444d; --fg: #e6edf3; --dim: #8b949e; --red: #ff7b72; --orange: #f0883e; --yellow: #e3b341; --green: #3fb950; }
+  }
+  text { font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: var(--fg); white-space: pre; font-variant-ligatures: none; }
+  .dim { fill: var(--dim); } .red { fill: var(--red); } .orange { fill: var(--orange); }
+  .yellow { fill: var(--yellow); } .green { fill: var(--green); } .b { font-weight: 700; }
+    @keyframes l0 { 0%, 3.75% { opacity: 0 } 3.81%, 97% { opacity: 1 } 100% { opacity: 0 } } .l0 { animation: l0 16.0s infinite step-end; }
+  @keyframes l1 { 0%, 18.88% { opacity: 0 } 18.94%, 97% { opacity: 1 } 100% { opacity: 0 } } .l1 { animation: l1 16.0s infinite step-end; }
+  @keyframes l2 { 0%, 24.50% { opacity: 0 } 24.56%, 97% { opacity: 1 } 100% { opacity: 0 } } .l2 { animation: l2 16.0s infinite step-end; }
+  @keyframes l3 { 0%, 29.50% { opacity: 0 } 29.56%, 97% { opacity: 1 } 100% { opacity: 0 } } .l3 { animation: l3 16.0s infinite step-end; }
+  @keyframes l4 { 0%, 29.94% { opacity: 0 } 30.00%, 97% { opacity: 1 } 100% { opacity: 0 } } .l4 { animation: l4 16.0s infinite step-end; }
+  @keyframes l5 { 0%, 30.38% { opacity: 0 } 30.44%, 97% { opacity: 1 } 100% { opacity: 0 } } .l5 { animation: l5 16.0s infinite step-end; }
+  @keyframes l6 { 0%, 30.81% { opacity: 0 } 30.88%, 97% { opacity: 1 } 100% { opacity: 0 } } .l6 { animation: l6 16.0s infinite step-end; }
+  @keyframes l7 { 0%, 31.25% { opacity: 0 } 31.31%, 97% { opacity: 1 } 100% { opacity: 0 } } .l7 { animation: l7 16.0s infinite step-end; }
+  @keyframes l8 { 0%, 31.69% { opacity: 0 } 31.75%, 97% { opacity: 1 } 100% { opacity: 0 } } .l8 { animation: l8 16.0s infinite step-end; }
+  @keyframes l9 { 0%, 32.13% { opacity: 0 } 32.19%, 97% { opacity: 1 } 100% { opacity: 0 } } .l9 { animation: l9 16.0s infinite step-end; }
+  @keyframes l10 { 0%, 32.56% { opacity: 0 } 32.63%, 97% { opacity: 1 } 100% { opacity: 0 } } .l10 { animation: l10 16.0s infinite step-end; }
+  @keyframes l11 { 0%, 33.00% { opacity: 0 } 33.06%, 97% { opacity: 1 } 100% { opacity: 0 } } .l11 { animation: l11 16.0s infinite step-end; }
+  @keyframes l12 { 0%, 33.44% { opacity: 0 } 33.50%, 97% { opacity: 1 } 100% { opacity: 0 } } .l12 { animation: l12 16.0s infinite step-end; }
+  @keyframes l13 { 0%, 33.88% { opacity: 0 } 33.94%, 97% { opacity: 1 } 100% { opacity: 0 } } .l13 { animation: l13 16.0s infinite step-end; }
+  @keyframes l14 { 0%, 34.31% { opacity: 0 } 34.38%, 97% { opacity: 1 } 100% { opacity: 0 } } .l14 { animation: l14 16.0s infinite step-end; }
+  @keyframes l15 { 0%, 39.94% { opacity: 0 } 40.00%, 97% { opacity: 1 } 100% { opacity: 0 } } .l15 { animation: l15 16.0s infinite step-end; }
+  @keyframes l16 { 0%, 40.38% { opacity: 0 } 40.44%, 97% { opacity: 1 } 100% { opacity: 0 } } .l16 { animation: l16 16.0s infinite step-end; }
+  @keyframes l17 { 0%, 40.81% { opacity: 0 } 40.88%, 97% { opacity: 1 } 100% { opacity: 0 } } .l17 { animation: l17 16.0s infinite step-end; }
+  @keyframes l18 { 0%, 41.25% { opacity: 0 } 41.31%, 97% { opacity: 1 } 100% { opacity: 0 } } .l18 { animation: l18 16.0s infinite step-end; }
+  @keyframes l19 { 0%, 41.69% { opacity: 0 } 41.75%, 97% { opacity: 1 } 100% { opacity: 0 } } .l19 { animation: l19 16.0s infinite step-end; }
+  @keyframes l20 { 0%, 42.13% { opacity: 0 } 42.19%, 97% { opacity: 1 } 100% { opacity: 0 } } .l20 { animation: l20 16.0s infinite step-end; }
+  @keyframes l21 { 0%, 42.56% { opacity: 0 } 42.63%, 97% { opacity: 1 } 100% { opacity: 0 } } .l21 { animation: l21 16.0s infinite step-end; }
+  @keyframes l22 { 0%, 43.00% { opacity: 0 } 43.06%, 97% { opacity: 1 } 100% { opacity: 0 } } .l22 { animation: l22 16.0s infinite step-end; }
+  @keyframes l23 { 0%, 43.44% { opacity: 0 } 43.50%, 97% { opacity: 1 } 100% { opacity: 0 } } .l23 { animation: l23 16.0s infinite step-end; }
+  @keyframes l24 { 0%, 43.88% { opacity: 0 } 43.94%, 97% { opacity: 1 } 100% { opacity: 0 } } .l24 { animation: l24 16.0s infinite step-end; }
+  @keyframes l25 { 0%, 44.31% { opacity: 0 } 44.38%, 97% { opacity: 1 } 100% { opacity: 0 } } .l25 { animation: l25 16.0s infinite step-end; }
+  @keyframes type { 0%, 3.75% { transform: scaleX(0.0370) } 15.13%, 100% { transform: none } } .typing { transform-box: fill-box; transform-origin: left; animation: type 16.0s infinite steps(52, end); }
+</style>
+<rect x=".5" y=".5" width="885" height="593" rx="10" fill="var(--bg)" stroke="var(--line)"/>
+<path d="M.5 34.5V10.5a10 10 0 0 1 10-10h865a10 10 0 0 1 10 10v24z" fill="var(--bar)" stroke="var(--line)"/>
+<circle cx="20" cy="17.5" r="6" fill="var(--line)"/><circle cx="40" cy="17.5" r="6" fill="var(--line)"/><circle cx="60" cy="17.5" r="6" fill="var(--line)"/>
+<text x="443" y="22" text-anchor="middle" class="dim" style="font-size: 12px">~/src/requests — claude</text>
+<clipPath id="typed"><rect class="typing" x="22" y="52" width="439.4" height="20"/></clipPath><g clip-path="url(#typed)"><text x="22" y="66"><tspan class="dim">❯</tspan> /punchcard https://github.com/psf/requests/pull/7520</text></g>
+<text class="l1" x="22" y="86"><tspan class="green">✓</tspan> <tspan class="dim">three finder passes · every value to its last consumer · every removed guarantee</tspan></text>
+<text class="l2" x="22" y="106"><tspan class="green">✓</tspan> <tspan class="dim">judging 7 candidates against the constitution · running main and this PR</tspan></text>
+<text class="l3" x="22" y="126"></text>
+<text class="l4" x="22" y="146"><tspan class="orange b">🟠 Ship after #1.</tspan></text>
+<text class="l5" x="22" y="166"></text>
+<text class="l6" x="22" y="186">Finding #1 is a regression this PR introduces on malformed Link headers and must be fixed</text>
+<text class="l7" x="22" y="206">before merge; #2 and #3 are worth closing in the same change but do not block.</text>
+<text class="l8" x="22" y="226"></text>
+<text class="l9" x="22" y="246"><tspan class="dim">  #   severity   what                                                                     where</tspan></text>
+<text class="l10" x="22" y="266"></text>
+<text class="l11" x="22" y="286">  1   <tspan class="red">● BLOCKER</tspan>  One stray &quot; anywhere in the header silently deletes every link after it   utils.py:1004</text>
+<text class="l12" x="22" y="306">  2   <tspan class="yellow">● DESIGN</tspan>   The quoted-string scanner now exists twice, so #1 has to be fixed twice   utils.py:973</text>
+<text class="l13" x="22" y="326">  3   <tspan class="yellow">● DESIGN</tspan>   The two load-bearing branches of the new splitter have no test            utils.py:1002</text>
+<text class="l14" x="22" y="346"></text>
+<text class="l15" x="22" y="366"><tspan class="red b">● 1 · One stray &quot; anywhere in the header silently deletes every link after it</tspan></text>
+<text class="l16" x="22" y="386"><tspan class="dim">src/requests/utils.py:1004</tspan> · A caller reading r.links[&quot;last&quot;][&quot;url&quot;] gets the first link&#x27;s URL back,</text>
+<text class="l17" x="22" y="406">with no exception and nothing that looks wrong.</text>
+<text class="l18" x="22" y="426"></text>
+<text class="l19" x="22" y="446">  &gt;&gt;&gt; parse_header_links(&#x27;&lt;https://x/a&quot;b&gt;; rel=&quot;next&quot;, &lt;https://x/c&gt;; rel=&quot;last&quot;&#x27;)</text>
+<text class="l20" x="22" y="466"><tspan class="dim">  # main</tspan></text>
+<text class="l21" x="22" y="486">  [{&#x27;url&#x27;: &#x27;https://x/a&quot;b&#x27;, &#x27;rel&#x27;: &#x27;next&#x27;}, {&#x27;url&#x27;: &#x27;https://x/c&#x27;, &#x27;rel&#x27;: &#x27;last&#x27;}]</text>
+<text class="l22" x="22" y="506"><tspan class="dim">  # this PR</tspan></text>
+<text class="l23" x="22" y="526">  [{&#x27;url&#x27;: &#x27;https://x/a&quot;b&#x27;, &#x27;rel&#x27;: &#x27;last&#x27;}]</text>
+<text class="l24" x="22" y="546"></text>
+<text class="l25" x="22" y="566">  🔧 <tspan class="b">Fix: track quote state per entry, and only for quotes outside the &lt;...&gt; target.</tspan></text>
+</svg>

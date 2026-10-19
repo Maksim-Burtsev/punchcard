@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+  The README demo as the review lands on a pull request: assets/demo-review.md,
+  rendered with GitHub's own Markdown styles and cut after finding #1. The text
+  is edited in demo-review.md, never here. Re-render both themes:
+
+    uv run --with playwright python assets/demo/render.py assets/demo/pr-comment.html assets/demo-dark.png
+    uv run --with playwright python assets/demo/render.py assets/demo/pr-comment.html assets/demo-light.png light
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Punchcard demo</title>
+<script>
+  const theme = new URLSearchParams(location.search).get("theme") ?? "dark";
+  document.write(`
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-${theme}.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github${theme === "dark" ? "-dark" : ""}.min.css">`);
+  document.documentElement.dataset.theme = theme;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+  :root { --page: #0d1117; --border: #3d444d; --head: #151b23; --muted: #9198a1; }
+  :root[data-theme="light"] { --page: #ffffff; --border: #d1d9e0; --head: #f6f8fa; --muted: #59636e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: var(--page); }
+  #stage { width: 880px; padding: 0; background: var(--page); }
+  .comment { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+  .head {
+    display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+    background: var(--head); border-bottom: 1px solid var(--border);
+    font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--muted);
+  }
+  .head img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; object-position: 30% 20%; }
+  .markdown-body { padding: 16px 24px 80px; overflow: hidden; }
+  .markdown-body pre code.hljs { padding: 0; background: transparent; }
+  .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; background: linear-gradient(transparent, var(--page)); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="comment">
+    <div class="head"><img src="../doyen.png" alt=""><span>psf/requests#7520 · the comment <strong>/punchcard:pr</strong> posts</span></div>
+    <article class="markdown-body" id="body"></article>
+    <div class="fade"></div>
+  </div>
+</div>
+<script>
+  window.ready = false;
+  fetch("../demo-review.md").then((r) => r.text()).then((md) => {
+    // What /punchcard:pr posts: the marker, the credit line, then the review.
+    md = `<sub>Design review by <a href="#">Punchcard</a></sub>\n\n${md}`;
+    const body = document.getElementById("body");
+    body.innerHTML = marked.parse(md);
+    for (const code of body.querySelectorAll("pre code")) {
+      const lang = code.className.replace("language-", "");
+      if (lang === "pycon") code.className = "language-python";
+      hljs.highlightElement(code);
+    }
+    // Cut after finding #1: everything from the second rule on goes.
+    const cut = body.querySelectorAll("hr")[1];
+    while (cut.nextSibling) cut.nextSibling.remove();
+    cut.remove();
+    window.ready = true;
+  });
+</script>
+</body>
+</html>

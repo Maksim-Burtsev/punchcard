@@ -1,0 +1,191 @@
+<!doctype html>
+<!--
+  The README demo as a Claude Code session: /punchcard on psf/requests#7520.
+  The review text is the real run, assets/demo-review.md, shortened to fit a
+  screen; nothing is invented. Edit the text here, then re-render:
+
+    uv run --with playwright python assets/demo/render.py assets/demo/claude-code.html assets/demo.gif
+
+  Open this file in a browser to watch it loop while editing. Timing lives in
+  data-wait attributes; timeline.js explains them.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Punchcard demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=block">
+<style>
+  :root {
+    --bg: #0d1117; --bar: #161b22; --line: #30363d; --fg: #e6edf3; --dim: #7d8590;
+    --red: #ff7b72; --orange: #f0883e; --yellow: #e3b341; --green: #3fb950;
+    --blue: #79c0ff; --str: #a5d6ff; --purple: #d2a8ff; --claude: #d97757;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: transparent; padding: 0; }
+  #stage {
+    width: 880px; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    font: 13px/20px "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-variant-ligatures: none;
+  }
+  .bar { height: 34px; background: var(--bar); border-bottom: 1px solid var(--line); display: flex; align-items: center; padding: 0 14px; gap: 8px; }
+  .bar i { width: 12px; height: 12px; border-radius: 50%; background: #484f58; }
+  .bar span { flex: 1; text-align: center; color: var(--dim); font-size: 12px; margin-right: 52px; }
+  .screen { height: 580px; overflow: hidden; padding: 16px 20px 0; }
+  .swap { display: grid; }
+  .swap > * { grid-area: 1 / 1; }
+  pre { font: inherit; white-space: pre; }
+  .gap { height: 20px; }
+
+  .rule { color: var(--line); white-space: pre; overflow: hidden; }
+  .user { background: #1c2128; color: var(--dim); margin: 0 -20px; padding: 0 20px; }
+  .type { display: inline-block; }
+  .caret { display: inline-block; width: 8px; height: 16px; background: var(--fg); vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .dot { display: inline-block; width: 18px; }
+  .run .dot { color: var(--dim); animation: blink .8s steps(1) infinite; }
+  .ok .dot { color: var(--green); }
+  .say .dot { color: var(--fg); }
+  .sub { color: var(--dim); padding-left: 18px; }
+  .tree { display: inline-block; width: 3ch; }
+  .sub b { color: var(--fg); font-weight: 400; }
+  .spin { color: var(--claude); }
+  .spin::before { content: "✻"; display: inline-block; width: 18px; animation: spin .9s steps(1) infinite; }
+  @keyframes spin { 0% { content: "·"; } 17% { content: "✢"; } 33% { content: "✳"; } 50% { content: "✶"; } 67% { content: "✻"; } 83% { content: "✽"; } }
+
+  .md { padding-left: 18px; }
+  .verdict { color: var(--orange); font-weight: 700; }
+  .h-red { color: var(--red); font-weight: 700; }
+  .h-yellow { color: var(--yellow); font-weight: 700; }
+  .loc { color: var(--dim); }
+  code { color: var(--blue); font: inherit; }
+  .fix { border-left: 3px solid var(--line); padding-left: 12px; }
+  .fix b { color: var(--fg); }
+  table { border-collapse: collapse; margin: 0; }
+  td, th { border: 1px solid var(--line); padding: 0 8px; text-align: left; font-weight: 400; white-space: nowrap; }
+  th { color: var(--dim); }
+  .blocker { color: var(--red); }
+  .design { color: var(--yellow); }
+  .code { background: #161b22; border-radius: 6px; padding: 6px 12px; margin-left: 18px; }
+  .code .k { color: var(--red); } .code .s { color: var(--str); } .code .c { color: var(--dim); } .code .p { color: var(--purple); }
+  .code .pass { color: var(--green); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-left: 18px; }
+  .cols .code { margin-left: 0; }
+  .cols .code .head { color: var(--dim); }
+  .hl { display: block; background: rgba(227, 179, 65, .18); margin: 0 -12px; padding: 0 12px; }
+</style>
+</head>
+<body data-hold="4">
+<div id="stage">
+  <div class="bar"><i></i><i></i><i></i><span>~/src/requests — claude</span></div>
+  <div class="screen"><div>
+
+    <div class="swap">
+      <div class="step" data-until="sent" data-wait="0.4">
+        <div class="rule">────────────────────────────────────────────────────────────────────────────────────────────────────────────</div>
+        <div>&gt; <span class="step type" data-wait="0.5">/punchcard https://github.com/psf/requests/pull/7520</span><span class="caret"></span></div>
+        <div class="rule">────────────────────────────────────────────────────────────────────────────────────────────────────────────</div>
+      </div>
+      <div class="step" id="sent" data-wait="0.5"><div class="gap"></div><div class="user">&gt; /punchcard https://github.com/psf/requests/pull/7520</div><div class="gap"></div></div>
+    </div>
+
+    <div class="swap">
+      <div class="step run" id="finding" data-until="found" data-wait="0.5"><span class="dot">⏺</span>Three independent finders</div>
+      <div class="step ok" id="found" data-after="f3" data-wait="0.5"><span class="dot">⏺</span>Three independent finders</div>
+    </div>
+    <div class="step sub" data-wait="0.9"><span class="tree">⎿</span><b>every changed value</b>, traced to its last consumer</div>
+    <div class="step sub" data-wait="0.9"><span class="tree"></span><b>every guarantee a deleted line</b> used to make</div>
+    <div class="step sub" id="f3" data-wait="0.9"><span class="tree"></span><b>every changed behavior</b>, and the test that goes red when it is reverted</div>
+    <div class="gap"></div>
+    <div class="swap">
+      <div class="step run" data-until="judged" data-wait="0.6"><span class="dot">⏺</span>One judge</div>
+      <div class="step ok" id="judged" data-after="ran" data-wait="0.5"><span class="dot">⏺</span>One judge</div>
+    </div>
+    <div class="step sub" data-wait="0.9"><span class="tree">⎿</span><b>7 candidates</b> held against the constitution</div>
+    <div class="step sub" id="ran" data-wait="1.1"><span class="tree"></span><b>main and this PR</b>, run on the same Link header</div>
+    <div class="gap"></div>
+
+    <div class="swap" id="verdict-row">
+      <div class="step spin" data-until="verdict" data-wait="0.7"> Writing the review…</div>
+      <div class="step say verdict" id="verdict" data-wait="1.4"><span class="dot">⏺</span>🟠 Ship after #1.</div>
+    </div>
+    <div class="gap"></div>
+    <div class="step md">Finding #1 is a regression this PR introduces on malformed <code>Link</code> headers and must</div>
+    <div class="step md">be fixed before merge; #2 and #3 are worth closing in the same change but do not block.</div>
+    <div class="gap"></div>
+    <div class="md step"><table>
+      <tr class="step"><th>#</th><th></th><th>What</th><th>Where</th></tr>
+      <tr class="step"><td>1</td><td class="blocker">🔴 BLOCKER</td><td>One stray <code>"</code> anywhere in the header silently deletes every link after it</td><td><code>:1004</code></td></tr>
+      <tr class="step"><td>2</td><td class="design">🟡 DESIGN</td><td>The quoted-string scanner now exists twice, so #1 has to be fixed twice</td><td><code>:973</code></td></tr>
+      <tr class="step"><td>3</td><td class="design">🟡 DESIGN</td><td>The two load-bearing branches of the new splitter have no test</td><td><code>:1002</code></td></tr>
+    </table></div>
+    <div class="gap"></div>
+
+    <div class="step md h-red" data-wait="1.6" data-scroll="verdict-row">🔴 1 · One stray " anywhere in the header silently deletes every link after it</div>
+    <div class="step md"><span class="loc">src/requests/utils.py:1004</span> · A caller reading <code>r.links["last"]["url"]</code> gets the first link's</div>
+    <div class="step md">URL back, with no exception and nothing that looks wrong.</div>
+    <div class="gap"></div>
+    <pre class="code stream">
+<span class="p">&gt;&gt;&gt;</span> parse_header_links(<span class="s">'&lt;https://x/a"b&gt;; rel="next", &lt;https://x/c&gt;; rel="last"'</span>)
+<span class="c"># main</span>
+[{<span class="s">'url'</span>: <span class="s">'https://x/a"b'</span>, <span class="s">'rel'</span>: <span class="s">'next'</span>}, {<span class="s">'url'</span>: <span class="s">'https://x/c'</span>, <span class="s">'rel'</span>: <span class="s">'last'</span>}]
+<span class="c"># this PR</span>
+[{<span class="s">'url'</span>: <span class="s">'https://x/a"b'</span>, <span class="s">'rel'</span>: <span class="s">'last'</span>}]
+</pre>
+    <div class="gap"></div>
+    <div class="step md"><div class="fix">🔧 <b>Fix:</b> make the quote state local to one link entry and reset it at each</div></div>
+    <div class="step md"><div class="fix">entry boundary, so a malformed entry cannot redefine the entries after it.</div></div>
+    <div class="gap"></div>
+
+    <div class="step md h-yellow" data-wait="3" data-scroll>🟡 2 · The quoted-string scanner now exists twice, so #1 has to be fixed twice</div>
+    <div class="step md"><span class="loc">src/requests/utils.py:973</span> · Whoever fixes the quote handling for #1 has to find and</div>
+    <div class="step md">change both copies, and a fix applied to one leaves the other wrong.</div>
+    <div class="gap"></div>
+    <div class="cols">
+      <pre class="code stream">
+<span class="head">_parse_header_links_params  :973</span>
+<span class="k">if</span> escaped:
+    escaped = <span class="k">False</span>
+<span class="k">elif</span> char == <span class="s">"\\"</span> <span class="k">and</span> in_quotes:
+    escaped = <span class="k">True</span>
+<span class="k">elif</span> char == <span class="s">'"'</span>:
+    in_quotes = <span class="k">not</span> in_quotes
+<span class="hl"><span class="k">elif</span> char == <span class="s">";"</span> <span class="k">and not</span> in_quotes:</span>
+</pre>
+      <pre class="code stream">
+<span class="head">_split_link_header_entries  :1000</span>
+<span class="k">if</span> escaped:
+    escaped = <span class="k">False</span>
+<span class="k">elif</span> char == <span class="s">"\\"</span> <span class="k">and</span> in_quotes:
+    escaped = <span class="k">True</span>
+<span class="k">elif</span> char == <span class="s">'"'</span>:
+    in_quotes = <span class="k">not</span> in_quotes
+<span class="hl"><span class="k">elif</span> char == <span class="s">","</span> <span class="k">and not</span> in_quotes:</span>
+</pre>
+    </div>
+    <div class="gap"></div>
+    <div class="step md"><div class="fix">🔧 <b>Fix:</b> let one scanner yield the split positions and have both callers</div></div>
+    <div class="step md"><div class="fix">tell it which delimiter they split on.</div></div>
+    <div class="gap"></div>
+
+    <div class="step md h-yellow" data-wait="2.5" data-scroll>🟡 3 · The two load-bearing branches of the new splitter have no test</div>
+    <div class="step md"><span class="loc">src/requests/utils.py:1002</span> · A later change that drops either branch ships</div>
+    <div class="step md">silently, because the suite this PR adds to stays green without them.</div>
+    <div class="gap"></div>
+    <div class="step md">Removing the backslash branch from both helpers and re-running the tests:</div>
+    <div class="gap"></div>
+    <pre class="code stream">
+$ PYTHONPATH=src pytest tests/test_utils.py -k parse_header_links -q
+.........                                                          [100%]
+<span class="pass">9 passed</span>, 224 deselected in 0.03s
+</pre>
+    <div class="gap"></div>
+    <div class="step md"><div class="fix">🔧 <b>Fix:</b> add cases whose expected output changes when the escape branch</div></div>
+    <div class="step md"><div class="fix">or the space-skipping lookahead is removed.</div></div>
+    <div class="gap"></div>
+  </div></div>
+</div>
+<script src="timeline.js"></script>
+</body>
+</html>
