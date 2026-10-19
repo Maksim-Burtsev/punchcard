@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Your working tree is left alone.** The review prepares the
+  comparison once: `main` and the change checked out as worktrees in a
+  scratch directory, the one-test command found once, one context pack
+  every pass starts from. No pass stashes, checks out, reverts or runs
+  anything in your checkout any more — 1.5.1 edited files in it and
+  restored them with `git checkout --` in one of four measured runs,
+  which deletes uncommitted edits. Speed and cost unchanged
+  (`benchmarks/stability-2026-08.md`, "Prepare once").
+
 ## 1.5.1 — 2026-10-01
 
 - **A posted review names where it came from.** A small line under the
