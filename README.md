@@ -89,7 +89,7 @@ summary table, one card per finding.
 ## See it
 
 <p align="center">
-  <img src="assets/demo.gif" alt="A Punchcard review of psf/requests#7520: verdict, summary table, and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="900">
+  <img src="assets/demo.gif" alt="Punchcard in Claude Code on psf/requests#7520: three finders and a judge run, then the verdict, the summary table and three finding cards — the regression run through main and the PR, the duplicated scanner side by side, the branches no test covers" width="880">
 </p>
 
 > A real review of [psf/requests#7520](https://github.com/psf/requests/pull/7520) — [the full text](assets/demo-review.md), as the skill rendered it.
