@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.5.2 — 2026-10-19
 
 - **Your working tree is left alone.** The review prepares the
   comparison once: `main` and the change checked out as worktrees in a
