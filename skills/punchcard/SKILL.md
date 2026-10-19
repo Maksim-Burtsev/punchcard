@@ -161,7 +161,72 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    you skipped in one line.
 2. **Intent first.** Read the MR/PR description, commit messages, or task.
    You review the change against what it claims to do.
-3. **Triage, then search in three independent passes.** Size the change
+3. **Prepare once.** Every pass compares the code before and after the
+   change, and a finder left to work that out alone pays for it again —
+   the interpreter, the test command, a way to get the base — while
+   three finders improvising in one checkout revert files under each
+   other's feet. So you prepare the comparison once, before anything is
+   dispatched, and every pass starts from it.
+
+   *Two trees.* Pin the base and head shas and write both down. Base is
+   `HEAD` for uncommitted work, `git merge-base <default> HEAD` for a
+   branch, and the merge-base of the PR's head with its target branch for
+   a PR. Head is the branch or PR head — fetch it first when it is not
+   local (`git fetch origin pull/<n>/head` on GitHub,
+   `merge-requests/<n>/head` on GitLab; `--unshallow` a shallow clone
+   before asking for a merge-base) — and for uncommitted work the sha
+   `git stash create` prints: a commit of the working tree, staged and
+   unstaged, written without touching the tree, the index or the stash
+   list; copy in any untracked file the change needs. Both go in a
+   scratch directory outside the user's tree (`mktemp -d`):
+   `git worktree add --detach <scratch>/base <base>`, the same for head.
+   A PR with no local repository: read files at its head sha through
+   whatever opened it, as the brief does, and run only what can run
+   without a checkout.
+
+   *The user's tree is read-only.* Never run `git stash` — anywhere: its
+   list is shared by every worktree of the repository; `stash create`
+   above is the one form that writes nothing but a commit — nor
+   `checkout`, `switch`, `reset` or `restore` in the user's tree, never
+   edit a file in it and never run the code or its tests there — not to
+   revert, not for a moment. It may hold work that exists nowhere else. Base and head are read-only too, because
+   the other passes are reading them: an experiment that reverts or
+   edits code gets its own throwaway worktree,
+   `git worktree add --detach <scratch>/exp-<n> <base or head sha>`, and
+   reverts there with `git checkout <base sha> -- <file>`.
+
+   *The environment, once.* Find the toolchain and the command that runs
+   one test — `PYTHONPATH=src pytest tests/x.py -k name -q`,
+   `go test ./pkg -run Name`, `npx vitest run file -t name` — and run it
+   once in each tree on a real test, so the command passed on is one
+   that worked. Dependencies that live in the tree (`.venv`,
+   `node_modules`) are reused by the other trees through the same
+   interpreter or a symlink, not installed twice — and then check that
+   each tree runs its own code, not the copy the shared environment
+   points at: an editable install imports the user's tree from anywhere,
+   and a "main vs PR" run that imports the PR twice proves nothing. Ask
+   the interpreter where the changed module came from, in each tree.
+   When the environment cannot be made to run, record that once; every
+   pass then traces by reading and says so.
+
+   *The context pack* is one short block, handed verbatim to every
+   finder and kept by you: the target and its intent in one line; base
+   and head shas with their paths; the changed files with `+/-` counts;
+   the one-test command and the example that passed; how to run one
+   input against base and against head — which tree, which interpreter,
+   and the check that each imports its own code; what is known not to
+   run. Finders do not re-derive what the pack states.
+
+   *Cleanup.* When the review ends — rendered, posted, or stopped partway
+   — remove every worktree you added with `git worktree remove --force`
+   (it works when the directory is already gone; `prune` would also drop
+   the user's own entries) and the scratch directory. The user's
+   repository is left with the worktrees it had.
+
+   The shortcut and the sequential passes start from the same trees and
+   pack: they are cheap, and they make the main-vs-PR demonstration
+   safe however the passes run.
+4. **Triage, then search in three independent passes.** Size the change
    before dispatching anything, and size it by what it does, not only by
    how long it is. A diff earns the no-fan-out shortcut only when both
    are true: it is small — as a rule of thumb, under about a hundred
@@ -198,18 +263,17 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    pipeline, dispatch them in parallel and
    wait for all three to return before you judge — never end your turn,
    set a timer or poll while a finder is still running; their return is
-   what resumes you. The wait is not idle: while the finders run, do steps 2
-   and 4 yourself — read the change's intent, match the routing table, load
-   the chapters — so that when the last finder returns, judging starts, not
-   preparation. Run them on the model you are running on — a cheaper
-   finder was measured and it lost a blocker no full-strength finder had
-   ever missed. Give each the target, the repository path and its own
-   pass, and have it
+   what resumes you. The wait is not idle: while the finders run, do step 5
+   yourself — match the routing table, load the chapters — so that when the
+   last finder returns, judging starts, not preparation. Run them on the
+   model you are running on — a cheaper finder was measured and it lost a
+   blocker no full-strength finder had ever missed. Give each the context
+   pack and its own pass, and have it
    return candidates only — file, line, the mechanism, the concrete
    consequence it traced to the end, and for each claim the command it ran
    and what that printed, or the words "not executed" — with no severity,
    no verdict and no card. Finders do not read the constitution; the
-   chapters are loaded once, by you, in step 4. When no subagent tool is
+   chapters are loaded once, by you, in step 5. When no subagent tool is
    available, run the three passes yourself
    in sequence, starting each one from the diff again rather than from what
    the last pass concluded. Independence is the whole point: a reviewer who
@@ -253,16 +317,17 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    or a single case, never a whole file, and at most three executions in
    total — beyond that, name the missing case by reading. The one
    revert-and-run experiment that decides a verdict belongs to the judge,
-   run once.
+   run once, in a throwaway worktree.
 
-4. **Route and load.** Match the diff against the routing table and read the
+5. **Route and load.** Match the diff against the routing table and read the
    matched constitution chapters.
-5. **Judge.** Walk the core and the loaded chapters, collect candidate
+6. **Judge.** Walk the core and the loaded chapters, collect candidate
    findings. Claims about what a test would do are experiments, not
    inferences: before writing "this test still passes if you revert the
-   change", revert it and run the test. If you cannot run the suite, you may
-   say what a test does not cover, but never that it would still pass — and
-   read every assertion in a test you attack, not the first few lines.
+   change", revert it in a throwaway worktree and run the test. If you
+   cannot run the suite, you may say what a test does not cover, but
+   never that it would still pass — and read every assertion in a test you
+   attack, not the first few lines.
    A finder's executed demonstration is evidence: its command and output
    stand as the run, and you re-run it only when the output decides a
    verdict and you have a reason to doubt it — never to reproduce what is
@@ -280,12 +345,12 @@ clause, and keep the finding — gaps feed the constitution's next revision.
    last consumer in both directions — never when you have collected enough
    findings. Collect every candidate you find; cutting is the gate's job in
    the next step, not the search's.
-6. **Gate and order.** Cut ruthlessly against the gate and the scope rule,
+7. **Gate and order.** Cut ruthlessly against the gate and the scope rule,
    never against a count. Every survivor is rendered. Order them by
    consequence, with two rules: a missing-test finding (8.1) is filed
    last, separately; and a finding about a config, CI or editor file never
    outranks one about the code.
-7. **Render.** Verdict heading, its one-sentence readout, then the summary
+8. **Render.** Verdict heading, its one-sentence readout, then the summary
    table (two or more findings only), then the finding cards, nothing else.
    For "Ship it.": heading, readout, verified checklist, done.
 

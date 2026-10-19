@@ -680,3 +680,100 @@ Run 3 also demonstrated judge discipline under escalation: it dropped a
 on revert. Quality on the boundary case is at or above the shipped
 pipeline's record; the shortcut's speed gains on genuinely small diffs
 are unchanged, because those diffs were never near the boundary.
+
+## Prepare once — October 2026
+
+Issue #38: before anything is dispatched, the coordinator pins base and
+head, checks both out as worktrees in a scratch directory, finds the
+one-test command once, and hands every pass the same context pack. The
+user's tree becomes read-only. Measured against 1.5.1 on the two rubric
+PRs, with one more arm for #43 option B (finders dispatched as forks of
+the coordinator, so they share its context as a cached prefix).
+
+Cold `claude -p` runs on Opus 5.5 (medium), Claude Code 2.1.303, every
+run in its own clone at the PR head with a ready virtualenv. Plugins
+isolated with `--settings` (`ponytail`, the installed `punchcard` and
+`superpowers` off), checked by a probe run first. The user-level
+`CLAUDE.md` on the host could not be isolated and was loaded in every
+arm. Minutes are run start to the written review; three fan-out runs
+then sat on a 30-minute wake-up timer before the process exited, and
+that idle time is left out (see below). Uncached tokens are input plus
+cache writes, summed over the coordinator and its subagents; cost is
+the harness's own figure.
+
+**flask#5918**
+
+| | 1.5.1 (×2) | prepare once (×5) | + forks, #43 B (×5) |
+|---|---|---|---|
+| path | fan-out 2/2 | fan-out 4/5, inline 1/5 | fan-out 5/5 |
+| minutes to review | 5.9 · 5.6 | 7.1 · 6.4 · 5.4 · 5.9 · inline 2.9 | 4.4 · 3.1 · 3.8 · 3.8 · 3.2 |
+| finders done (min) | 4.4 · 3.9 | 4.6 · 4.5 · 4.1 · 4.0 | 2.6 · 1.8 · 2.1 · 2.7 · 1.9 |
+| uncached tokens (fan-out) | 223k · 211k | 215k · 206k · 206k · 211k | 93–119k |
+| cost (fan-out) | $3.5 · $3.4 | $3.3–3.6 | $1.7–2.2 |
+| blueprint hooks skip (blocker) | 2/2 | 5/5 | 5/5 |
+| sansio rule only `Flask` serves | 2/2 | 5/5 | 5/5 |
+| routes mutates live rule | 2/2 | 5/5 | 5/5 |
+| werkzeug cross-redirect | 2/2 | 4/5 (the inline run missed it) | **0/5** |
+| `Rule.methods` / `url_map` shape | 2/2 | 4/5 | 5/5 |
+| required_methods flip | 1/2 | 1/5 | 3/5 |
+| `except: pass` | 1/2 | 1/5 | 0/5 |
+| coverage card | 2/2 | 5/5 | 5/5 |
+| noise | 0 | 0 | 0 |
+
+**requests#7520** — every run on every arm took the inline path.
+
+| | 1.5.1 (×2) | prepare once (×2) | + forks (×2) |
+|---|---|---|---|
+| minutes | 1.8 · 1.1 | 1.5 · 1.3 | 1.3 · 1.3 |
+| cost | $0.7 · $0.6 | $0.7 · $0.6 | $0.7 · $0.6 |
+| unterminated quote found · as blocker | 2/2 · 1/2 | 2/2 · 1/2 | 2/2 · 2/2 |
+| duplicated scanner · escape untested | 2/2 · 2/2 | 2/2 · 2/2 | 2/2 · 2/2 |
+| noise | 0 | 0 | 0 |
+
+**The user's tree.** The point of the change, and the part that shows.
+In two of four 1.5.1 runs a pass wrote into the checkout it was
+reviewing: on flask run 1 a finder edited `src/flask/cli.py` and
+`src/flask/app.py` in place with `sed -i`, ran a test, and restored them
+with `git checkout --`, while the other two finders were reading the
+same files. On a tree with uncommitted work that restore deletes the
+user's edits to those files. Flask run 2 left sixteen downloaded `.whl`
+files in the tree. Across seventeen runs with the prep step, no command
+wrote into the user's tree; every edit-and-run happened in a throwaway
+worktree. One extra run reviewed uncommitted work — the requests diff
+applied on `main`, one file staged, one unstaged, an untracked file and
+a stash entry of the user's own — and `git status --porcelain`,
+`git stash list`, the staged and unstaged diffs, the untracked file and
+the worktree list were byte-identical before and after.
+
+**Speed: no gain.** The issue expected the finders to get faster by the
+two minutes of environment setup that "Faster — PR A" recorded. That
+two minutes was virtualenv building, and every run since, these
+included, starts with the environment ready. With nothing left to
+build, the prep step saves nothing measurable: finders finished in
+4.0–4.6 minutes against 3.9–4.4, at the same cost. On a host where
+finders do have to build an environment the saving may still be there;
+it is not measured here. The change stays for the tree, not the clock.
+
+**Forks (#43 B): faster, cheaper, and rejected.** Forks halved the
+uncached tokens and cut the review to under four minutes, because the
+finders finished in about two minutes instead of four. The time came
+out of the search: the werkzeug cross-redirect — a blocker-class key
+found by 2/2 baseline runs and 4/4 regular fan-outs here — was found by
+none of the five fork runs, and `except: pass` by none. The skill's
+rule is that nothing is cut from the search to save time, so the fork
+paragraph was not kept. #43 option A (a plugin agent file) was not
+measured.
+
+Three more things on the record:
+
+- One prepare-once run took the inline path on flask, a diff the triage
+  rule sends to the fan-out, and missed the cross-redirect and the
+  `Rule.methods` keys; the other four fanned out. The 1.5.1 runs fanned
+  out 2/2 here and 3/3 in August. One in five is not enough to blame the
+  prep step, and not enough to clear it.
+- Three of eleven fan-out runs (two fork, one prepare-once, neither of
+  the two 1.5.1 runs) called a 30-minute wake-up timer after dispatching the
+  finders, which the skill already forbids. The review was written on
+  time in each, but the process stayed open until the timer fired.
+- `required_methods` dropped from the 5/5 recorded in August to 1/2 on
+  1.5.1 itself: a property of the new model, not of this change.
